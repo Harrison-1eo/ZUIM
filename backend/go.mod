@@ -1,4 +1,4 @@
-module IMTest
+module backend
 
 go 1.22
 

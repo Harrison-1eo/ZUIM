@@ -3,8 +3,8 @@
 package main
 
 import (
-	"IMTest/internal/repositories"
-	"IMTest/internal/routes"
+	"backend/internal/repositories"
+	"backend/internal/routes"
 )
 
 func main() {

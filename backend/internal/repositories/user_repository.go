@@ -2,7 +2,7 @@
 
 package repositories
 
-import "IMTest/internal/models"
+import "backend/internal/models"
 
 type UserRepository struct {
 }
