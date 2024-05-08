@@ -3,9 +3,9 @@
 package controllers
 
 import (
-	"IMTest/internal/models"
-	"IMTest/internal/repositories"
-	"IMTest/internal/utils"
+	"backend/internal/models"
+	"backend/internal/repositories"
+	"backend/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 

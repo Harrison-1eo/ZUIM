@@ -3,7 +3,7 @@
 package repositories
 
 import (
-	"IMTest/internal/models"
+	"backend/internal/models"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )

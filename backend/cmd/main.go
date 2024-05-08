@@ -3,8 +3,8 @@
 package main
 
 import (
-	"IMTest/internal/repositories"
-	"IMTest/internal/routes"
+	"backend/internal/repositories"
+	"backend/internal/routes"
 )
 
 func main() {
@@ -12,7 +12,7 @@ func main() {
 	repositories.InitDB()
 
 	router := routes.SetupRouter()
-	err := router.Run(":8080")
+	err := router.Run(":8000")
 	if err != nil {
 		return
 	}

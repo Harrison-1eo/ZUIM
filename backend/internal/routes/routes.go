@@ -3,8 +3,8 @@
 package routes
 
 import (
-	"IMTest/internal/controllers"
-	"IMTest/internal/middlewares"
+	"backend/internal/controllers"
+	"backend/internal/middlewares"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"time"

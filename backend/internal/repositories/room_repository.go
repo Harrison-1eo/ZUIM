@@ -3,7 +3,7 @@
 package repositories
 
 import (
-	"IMTest/internal/models"
+	"backend/internal/models"
 )
 
 type RoomRepository struct {
