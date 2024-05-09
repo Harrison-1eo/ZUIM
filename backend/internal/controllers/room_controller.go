@@ -148,5 +148,5 @@ func GetRoomMembers(c *gin.Context) {
 		})
 	}
 
-	respond(c, 0, "获取聊天室成员列表成功", members)
+	respond(c, 0, "获取聊天室成员列表成功", numbersResponse)
 }

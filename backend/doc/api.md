@@ -220,3 +220,109 @@
   "data": null
 }
 ```
+
+## 3. 消息相关
+
+### 3.1 发送消息（不用）
+
+地址：`/api/message/send`
+
+方法：`POST`
+
+参数：
+```json
+{
+  "room_id": 1,
+  "type": "text",
+  "content": "hello"
+}
+```
+
+### 3.2 获取消息
+
+地址：`/api/message/list`
+
+方法：`GET`
+
+参数：
+```json
+{
+  "room_id": 1,
+  "last_message_id": 0,
+  "limit": 20
+}
+```
+
+last_message_id 为 0 时，表示获取最新的消息，limit 表示获取的消息数量
+
+last_message_id 不为 0 时，表示获取 last_message_id **之前（不含）**的消息
+
+成功返回：
+```json
+{
+  "code": 0,
+  "msg": "历史消息获取成功",
+  "data": [
+    {
+      "ID": 1,
+      "send_time": "2024-05-07 15:23:30",
+      "room_id": 1,
+      "sender_id": 1,
+      "sender_name": "user1",
+      "type": "text",
+      "content": "hello"
+    },
+    {
+        "ID": 2,
+        "send_time": "2024-05-07 15:23:30",
+        "room_id": 1,
+        "sender_id": 2,
+        "sender_name": "user2",
+        "type": "text",
+        "content": "world"
+    }
+  ]
+}
+```
+
+
+### 3.3 WebSocket 消息推送（未测试）
+
+地址：`/api/message/ws`
+
+方法：`GET`
+
+使用 WebSocket 连接到服务器，连接成功后，服务器会返回一个消息：
+```json
+{
+  "code": 0,
+  "msg": "连接成功",
+  "data": null
+}
+```
+
+连接成功后，向服务器发送消息，即向房间发送消息：
+```json
+{
+  "room_id": 1,
+  "type": "text",
+  "content": "hello"
+}
+```
+
+服务器返回新消息，即推送给房间内的所有用户，用户收到新消息后，可以在页面上显示：
+```json
+{
+  "code": 0,
+  "msg": "新消息",
+  "data": {
+    "ID": 1,
+    "send_time": "2024-05-07 15:23:30",
+    "room_id": 1,
+    "sender_id": 1,
+    "sender_name": "user1",
+    "type": "text",
+    "content": "hello"
+  }
+}
+```

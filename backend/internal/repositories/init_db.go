@@ -6,6 +6,7 @@ import (
 	"backend/internal/models"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var db *gorm.DB
@@ -14,13 +15,16 @@ var db *gorm.DB
 func InitDB() {
 	// 连接SQLite数据库
 	var err error
-	db, err = gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	db, err = gorm.Open(sqlite.Open("test.db"), &gorm.Config{
+		// 打印SQL语句
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
 		panic("internal/config/init_db.go: failed to connect database >>> " + err.Error())
 	}
 
 	// 迁移数据库模式
-	err = db.AutoMigrate(&models.User{}, &models.Room{}, &models.UserRoom{})
+	err = db.AutoMigrate(&models.User{}, &models.Room{}, &models.UserRoom{}, &models.Message{})
 	if err != nil {
 		panic("internal/config/init_db.go: failed to migrate database >>> " + err.Error())
 	}

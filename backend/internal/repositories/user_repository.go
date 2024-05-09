@@ -39,3 +39,21 @@ func (repo *UserRepository) AuthenticateUser(username, password string) (*models
 	}
 	return &user, nil
 }
+
+// 根据ID获取用户
+func (repo *UserRepository) GetUserByID(id uint) (*models.User, error) {
+	var user models.User
+	if err := db.Model(models.User{}).First(&user, id).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+// 根据ID获取用户名
+func (repo *UserRepository) GetUsernameByID(id uint) (string, error) {
+	var user models.User
+	if err := db.Model(models.User{}).First(&user, id).Error; err != nil {
+		return "", err
+	}
+	return user.Username, nil
+}

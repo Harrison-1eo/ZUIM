@@ -62,10 +62,14 @@ func SetupRouter() *gin.Engine {
 	}
 
 	// 聊天记录相关路由
-	//message := api.Group("/message")
+	message := api.Group("/message")
 	{
 		// 发送消息
-		//message.POST("/send", controllers.SendMessage)
+		message.POST("/send", controllers.SendMessage)
+		// 获取历史消息
+		message.GET("/list", controllers.GetMessages)
+		// 进入WebSocket实时聊天室
+		message.GET("/ws", controllers.WebSocketMessage)
 	}
 
 	return r
