@@ -17,6 +17,7 @@ go run ./cmd/main.go
 确保已经安装了`Node.js 14.0`以上版本
 
 ```bash
+npm install -g @vue/cli
 cd frontend
 npm install
 npm run serve

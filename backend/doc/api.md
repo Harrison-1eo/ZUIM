@@ -23,11 +23,7 @@
   "msg": "注册成功",
   "data": {
     "ID": 4,
-    "CreatedAt": "2024-05-07T15:23:30.8072479+08:00",
-    "UpdatedAt": "2024-05-07T15:23:30.8072479+08:00",
-    "DeletedAt": null,
-    "username": "user12345",
-    "password": "password12345"
+    "username": "user12345"
   }
 }
 ```
@@ -64,11 +60,7 @@
     "token": "eyJhb.eyJleHO.KNzZ",
     "user": {
       "ID": 5,
-      "CreatedAt": "2024-05-07T19:24:02.86966+08:00",
-      "UpdatedAt": "2024-05-07T19:24:02.86966+08:00",
-      "DeletedAt": null,
-      "username": "123",
-      "password": "123"
+      "username": "123"
     }
   }
 }

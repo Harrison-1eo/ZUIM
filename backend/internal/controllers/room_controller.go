@@ -135,5 +135,18 @@ func GetRoomMembers(c *gin.Context) {
 		return
 	}
 
+	type ResponseType struct {
+		ID       uint   `json:"ID"`
+		Username string `json:"username"`
+	}
+
+	numbersResponse := make([]ResponseType, 0)
+	for _, member := range members {
+		numbersResponse = append(numbersResponse, ResponseType{
+			ID:       member.ID,
+			Username: member.Username,
+		})
+	}
+
 	respond(c, 0, "获取聊天室成员列表成功", members)
 }

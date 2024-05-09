@@ -35,7 +35,14 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	respond(c, 0, "注册成功", newUser)
+	type ResponseType struct {
+		ID       uint   `json:"ID"`
+		Username string `json:"username"`
+	}
+
+	respond(c, 0, "注册成功",
+		ResponseType{ID: newUser.ID,
+			Username: newUser.Username})
 }
 
 // 用户登录
@@ -63,5 +70,13 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	respond(c, 0, "登录成功", gin.H{"user": authenticatedUser, "token": token})
+	type ResponseType struct {
+		ID       uint   `json:"ID"`
+		Username string `json:"username"`
+	}
+
+	logIn := ResponseType{ID: authenticatedUser.ID,
+		Username: authenticatedUser.Username}
+
+	respond(c, 0, "登录成功", gin.H{"user": logIn, "token": token})
 }
