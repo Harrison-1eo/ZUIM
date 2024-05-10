@@ -152,16 +152,11 @@
 
 ### 2.3 查看房间中的用户
 
-地址：`/api/room/members`
+地址：`/api/room/members?room_id=1`
 
 方法：`GET`
 
-参数：
-```json
-{
-    "room_id": 1
-}
-```
+参数：GET方法，参数填写在URL中，room_id 表示房间的ID
 
 成功返回：
 ```json

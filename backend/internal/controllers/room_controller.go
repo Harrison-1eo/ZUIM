@@ -6,6 +6,7 @@ import (
 	"backend/internal/models"
 	"backend/internal/repositories"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 var roomRepo *repositories.RoomRepository = repositories.NewRoomRepository()
@@ -110,25 +111,35 @@ func AddUserToRoom(c *gin.Context) {
 
 // GetRoomMembers 获取聊天室成员列表
 func GetRoomMembers(c *gin.Context) {
-	type RequestBody struct {
-		RoomID uint `json:"room_id"`
-	}
-	var body RequestBody
-	if err := c.ShouldBindJSON(&body); err != nil {
+	//type RequestBody struct {
+	//	RoomID uint `json:"room_id"`
+	//}
+	//var body RequestBody
+	//if err := c.ShouldBindJ
+
+	// 从URL参数中解析出聊天室ID
+	roomID, ok := c.GetQuery("room_id")
+	if ok != true {
 		respond(c, 1, "获取聊天室成员列表失败，请求错误", nil)
-		println("// controllers/room_controller.go 获取聊天室成员列表失败，请求错误 >>> err:", err.Error())
+		println("// controllers/room_controller.go 获取聊天室成员列表失败，请求错误 >>> err: room_id not found", c.Request.URL.RawQuery)
+		return
+	}
+	roomIDUint, err := strconv.Atoi(roomID)
+	if roomIDUint == 0 || err != nil {
+		respond(c, 1, "获取聊天室成员列表失败，请求错误", nil)
+		println("// controllers/room_controller.go 获取聊天室成员列表失败，请求错误 >>> err: roomID == 0")
 		return
 	}
 
 	// 检查用户是否有权限：只有在聊天室中的人才能查看成员列表
 	userId := c.MustGet("userID").(uint)
-	if !userRoomRepo.IfUserInRoom(userId, body.RoomID) {
+	if !userRoomRepo.IfUserInRoom(userId, uint(roomIDUint)) {
 		respond(c, 1, "获取聊天室成员列表失败，没有权限，当前用户不在此房间中", nil)
 		println("// controllers/room_controller.go 获取聊天室成员列表失败，没有权限 >>> err:")
 		return
 	}
 
-	members, err := userRoomRepo.GetRoomUsers(body.RoomID)
+	members, err := userRoomRepo.GetRoomUsers(uint(roomIDUint))
 	if err != nil {
 		respond(c, 1, "获取聊天室成员列表失败，服务器错误", nil)
 		println("// controllers/room_controller.go 获取聊天室成员列表失败，服务器错误 >>> err:", err.Error())
