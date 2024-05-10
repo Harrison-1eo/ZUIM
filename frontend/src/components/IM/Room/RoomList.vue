@@ -124,12 +124,14 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
+  height: 100vh;
 }
 
 .chat-header {
   padding: 10px;
   background-color: #f5f7fa;
   text-align: center;
+  height: 2em;
 }
 
 .new-chat-button{
