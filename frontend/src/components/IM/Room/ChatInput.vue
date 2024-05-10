@@ -3,8 +3,12 @@
     <el-input type="textarea" placeholder="输入消息..." v-model="newMessage" class="message-input" :rows="4"/>
 
     <div class="send-buttons">
+      <!-- 发送文件 -->
+      <el-button type="primary" class="send-button" @click="sendFile" style="margin-bottom: 10px">发送文件</el-button>
       <el-button type="primary" class="send-button" @click="changeVisible" style="margin-bottom: 10px">添加附件</el-button>
       <el-button type="success" class="send-button" @click="sendMessage">发送消息</el-button>
+      <!-- 开启视频 -->
+      <el-button type="success" class="send-button" @click="startVideo">开启视频</el-button>
     </div>
 
     <!-- 对话框 -->
@@ -32,6 +36,15 @@ export default {
       // 向父组件发送输入的消息
       this.$emit('send', this.newMessage);
       this.newMessage = ''; // 发送后清空输入框
+    },
+    sendFile() {
+      // 发送文件
+
+      console.log('Sending file...');
+    },
+    startVideo() {
+      // 开启视频
+      console.log('Starting video...');
     }
   }
 };

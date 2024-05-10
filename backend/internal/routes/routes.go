@@ -44,6 +44,8 @@ func SetupRouter() *gin.Engine {
 	{
 		// 创建聊天室
 		room.POST("/create", controllers.CreateRoom)
+		// 删除聊天室，前端代码：axios.delete('http://localhost:8000/api/room/delete?room_id=' + id,
+		room.DELETE("/delete", controllers.DeleteRoom)
 		// 添加用户到聊天室
 		room.POST("/add_user", controllers.AddUserToRoom)
 		// 获取我的聊天室列表

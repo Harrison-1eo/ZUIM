@@ -58,3 +58,19 @@ func (repo *UserRoomRepository) GetRoomsByUserID(userID uint) ([]models.Room, er
 	}
 	return rooms, nil
 }
+
+func (repo *UserRoomRepository) IfUserIsOwner(userId uint, roomId uint) bool {
+	var userRoom models.UserRoom
+	res := db.Model(models.UserRoom{}).Where("UserID = ? AND RoomID = ? AND Role = ?", userId, roomId, "owner")
+	if res.First(&userRoom).Error != nil {
+		return false
+	}
+	return true
+}
+
+func (repo *UserRoomRepository) DeleteRoom(roomID uint) error {
+	if err := db.Delete(&models.UserRoom{}, "room_id = ?", roomID).Error; err != nil {
+		return err
+	}
+	return nil
+}

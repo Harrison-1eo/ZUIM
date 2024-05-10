@@ -56,7 +56,50 @@ func CreateRoom(c *gin.Context) {
 
 	respond(c, 0, "创建聊天室成功", newRoom)
 }
+// 根据RoomID删除聊天室
+func DeleteRoom(c *gin.Context) {
+	// 从URL参数中解析出聊天室ID
+	roomID, ok := c.GetQuery("room_id")
 
+	if ok != true {
+		respond(c, 1, "删除聊天室失败，请求错误1", nil)
+		println("// controllers/room_controller.go 删除聊天室失败，请求错误1 >>> err: room_id not found", c.Request.URL.RawQuery)
+		println(roomID)
+		return
+	}
+	roomIDUint, err := strconv.Atoi(roomID)
+	if roomIDUint == 0 || err != nil {
+		respond(c, 1, "删除聊天室失败，请求错误2", nil)
+		println("// controllers/room_controller.go 删除聊天室失败，请求错误2 >>> err: roomID == 0")
+		return
+	}
+
+	// // 检查用户是否有权限：只有聊天室的创建者才能删除聊天室
+	// userId := c.MustGet("userID").(uint)
+	// if !userRoomRepo.IfUserIsOwner(userId, uint(roomIDUint)) {
+	// 	respond(c, 1, "删除聊天室失败，没有权限，当前用户不是此房间的创建者", nil)
+	// 	println("// controllers/room_controller.go 删除聊天室失败，没有权限 >>> err:")
+	// 	return
+	// }
+
+	// 删除聊天室
+	if err := roomRepo.DeleteRoom(uint(roomIDUint)); err != nil {
+		println(roomID)
+		respond(c, 1, "删除聊天室失败，服务器错误3", nil)
+		println("// controllers/room_controller.go 删除聊天室失败，服务器错误3 >>> err:", err.Error())
+		return 
+	}
+	// user_room表中删除相关记录
+	if err := userRoomRepo.DeleteRoom(uint(roomIDUint)); err != nil {
+		respond(c, 1, "删除聊天室失败，服务器错误4", nil)
+		println("// controllers/room_controller.go 删除聊天室失败，服务器错误4 >>> err:", err.Error())
+		return
+	}
+
+	
+
+	respond(c, 0, "删除聊天室成功", nil)
+}
 // GetRoomList 获取我的聊天室列表
 func GetRoomList(c *gin.Context) {
 	userId := c.MustGet("userID").(uint)

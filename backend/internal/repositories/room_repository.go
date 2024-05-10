@@ -20,6 +20,13 @@ func (repo *RoomRepository) CreateRoom(room models.Room) (*models.Room, error) {
 	}
 	return &room, nil
 }
+// 删除聊天室
+func (repo *RoomRepository) DeleteRoom(id uint) error {
+	if err := db.Delete(&models.Room{}, id).Error; err != nil {
+		return err
+	}
+	return nil
+}
 
 // 获取聊天室信息
 func (repo *RoomRepository) GetRoom(id uint) (*models.Room, error) {
