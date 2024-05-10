@@ -13,8 +13,7 @@ export default {
 
 <style scoped>
 .im-right-content {
-  padding: 20px; /* 添加内部空间 */
-  background-color: #fff; /* 背景颜色 */
-  overflow-y: auto; /* 添加滚动条 */
+  background-color: #d8d8d8;
+  padding: 0px;
 }
 </style>

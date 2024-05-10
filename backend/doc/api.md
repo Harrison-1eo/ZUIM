@@ -237,7 +237,7 @@
 
 地址：`/api/message/list`
 
-方法：`GET`
+方法：`POST`
 
 参数：
 ```json

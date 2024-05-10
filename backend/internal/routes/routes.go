@@ -67,7 +67,7 @@ func SetupRouter() *gin.Engine {
 		// 发送消息
 		message.POST("/send", controllers.SendMessage)
 		// 获取历史消息
-		message.GET("/list", controllers.GetMessages)
+		message.POST("/list", controllers.GetMessages)
 		// 进入WebSocket实时聊天室
 		message.GET("/ws", controllers.WebSocketMessage)
 	}

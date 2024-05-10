@@ -1,7 +1,9 @@
+<!-- src/components/IMHeader.vue -->
+
 <template>
   <el-header class="header-container">
     <div class="logo-container">
-      <img src="../assets/logo.png" alt="Logo" height="50px"/>
+      <img src="../../assets/logo.png" alt="Logo" height="50px"/>
       <span>IM SYSTEM</span>
     </div>
     <el-button @click="logout" class="logout-button">登出</el-button>
@@ -9,10 +11,16 @@
 </template>
 
 <script>
+import {ElMessage} from "element-plus";
+
 export default {
   name: 'IMHeader',
   methods: {
     logout() {
+      ElMessage.success('登出成功');
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      localStorage.removeItem('userId')
       this.$router.push('/login')
     }
   }

@@ -20,8 +20,8 @@
 </template>
 
 <script>
-import UserLogin from '../components/UserLogin.vue'
-import UserRegister from '../components/UserRegister.vue'
+import UserLogin from '../components/Login/UserLogin.vue'
+import UserRegister from '../components/Login/UserRegister.vue'
 
 export default {
   name: 'UserLogin',

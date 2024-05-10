@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from "@/axios-config";
 import {ElMessage} from "element-plus";
 
 export default {
@@ -39,8 +39,8 @@ export default {
       }
       try {
         const res = await axios.post('/login', {
-          username: this.username,
-          password: this.password
+          'username': this.loginUsername,
+          'password': this.loginPassword
         });
         if (res.status === 200) {
           if (res.data.code === 0) {
@@ -48,7 +48,7 @@ export default {
             localStorage.setItem('token', res.data.data.token);
             localStorage.setItem('user', JSON.stringify(res.data.data.user.username));
             localStorage.setItem('userId', JSON.stringify(res.data.data.user.ID));
-            this.$router.push('/homepage');
+            this.$router.push('/im');
             ElMessage.success('登录成功');
           } else {
             ElMessage.error(res.data.msg);

@@ -11,9 +11,9 @@
 </template>
 
 <script>
-import IMHeader from "@/components/IMHeader.vue";
-import IMLeftMenu from '@/components/IMLeftMenu.vue'
-import IMRightContent from '@/components/IMRightContent.vue'
+import IMHeader from "@/components/IM/IMHeader.vue";
+import IMLeftMenu from '@/components/IM/IMLeftMenu.vue'
+import IMRightContent from '@/components/IM/IMRightContent.vue'
 
 export default {
   name: 'IMView',
@@ -35,11 +35,12 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100%;
+  overflow: hidden; /* 防止内容溢出产生滚动条 */
 }
 
 .main {
   display: flex;
   flex: 1;
-  height: 100%;
+  height: 100%; /* 占据整个可视区域的高度 */
 }
 </style>

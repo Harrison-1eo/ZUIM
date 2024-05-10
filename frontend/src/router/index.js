@@ -4,9 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
     {
         path: '/',
-        name: 'home',
-        component: () =>
-            import ( /* webpackChunkName: "home" */ '../views/HomeView.vue')
+        redirect: '/login'
     },
     {
         path: '/about',
@@ -30,45 +28,39 @@ const routes = [
                 path: 'home',
                 name: 'home',
                 component: () =>
-                    import ( /* webpackChunkName: "chat" */ '../components/IM/home.vue')
+                    import ( /* webpackChunkName: "chat" */ '../components/IM/OtherFunc/home.vue')
             },
             {
                 path: 'info',
                 name: 'info',
                 component: () =>
-                    import ( /* webpackChunkName: "chat" */ '../components/IM/info.vue')
+                    import ( /* webpackChunkName: "chat" */ '../components/IM/OtherFunc/info.vue')
             },
             {
                 path: 'password',
                 name: 'password',
                 component: () =>
-                    import ( /* webpackChunkName: "contacts" */ '../components/IM/password.vue')
+                    import ( /* webpackChunkName: "contacts" */ '../components/IM/OtherFunc/password.vue')
             },
             {
                 path: 'friend',
                 name: 'friend',
                 component: () =>
-                    import ( /* webpackChunkName: "discover" */ '../components/IM/friend.vue')
+                    import ( /* webpackChunkName: "discover" */ '../components/IM/OtherFunc/friend.vue')
             },
             {
                 path: 'chat',
                 name: 'chat',
                 component: () =>
-                    import ( /* webpackChunkName: "me" */ '../components/IM/chat.vue')
+                    import ( /* webpackChunkName: "me" */ '../components/IM/Room/RoomList.vue')
             },
             {
                 path: 'setting',
                 name: 'setting',
                 component: () =>
-                    import ( /* webpackChunkName: "setting" */ '../components/IM/setting.vue')
+                    import ( /* webpackChunkName: "setting" */ '../components/IM/OtherFunc/setting.vue')
             }
         ]
-    },
-    {
-        path: '/hello',
-        name: 'hello',
-        component: () =>
-            import ( /* webpackChunkName: "hello" */ '../components/HelloWorld.vue')
     },
     {
         path: "/:catchAll(.*)",

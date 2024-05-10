@@ -1,24 +1,14 @@
-# imvue
+## 待实现
 
-## Project setup
-```
-npm install
-```
+### 1. 有关登录
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+- [ ]  登录页面的布局
+- [ ]  统一的错误处理（ElMessage.error）
+- [x]  token失效返回401的处理（axios 拦截器）
+- [x]  退出登录
 
-### Compiles and minifies for production
-```
-npm run build
-```
+### 2. 有关消息
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+- [ ]  消息列表的布局（消失的输入框和Scrollbar的高度）
+- [ ]  添加其他人到房间
+- [ ]  消息的发送和接收 WebSocket
