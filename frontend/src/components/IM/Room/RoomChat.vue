@@ -1,7 +1,7 @@
 <template>
   <div class="chat-box" id="chat-box">
     <div class="chat-messages" ref="messageContainer" id="message-box">
-<!--      <p>消息内容将在这里显示 {{ roomID }} </p>-->
+
       <el-scrollbar ref="scrollbar" height="500px">
         <div ref="inner">
           <el-button type="text" text> 加载更多历史消息 </el-button>
@@ -13,7 +13,33 @@
       <ChatInput @send="sendMessageToParent"/>
     </div>
   </div>
-
+<!-- <div class="chat-room">
+        <h2>Chat Room</h2>
+        <el-container class="chat-container">
+            <el-main class="chat-box">
+                <el-card>
+                    <div slot="header" class="chat-header">
+                        <span>聊天</span>
+                    </div>
+                    <div class="chat-messages">
+                        <div class="message" v-for="message in messages" :key="message.id" :class="{ 'own-message': message.own }">
+                            <div class="avatar">
+                                <img :src="message.avatar" alt="avatar">
+                            </div>
+                            <div class="message-content">
+                                <p>{{ message.content }}</p>
+                                <small>{{ message.time }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </el-card>
+            </el-main>
+            <el-footer class="chat-input">
+                <el-input v-model="message" placeholder="Enter message" />
+                <el-button type="primary" @click="sendMessage">Send</el-button>
+            </el-footer>
+        </el-container>
+    </div> -->
 
 </template>
 
@@ -22,6 +48,11 @@ import axios from "@/axios-config";
 import MessageItem from "@/components/IM/Room/MessageItem.vue";
 import ChatInput from "@/components/IM/Room/ChatInput.vue";
 import loading from "@element-plus/icons/lib/Loading";
+
+
+
+
+
 
 export default {
   name: 'RoomChat',
@@ -126,22 +157,23 @@ export default {
   flex-direction: column;
   position: relative; /* 添加相对定位 */
 }
-
+.input-box{
+  flex: 0;
+  padding: 10px;
+  height: 50px;
+}
 .chat-messages {
-  flex: 1;
+  flex: 0.8;
+  overflow-y: auto;
 }
 
 .message {
   margin-bottom: 10px;
 }
-.input-box{
-  //flex: 0;
-  padding: 10px;
-  height: 50px;
-}
+
 
 #message-box {
-  height: calc(100% - 72px - 42px); /* 减去头部和输入框的高度 */
+  height: calc(90% - 72px - 42px); /* 减去头部和输入框的高度 */
 }
 </style>
 
