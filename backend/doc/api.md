@@ -321,3 +321,52 @@ last_message_id 不为 0 时，表示获取 last_message_id **之前（不含）
   }
 }
 ```
+
+### 3.4 上传文件
+
+地址：`/api/message/upload`
+
+方法：`POST`
+
+参数：写在Body中，form-data格式
+
+- `room_id`: 房间ID
+- `file`: 文件
+
+成功返回：
+```json
+{
+  "code": 0,
+  "msg": "上传文件成功",
+  "data": {
+    "create_time": "0001-01-01 00:00:00",
+    "file_name": "屏幕截图(1).png",
+    "file_type": ".png",
+    "file_url": "/static/files/1715410981418887.png",
+    "room_id": 8
+  }
+}
+```
+
+下载文件时，使用 `http://localhost:8080/static/files/1715410981418887.png` 这个链接即可下载文件
+
+上传文件与消息的结合方式：
+
+1. 先上传文件，获取成功上传的文件的信息
+2. 发送消息，消息的`type`为`file`，`content`为上传文件后收到的文件对象，即
+    ```json
+    {
+      "room_id": 1,
+      "type": "file",
+      "content": {
+        "create_time": "0001-01-01 00:00:00",
+        "file_name": "屏幕截图(1).png",
+        "file_type": ".png",
+        "file_url": "/static/files/1715410981418887.png",
+        "room_id": 8
+      }
+    }
+    ```
+3. 接收消息时，在`MessageItem.vue`中判断消息的类型`type`：
+   如果时`text`，则显示消息内容；
+   如果是`file`，则显示文件名，点击文件名即可下载文件。

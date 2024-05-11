@@ -39,6 +39,9 @@ func SetupRouter() *gin.Engine {
 	api := r.Group("/api")
 	api.Use(middlewares.AuthMiddleware())
 
+	// 静态文件路由
+	api.Static("/static", "./static")
+
 	// 聊天室相关路由
 	room := api.Group("/room")
 	{
@@ -72,6 +75,8 @@ func SetupRouter() *gin.Engine {
 		message.POST("/list", controllers.GetMessages)
 		// 进入WebSocket实时聊天室
 		message.GET("/ws", controllers.WebSocketMessage)
+		// 接受上传的文件
+		message.POST("/upload", controllers.UploadFile)
 	}
 
 	return r
