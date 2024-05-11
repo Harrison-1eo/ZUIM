@@ -28,7 +28,7 @@
       <p v-for="user in roomUsers" :key="user.id">{{ user.username }}
       </p>
       <template #footer>
-        <el-button type="primary" >邀请成员（未绑定事件）</el-button>
+        <el-button type="primary" @click="addUserBox">邀请成员（未绑定事件）</el-button>
       </template>
 
     </el-card>
@@ -45,7 +45,7 @@
 
 <script>
 import axios from "@/axios-config";
-import {ElMessage} from "element-plus";
+import {ElMessage, ElMessageBox} from "element-plus";
 
 export default {
   name: 'RoomDrawer',
@@ -73,6 +73,41 @@ export default {
     this.fetchRoomUsers();
   },
   methods: {
+    addUserBox() {
+      ElMessageBox.prompt('请输入邀请的用户名称', '邀请朋友').then(({ value }) => {
+        if (!value) {
+          ElMessage.error('用户名称不能为空');
+          return;
+        }
+        // 创建新房间
+        this.addUser(value);
+      }).catch(() => {
+        ElMessage.info('取消邀请');
+      });
+    },
+    async addUser(name) {
+      try {
+        const response = await axios.post('http://localhost:8000/api/room/add_user',
+            {
+              'room_id': this.roomID,
+              'user_name': name,
+              'role': 'member'
+            },
+        );
+        console.log('Add user:', response.data);
+        if (response.data.code !== 0) {
+          ElMessage.error(response.data.msg);
+          return false;
+        }
+        await this.fetchRoomUsers();
+      } catch (error) {
+        console.error('Failed to add user:', error);
+        ElMessage.error('服务器错误');
+        return false;
+      }
+      ElMessage.success('邀请成功');
+      return true;
+    },
     async deleteRoom() {
       try {
         const response = await axios.delete(

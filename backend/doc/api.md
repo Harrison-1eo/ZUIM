@@ -193,7 +193,7 @@
 ```json
 {
   "room_id": 5,
-  "user_id": 3,
+  "user_name": "123",
   "role": "member"
 }
 ```

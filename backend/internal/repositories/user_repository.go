@@ -57,3 +57,13 @@ func (repo *UserRepository) GetUsernameByID(id uint) (string, error) {
 	}
 	return user.Username, nil
 }
+
+func (repo *UserRepository) GetUserByUsername(username string) (*models.User, error) {
+	var user models.User
+	if err := db.Model(models.User{}).Where("username = ?", username).First(&user).Error; err != nil {
+		return nil, err
+	}
+	println("username : ", username)
+	println("user : ", user.ID)
+	return &user, nil
+}

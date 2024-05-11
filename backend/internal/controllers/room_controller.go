@@ -11,6 +11,7 @@ import (
 
 var roomRepo *repositories.RoomRepository = repositories.NewRoomRepository()
 var userRoomRepo *repositories.UserRoomRepository = repositories.NewUserRoomRepository()
+var userRepo *repositories.UserRepository = repositories.NewUserRepository()
 
 // CreateRoom 创建聊天室
 func CreateRoom(c *gin.Context) {
@@ -56,6 +57,7 @@ func CreateRoom(c *gin.Context) {
 
 	respond(c, 0, "创建聊天室成功", newRoom)
 }
+
 // 根据RoomID删除聊天室
 func DeleteRoom(c *gin.Context) {
 	// 从URL参数中解析出聊天室ID
@@ -87,7 +89,7 @@ func DeleteRoom(c *gin.Context) {
 		println(roomID)
 		respond(c, 1, "删除聊天室失败，服务器错误3", nil)
 		println("// controllers/room_controller.go 删除聊天室失败，服务器错误3 >>> err:", err.Error())
-		return 
+		return
 	}
 	// user_room表中删除相关记录
 	if err := userRoomRepo.DeleteRoom(uint(roomIDUint)); err != nil {
@@ -96,10 +98,9 @@ func DeleteRoom(c *gin.Context) {
 		return
 	}
 
-	
-
 	respond(c, 0, "删除聊天室成功", nil)
 }
+
 // GetRoomList 获取我的聊天室列表
 func GetRoomList(c *gin.Context) {
 	userId := c.MustGet("userID").(uint)
@@ -116,10 +117,11 @@ func GetRoomList(c *gin.Context) {
 // AddUserToRoom 将用户添加到聊天室
 func AddUserToRoom(c *gin.Context) {
 	type RequestBody struct {
-		UserID uint   `json:"user_id"`
-		RoomID uint   `json:"room_id"`
-		Role   string `json:"role"`
+		UserName string `json:"user_name"`
+		RoomID   uint   `json:"room_id"`
+		Role     string `json:"role"`
 	}
+
 	var body RequestBody
 	if err := c.ShouldBindJSON(&body); err != nil {
 		respond(c, 1, "添加用户到聊天室失败，请求错误", nil)
@@ -135,15 +137,23 @@ func AddUserToRoom(c *gin.Context) {
 		return
 	}
 
+	// 检查用户是否存在
+	addUser, err := userRepo.GetUserByUsername(body.UserName)
+	if err != nil {
+		respond(c, 1, "添加用户到聊天室失败，用户不存在", nil)
+		println("// controllers/room_controller.go 添加用户到聊天室失败，用户不存在 >>> err:")
+		return
+	}
+
 	// 检查用户是否已经在聊天室中
-	if userRoomRepo.IfUserInRoom(body.UserID, body.RoomID) {
+	if userRoomRepo.IfUserInRoom(addUser.ID, body.RoomID) {
 		respond(c, 1, "添加用户到聊天室失败，用户已在聊天室中", nil)
 		println("// controllers/room_controller.go 添加用户到聊天室失败，用户已在聊天室中 >>> err:")
 		return
 	}
 
 	// 添加用户到聊天室
-	if err := userRoomRepo.AddUserToRoom(body.UserID, body.RoomID, body.Role); err != nil {
+	if err := userRoomRepo.AddUserToRoom(addUser.ID, body.RoomID, body.Role); err != nil {
 		respond(c, 1, "添加用户到聊天室失败，服务器错误", nil)
 		println("// controllers/room_controller.go 添加用户到聊天室失败，服务器错误 >>> err:", err.Error())
 		return
