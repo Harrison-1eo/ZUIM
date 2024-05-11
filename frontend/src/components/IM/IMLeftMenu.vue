@@ -23,6 +23,7 @@
             <span>关于我</span>
           </template>
           <el-menu-item index="info">个人信息</el-menu-item>
+          <el-menu-item index="updateInfo">修改资料</el-menu-item>
           <el-menu-item index="password">修改密码</el-menu-item>
         </el-sub-menu>
         <el-menu-item index="friend">

@@ -72,19 +72,20 @@ func GetMessages(c *gin.Context) {
 
 	sm := make([]models.MessageResponseBody, len(messages))
 	for i, m := range messages {
-		senderName, err := userRepository.GetUsernameByID(m.SenderID)
+		userInfo, err := userInfoRepository.GetUserInfoByID(m.SenderID)
 		if err != nil {
 			respond(c, 1, "Failed to retrieve messages", nil)
 			return
 		}
 		sm[i] = models.MessageResponseBody{
-			ID:         m.ID,
-			SendTime:   m.CreatedAt.Format("2006-01-02 15:04:05"),
-			RoomID:     m.RoomID,
-			SenderID:   m.SenderID,
-			SenderName: senderName,
-			Type:       m.Type,
-			Content:    m.Content,
+			ID:           m.ID,
+			SendTime:     m.CreatedAt.Format("2006-01-02 15:04:05"),
+			RoomID:       m.RoomID,
+			SenderID:     m.SenderID,
+			SenderName:   userInfo.Username,
+			SenderAvatar: userInfo.Avatar,
+			Type:         m.Type,
+			Content:      m.Content,
 		}
 	}
 

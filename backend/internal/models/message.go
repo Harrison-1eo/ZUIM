@@ -22,11 +22,12 @@ type MessageRequestBody struct {
 }
 
 type MessageResponseBody struct {
-	ID         uint   `json:"ID"`
-	SendTime   string `json:"send_time"`
-	RoomID     uint   `json:"room_id"`
-	SenderID   uint   `json:"sender_id"`
-	SenderName string `json:"sender_name"`
-	Type       string `json:"type"`
-	Content    string `json:"content"`
+	ID           uint   `json:"ID"`
+	SendTime     string `json:"send_time"`
+	RoomID       uint   `json:"room_id"`
+	SenderID     uint   `json:"sender_id"`
+	SenderName   string `json:"sender_name"`
+	SenderAvatar string `json:"sender_avatar"`
+	Type         string `json:"type"`
+	Content      string `json:"content"`
 }

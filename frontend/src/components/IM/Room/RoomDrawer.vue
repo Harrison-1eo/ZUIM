@@ -28,8 +28,14 @@
           <span>房间成员</span>
         </div>
       </template>
-      <p v-for="user in roomUsers" :key="user.id">{{ user.username }}
-      </p>
+<!--      <p v-for="user in roomUsers" :key="user.id">{{ user.username }}-->
+<!--      </p>-->
+      <el-row>
+        <el-col v-for="user in roomUsers" :key="user.id" :span="12" style="display:flex; text-align: center; margin: 10px 0;">
+          <el-avatar :src="this.getAvatar(user)" :size="40"></el-avatar>
+          <span style="margin: auto auto auto 10px;">{{ user.username }}</span>
+        </el-col>
+      </el-row>
       <template #footer>
         <el-button type="primary" @click="addUserBox">邀请成员</el-button>
       </template>
@@ -148,6 +154,13 @@ export default {
       }
 
 
+    },
+    getAvatar(user) {
+      if (user.avatar) {
+        return 'http://localhost:8000' + user.avatar;
+      } else {
+        return 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png';
+      }
     }
   }
 };
