@@ -10,7 +10,7 @@
             </el-scrollbar>
         </div>
         <div class="input-box" id="input-box">
-            <ChatInput @send="sendMessageToParent" />
+            <ChatInput :roomID="roomID" @send="sendMessageToParent" />
         </div>
     </div>
 
@@ -44,12 +44,26 @@ export default {
                 localStorage.getItem('token'),
                 this.addNewMessage
             ), // WebSocket 对象
+            currentUser: null // 当前用户信息
+
         };
     },
     created() {
         this.getHistoryMessages(0, 10); // 组件创建时调用获取历史消息函数
         this.ws.connect();
          // 创建 WebSocket 实例
+        // 定义当前用户信息
+        const userId = localStorage.getItem('userId');
+        const username = localStorage.getItem('user');
+        if (userId && username) {
+            this.currentUser = {
+                user_id: JSON.parse(userId),
+                username: JSON.parse(username),
+                avatar: "../../../assets/avatar/dick1.jpg", // 这里需要根据实际情况获取用户头像
+            };
+        } else {
+            // 处理未登录情况，比如跳转到登录页面
+        }
     },
     watch: {
         roomID() {
