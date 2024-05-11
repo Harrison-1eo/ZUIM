@@ -14,9 +14,17 @@
             </div>
             <!-- <p>消息内容将在这里显示 {{ roomID }} </p> -->
             <el-scrollbar ref="scrollbar">
+                <!-- <div class="avatar">
+                    <img src="" alt="avatar" />
+                    <span>{{item.from_user}}</span>“聊天姓名”
+                </div> -->
                 <div class="message-container">
                     <div ref="inner" class="message-inner-list">
-                        <MessageItem v-for="(message, index) in messages" :key="index" :message="message" class="message" />
+                        <!-- 设置头像 -->
+                        <!-- <div class="avatar">
+                            <img src="../../assets/avatar/dick1.png" alt="avatar" />
+                        </div> -->
+                        <MessageItem v-for="(message, index) in messages" :align="message.sender_id === currentUser.user_id ? 'right' : 'left'" :avatar="message.sender_id === currentUser.user_id ? currentUser.avatar : 'frontend/src/assets/avatar/dick1.jpg'":key="index" :message="message" class="message" />
                         <el-button type="text" link @click="getMoreHistoryMessages" style="margin-bottom: 9px"> 加载更多历史消息 </el-button>
                     </div>
                 </div>
@@ -56,6 +64,18 @@ export default {
     },
     created() {
         this.getHistoryMessages(0, 10); // 组件创建时调用获取历史消息函数
+        // 定义当前用户信息
+        const userId = localStorage.getItem('userId');
+        const username = localStorage.getItem('user');
+        if (userId && username) {
+            this.currentUser = {
+                user_id: JSON.parse(userId),
+                username: JSON.parse(username),
+                avatar: "../../../assets/avatar/dick1.jpg", // 这里需要根据实际情况获取用户头像
+            };
+        } else {
+            // 处理未登录情况，比如跳转到登录页面
+        }
     },
     watch: {
         roomID() {
@@ -139,6 +159,7 @@ export default {
             const lastMessageId = this.messages.length > 0 ? this.messages[this.messages.length - 1].ID : 0;
             console.log('Called with lastMessageId:', lastMessageId);
             this.getHistoryMessages(lastMessageId, 10);
+            
         }
     }
 };
