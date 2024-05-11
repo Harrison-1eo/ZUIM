@@ -98,7 +98,7 @@ export default {
                     }
                     console.log("msg", msg);
                     console.log(response.data.data.file_name);
-                    this.$emit('send', 'file', response.data.data.file_name + ' you can download the file on http://localhost:8080/' + response.data.data.file_url);
+                    this.$emit('send', 'file', response.data.data.file_name + ' you can download the file on http://localhost:8000' + response.data.data.file_url);
                     // this.sendMessage(msg); // 发送文件消息
                     // try {
                     //     const res = await axios.post('/api/message/send', {

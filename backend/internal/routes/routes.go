@@ -40,7 +40,7 @@ func SetupRouter() *gin.Engine {
 	api.Use(middlewares.AuthMiddleware())
 
 	// 静态文件路由
-	api.Static("/static", "./static")
+	r.Static("/static", "./static")
 
 	// 用户信息相关路由
 	user := api.Group("/user")
