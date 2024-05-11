@@ -190,13 +190,14 @@ func UploadFile(c *gin.Context) {
 
 	userID := c.MustGet("userID").(uint)
 	roomID := c.PostForm("room_id")
+	println("roomID:", roomID)
 	if roomID == "" {
-		respond(c, 1, "无效的房间", nil)
+		respond(c, 1, "无效的房间roomid not found", nil)
 		return
 	}
 	roomIDInt, err := strconv.Atoi(roomID)
 	if err != nil {
-		respond(c, 1, "无效的房间", nil)
+		respond(c, 1, "无效的房间 damn", nil)
 		return
 	}
 

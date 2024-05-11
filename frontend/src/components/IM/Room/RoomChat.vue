@@ -5,14 +5,14 @@
             <el-scrollbar ref="scrollbar">
                 <div class="message-container">
                     <div ref="inner" class="message-inner-list">
-                        <MessageItem v-for="(message, index) in messages" :key="index" :message="message" class="message" />
+                        <MessageItem v-for="(message, index) in messages" :key="index" :message="message" :align="message.sender_id === currentUser.user_id ? 'right' : 'left'" class="message" />
                         <el-button type="text" link @click="getMoreHistoryMessages" style="margin-bottom: 9px"> 加载更多历史消息 </el-button>
                     </div>
                 </div>
             </el-scrollbar>
         </div>
         <div class="input-box" id="input-box">
-            <ChatInput @send="sendMessageToParent" />
+            <ChatInput :roomID="roomID" @send="sendMessageToParent" />
         </div>
     </div>
 
@@ -41,6 +41,8 @@ export default {
             messages: [], // 用于存储消息列表
             newMessage: '', // 用于绑定输入框的内容
             ws: null, // WebSocket 对象
+                        currentUser: null // 当前用户信息
+
         };
     },
     created() {

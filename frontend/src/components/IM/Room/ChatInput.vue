@@ -9,9 +9,9 @@
                 <el-button type="primary" class="send-button" @click="openFileChooser" style="margin-bottom: 10px">发送文件</el-button>
                 <!-- 隐藏的文件输入 -->
                 <input type="file" ref="fileInput" style="display: none;" @change="handleFileUpload">
-            </div> 
+            </div>
             <!-- <el-button type="primary" class="send-button" @click="changeVisible" style="margin-bottom: 10px">添加附件</el-button> -->
-            
+
             <el-button type="success" class="send-button" @click="sendMessage">发送消息</el-button>
             <!-- 开启视频 -->
             <el-button type="success" class="send-button" @click="startVideo">开启视频</el-button>
@@ -26,11 +26,19 @@
 </template>
 
 <script>
+import axios from "@/axios-config";
 export default {
+    props: {
+        roomID: {
+            type: Number,
+            required: true
+        }
+    },
     data() {
         return {
             newMessage: '', // 绑定输入框的内容
-            dialogVisible: false
+            dialogVisible: false,
+            roomId: this.roomID
         };
     },
     methods: {
@@ -58,28 +66,57 @@ export default {
             // 在这里添加文件传输的逻辑
             console.log('文件选择成功：', file.name);
             // 假设有一个函数 uploadFile 来处理文件上传
-            // this.uploadFile(file);
+            this.uploadFile(file);
         },
 
         // 示例上传函数（需要自己实现具体上传逻辑）
-        uploadFile(file) {
+        async uploadFile(file) {
             // 使用 FormData 来包装文件
-            const formData = new FormData();
-            formData.append('file', file);
+            // const formData = new FormData();
+            // formData.append('file', file);
 
             // 发送文件到服务器
-            fetch('你的上传 API 地址', {
-                method: 'POST',
-                body: formData,
-            })
-                .then(response => response.json())
-                .then(data => console.log('文件上传成功:', data))
-                .catch(error => console.error('文件上传失败:', error));
+            try {
+                const formData = new FormData();
+                formData.append('room_id', this.roomId);
+                formData.append('file', file);
+
+                const response = await axios.post('/api/message/upload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+                console.log(response);
+
+                if (response.data.code === 0) {
+                    // 上传成功，返回文件信息
+                    console.log('File uploaded:', response.data.data);
+                    return response.data.data;
+                } else {
+                    // 上传失败，抛出错误信息
+                    throw new Error(response.data.msg || '上传文件失败');
+                }
+            } catch (error) {
+                console.error('Failed to upload file:', error);
+                throw error;
+            }
         },
-        startVideo() {
-            // 开启视频
-            console.log('Starting video...');
-        }
+
+
+
+
+        // uploadFile(file) {
+        //     // 使用 FormData 来包装文件
+        //     const formData = new FormData();
+        //     formData.append('file', file);
+
+        //     // 发送文件到服务器
+
+        // },
+        // startVideo() {
+        //     // 开启视频
+        //     console.log('Starting video...');
+        // }
     }
 };
 </script>
@@ -105,8 +142,5 @@ export default {
     margin-left: 10px;
     margin-top: 10px;
     margin-block-end: 10px;
-
 }
-
-
 </style>
