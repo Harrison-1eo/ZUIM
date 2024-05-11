@@ -12,7 +12,7 @@
             </div>
             <!-- <el-button type="primary" class="send-button" @click="changeVisible" style="margin-bottom: 10px">添加附件</el-button> -->
 
-            <el-button type="success" class="send-button" @click="sendMessage">发送消息</el-button>
+            <el-button type="success" class="send-button" @click="sendMessage('text')">发送消息</el-button>
             <!-- 开启视频 -->
             <el-button type="success" class="send-button" @click="startVideo">开启视频</el-button>
         </div>
@@ -46,9 +46,9 @@ export default {
             this.dialogVisible = !this.dialogVisible;
             console.log("changeVisible", this.dialogVisible);
         },
-        sendMessage() {
+        sendMessage(type) {
             // 向父组件发送输入的消息
-            this.$emit('send', this.newMessage);
+            this.$emit('send', type, this.newMessage);
             this.newMessage = ''; // 发送后清空输入框
         },
         // 打开文件选择器
@@ -91,6 +91,35 @@ export default {
                 if (response.data.code === 0) {
                     // 上传成功，返回文件信息
                     console.log('File uploaded:', response.data.data);
+                    const msg = {
+                        room_id: this.roomId,
+                        type: 'file',
+                        content: response.data.data.file_name
+                    }
+                    console.log("msg", msg);
+                    console.log(response.data.data.file_name);
+                    this.$emit('send', 'file', response.data.data.file_name + ' you can download the file on http://localhost:8080/' + response.data.data.file_url);
+                    // this.sendMessage(msg); // 发送文件消息
+                    // try {
+                    //     const res = await axios.post('/api/message/send', {
+                    //         room_id: this.roomId,
+                    //         type: 'file', // 假设消息类型为文本，可以根据实际需要修改
+                    //         content: response.data.data.file_name // 将子组件传递过来的消息内容发送到服务器
+                    //     });
+                    //     if (res.data.code === 0) {
+                    //         // 更新消息列表，这里假设服务器返回的消息格式与历史消息格式一致
+                    //         // this.messages.push(response.data.data);// 将服务器返回的消息添加到消息列表
+                    //         console.log("response.data.data", res.data.data);
+                    //         this.newMessage = ''; // 发送成功后清空输入框
+                    //         this.messages = [];
+                    //         await this.getHistoryMessages(0, 10);
+                    //     } else {
+                    //         console.error('Failed to send message:', res.data.msg);
+                    //     }
+                    // } catch (error) {
+                    //     console.error('Failed to send message:', error);
+                    // }
+
                     return response.data.data;
                 } else {
                     // 上传失败，抛出错误信息
@@ -113,10 +142,41 @@ export default {
         //     // 发送文件到服务器
 
         // },
-        // startVideo() {
-        //     // 开启视频
-        //     console.log('Starting video...');
-        // }
+        startVideo() {
+            // 开启视频
+            console.log('Starting video...');
+            // 开启摄像头
+            // 创建本地视频流
+            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                .then(function (stream) {
+                    var localVideo = document.getElementById("localVideo");
+                    localVideo.srcObject = stream;
+
+                    // 初始化 PeerJS
+                    var peer = new Peer();
+
+                    // 当 Peer 连接到 PeerJS 服务器时执行
+                    peer.on('open', function (id) {
+                        console.log('My peer ID is: ' + id);
+
+                        // 当有来自其他 Peer 的连接请求时执行
+                        peer.on('call', function (call) {
+                            // 接听来自其他 Peer 的视频通话请求
+                            call.answer(stream);
+
+                            // 在远程视频元素中显示对方视频流
+                            var remoteVideo = document.getElementById('remoteVideo');
+                            call.on('stream', function (remoteStream) {
+                                remoteVideo.srcObject = remoteStream;
+                            });
+                        });
+                    });
+                })
+                .catch(function (err) {
+                    console.error('getUserMedia error:', err);
+                });
+
+        }
     }
 };
 </script>

@@ -15,7 +15,7 @@
       </template>
       <p>{{ room.description }}</p>
       <template #footer>
-        <el-button type="primary" >修改房间描述（未设置方法）</el-button>
+        <el-button type="primary" class="changedescription" @click="changedescrpition">修改房间描述（未设置方法）</el-button>
       </template>
     </el-card>
 
@@ -76,6 +76,9 @@ export default {
     this.fetchRoomUsers();
   },
   methods: {
+    changedescrpition() {
+      ElMessage.info('修改房间描述功能未实现');
+    },
     addUserBox() {
       ElMessageBox.prompt('请输入邀请的用户名称', '邀请朋友').then(({ value }) => {
         if (!value) {

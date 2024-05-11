@@ -1,5 +1,6 @@
 <template>
   <div class="message-item" :class="{ 'message-right': align === 'right', 'message-left': align === 'left' }">
+    
     <div v-if="message.type === 'text'" class="text-message">
       <div v-if="align === 'left'" class="avatar">
         <img src="avatar" alt="avatar" />
@@ -8,8 +9,18 @@
       <span class="send-time">{{ message.send_time }}</span>
       <p>{{ message.content }}</p>
     </div>
-    <el-image v-else-if="message.type === 'pic'" :src="message.content" class="pic-message"></el-image>
-    <el-link v-else-if="message.type === 'file'" :href="message.content" target="_blank" class="file-message">{{ message.content }}</el-link>
+    <div v-if="message.type === 'pic'">
+      <el-image :src="message.content.file_url" class="pic-message"></el-image>
+    </div>
+    <div v-if="message.type === 'file'">
+      <el-link :href="message.content.file_url" target="_blank" class="file-message">{{ message.content.file_name }}</el-link>
+      <span class="sender-name">{{ message.sender_name }}</span>
+      <span class="send-time">{{ message.send_time }}</span>
+      <p>{{ message.content }}</p>
+
+    </div>
+    <!-- <el-image v-else-if="message.type === 'pic'" :src="message.content" class="pic-message"></el-image>
+    <el-link v-else-if="message.type === 'file'" :href="message.content" target="_blank" class="file-message">{{ message.content }}</el-link> -->
   </div>
 </template>
 

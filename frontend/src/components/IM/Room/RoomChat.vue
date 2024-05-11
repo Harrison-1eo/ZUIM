@@ -68,14 +68,14 @@ export default {
 
     },
     methods: {
-        sendMessageToParent(message) {
+        sendMessageToParent(type, message) {
             // 接收来自子组件的消息并处理
             console.log('Sending message to parent:', message);
             // 在这里可以进行进一步的处理，比如发送给服务器等操作
-            this.sendMessageToServer(message);
+            this.sendMessageToServer(type, message);
             // this.getHistoryMessages(0, 10);
         },
-        async sendMessageToServer(message) {
+        async sendMessageToServer(type, message) {
           if (message === '') {
             ElMessage.error('消息不能为空');
             return;
@@ -83,7 +83,7 @@ export default {
             try {
                 const response = await axios.post('/api/message/send', {
                     room_id: this.roomID,
-                    type: 'text', // 假设消息类型为文本，可以根据实际需要修改
+                    type: type, // 假设消息类型为文本，可以根据实际需要修改
                     content: message // 将子组件传递过来的消息内容发送到服务器
                 });
 
