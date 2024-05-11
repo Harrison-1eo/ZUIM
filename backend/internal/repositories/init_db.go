@@ -24,7 +24,7 @@ func InitDB() {
 	}
 
 	// 迁移数据库模式
-	err = db.AutoMigrate(&models.User{}, &models.Room{}, &models.UserRoom{}, &models.Message{})
+	err = db.AutoMigrate(&models.User{}, &models.Room{}, &models.UserRoom{}, &models.Message{}, &models.File{})
 	if err != nil {
 		panic("internal/config/init_db.go: failed to migrate database >>> " + err.Error())
 	}

@@ -5,11 +5,15 @@ package controllers
 import (
 	"backend/internal/models"
 	"backend/internal/repositories"
+	"backend/internal/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"path"
+	"strconv"
 )
 
 var messageRepo *repositories.MessageRepository = repositories.NewMessageRepository()
+var fileRepo *repositories.FileRepository = repositories.NewFileRepository()
 
 // SendMessage POST方法 发送消息
 func SendMessage(c *gin.Context) {
@@ -175,4 +179,64 @@ func WebSocketMessage(c *gin.Context) {
 			}
 		}
 	}
+}
+
+func UploadFile(c *gin.Context) {
+	file, err := c.FormFile("file")
+	if err != nil {
+		respond(c, 1, "上传文件失败", nil)
+		return
+	}
+
+	userID := c.MustGet("userID").(uint)
+	roomID := c.PostForm("room_id")
+	if roomID == "" {
+		respond(c, 1, "无效的房间", nil)
+		return
+	}
+	roomIDInt, err := strconv.Atoi(roomID)
+	if err != nil {
+		respond(c, 1, "无效的房间", nil)
+		return
+	}
+
+	// 保存文件到本地，保存路径为 /static/files/{room_id}/
+	fileName := utils.GenerateFilename(file.Filename)
+	filePath := "static/files/" + fileName
+	err = c.SaveUploadedFile(file, filePath)
+	if err != nil {
+		respond(c, 1, "上传文件失败", nil)
+		return
+	}
+
+	// 保存文件信息到数据库
+	fileInfo := models.File{
+		FileName: file.Filename,
+		FileType: path.Ext(file.Filename),
+		FilePath: filePath,
+		RoomID:   uint(roomIDInt),
+		SenderID: userID,
+	}
+	_, err = fileRepo.CreateFile(fileInfo)
+	if err != nil {
+		respond(c, 1, "上传文件失败", nil)
+		return
+	}
+
+	type ResponseType struct {
+		CreateTime string `json:"create_time"`
+		FileName   string `json:"file_name"`
+		FileType   string `json:"file_type"`
+		FileURL    string `json:"file_url"`
+		RoomID     uint   `json:"room_id"`
+	}
+
+	respond(c, 0, "上传文件成功",
+		ResponseType{
+			CreateTime: fileInfo.CreatedAt.Format("2006-01-02 15:04:05"),
+			FileName:   fileInfo.FileName,
+			FileType:   fileInfo.FileType,
+			FileURL:    "/" + fileInfo.FilePath,
+			RoomID:     fileInfo.RoomID,
+		})
 }
