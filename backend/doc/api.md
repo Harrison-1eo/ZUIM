@@ -75,6 +75,102 @@
 }
 ```
 
+### 1.3 获取用户信息
+
+地址：`/api/user/info`
+
+方法：`GET`
+
+成功返回：
+```json
+{
+   "code": 0,
+   "msg": "获取用户信息成功",
+   "data": {
+      "ID": 1,
+      "CreatedAt": "2024-05-11T22:38:02.268792+08:00",
+      "UpdatedAt": "2024-05-11T22:38:02.268792+08:00",
+      "DeletedAt": null,
+      "user_id": 2,
+      "username": "123",
+      "nike_name": "",
+      "avatar": "",
+      "sexuality": "",
+      "year": 0,
+      "month": 0,
+      "day": 0,
+      "country": "",
+      "province": "",
+      "city": "",
+      "email": ""
+   }
+}
+```
+
+### 1.4 修改用户信息
+
+地址：`/api/user/update`
+
+方法：`POST`
+
+参数：
+```json
+{
+   "user_id": 2,
+   "username": "123",
+   "nike_name": "",
+   "avatar": "",    // 填写头像地址
+   "sexuality": "",
+   "year": 0,
+   "month": 0,
+   "day": 0,
+   "country": "",
+   "province": "",
+   "city": "",
+   "email": ""
+}
+```
+
+成功返回：
+```json
+{
+  "code": 0,
+  "msg": "修改用户信息成功",
+  "data": {
+     ...
+  }
+}
+```
+
+### 1.5 查看其它用户信息
+
+地址：`/api/user/info?user_id=2`
+
+方法：`GET`
+
+参数：GET方法，参数填写在URL中，user_id 表示用户的ID
+
+成功返回：
+```json
+{
+   "code": 0,
+   "msg": "获取用户信息成功",
+   "data": {
+      "user_id": 2,
+      "username": "123",
+      "avatar": "",
+      "sexuality": "",
+      "year": 0,
+      "month": 0,
+      "day": 0,
+      "country": "",
+      "province": "",
+      "city": ""
+   }
+}
+```
+
+
 ## 2. 房间相关
 
 认证：需要在请求头中添加`Authorization`字段，值为登录成功后返回的`token`

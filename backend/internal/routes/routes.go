@@ -42,6 +42,17 @@ func SetupRouter() *gin.Engine {
 	// 静态文件路由
 	api.Static("/static", "./static")
 
+	// 用户信息相关路由
+	user := api.Group("/user")
+	{
+		// 获取用户信息
+		user.GET("/my", controllers.GetMyInfo)
+		// 更新用户信息
+		user.POST("/update", controllers.UpdateUserInfo)
+		// 获取指定用户信息
+		user.GET("/info", controllers.GetUserInfo)
+	}
+
 	// 聊天室相关路由
 	room := api.Group("/room")
 	{

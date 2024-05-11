@@ -44,7 +44,7 @@ func UpdateUserInfo(c *gin.Context) {
 
 // GetUserInfo GET方法 获取指定用户信息
 func GetUserInfo(c *gin.Context) {
-	userID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	userID, err := strconv.Atoi(c.Query("user_id"))
 	if err != nil {
 		respond(c, 1, "无效的用户ID", nil)
 		return
