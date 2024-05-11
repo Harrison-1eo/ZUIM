@@ -161,24 +161,40 @@
 成功返回：
 ```json
 {
-  "code": 0,
-  "msg": "获取成功",
-  "data": [
-    {
-      "ID": 1,
-      "CreatedAt": "2024-05-07T15:23:30.8072479+08:00",
-      "UpdatedAt": "2024-05-07T15:23:30.8072479+08:00",
-      "DeletedAt": null,
-      "username": "user1"
-    },
-    {
-      "ID": 2,
-      "CreatedAt": "2024-05-07T15:23:30.8072479+08:00",
-      "UpdatedAt": "2024-05-07T15:23:30.8072479+08:00",
-      "DeletedAt": null,
-      "username": "user2"
-    }
-  ]
+   "code": 0,
+   "msg": "获取聊天室成员列表成功",
+   "data": [
+      {
+         "ID": 2,
+         "username": "123",
+         "avatar": "",
+         "nike_name": ""
+      },
+      {
+         "ID": 3,
+         "username": "4",
+         "avatar": "",
+         "nike_name": ""
+      },
+      {
+         "ID": 4,
+         "username": "5",
+         "avatar": "",
+         "nike_name": ""
+      },
+      {
+         "ID": 1,
+         "username": "admin",
+         "avatar": "",
+         "nike_name": ""
+      },
+      {
+         "ID": 5,
+         "username": "55",
+         "avatar": "",
+         "nike_name": ""
+      }
+   ]
 }
 ```
 
@@ -212,6 +228,21 @@
 {
   "code": 1,
   "msg": "添加用户到聊天室失败，用户已在聊天室中",
+  "data": null
+}
+```
+
+### 2.5 删除房间
+
+地址：`/api/room/delete?room_id=5`
+
+方法：`DELETE`
+
+成功返回：
+```json
+{
+  "code": 0,
+  "msg": "删除聊天室成功",
   "data": null
 }
 ```

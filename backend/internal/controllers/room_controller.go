@@ -58,7 +58,7 @@ func CreateRoom(c *gin.Context) {
 	respond(c, 0, "创建聊天室成功", newRoom)
 }
 
-// 根据RoomID删除聊天室
+// DeleteRoom 根据RoomID删除聊天室
 func DeleteRoom(c *gin.Context) {
 	// 从URL参数中解析出聊天室ID
 	roomID, ok := c.GetQuery("room_id")
@@ -164,12 +164,6 @@ func AddUserToRoom(c *gin.Context) {
 
 // GetRoomMembers 获取聊天室成员列表
 func GetRoomMembers(c *gin.Context) {
-	//type RequestBody struct {
-	//	RoomID uint `json:"room_id"`
-	//}
-	//var body RequestBody
-	//if err := c.ShouldBindJ
-
 	// 从URL参数中解析出聊天室ID
 	roomID, ok := c.GetQuery("room_id")
 	if ok != true {
@@ -192,7 +186,7 @@ func GetRoomMembers(c *gin.Context) {
 		return
 	}
 
-	members, err := userRoomRepo.GetRoomUsers(uint(roomIDUint))
+	members, err := userRoomRepo.GetRoomUserInfos(uint(roomIDUint))
 	if err != nil {
 		respond(c, 1, "获取聊天室成员列表失败，服务器错误", nil)
 		println("// controllers/room_controller.go 获取聊天室成员列表失败，服务器错误 >>> err:", err.Error())
@@ -202,13 +196,17 @@ func GetRoomMembers(c *gin.Context) {
 	type ResponseType struct {
 		ID       uint   `json:"ID"`
 		Username string `json:"username"`
+		Avatar   string `json:"avatar"`
+		NikeName string `json:"nike_name"`
 	}
 
 	numbersResponse := make([]ResponseType, 0)
 	for _, member := range members {
 		numbersResponse = append(numbersResponse, ResponseType{
-			ID:       member.ID,
+			ID:       member.UserID,
 			Username: member.Username,
+			Avatar:   member.Avatar,
+			NikeName: member.NikeName,
 		})
 	}
 

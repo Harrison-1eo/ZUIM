@@ -6,7 +6,9 @@ import (
 	"backend/internal/models"
 	"backend/internal/repositories"
 	"backend/internal/utils"
+	"errors"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 var userRepository = repositories.NewUserRepository()
@@ -29,6 +31,17 @@ func Register(c *gin.Context) {
 
 	// 创建用户
 	newUser, err := userRepository.CreateUser(user)
+	if err != nil {
+		respond(c, 1, "注册失败，服务器错误", nil)
+		println("// controllers/user_controller.go 注册失败，服务器错误 >>> err:", err.Error())
+		return
+	}
+
+	_, err = userInfoRepository.CreateUserInfo(models.UserInfo{
+		UserID:   newUser.ID,
+		Username: newUser.Username,
+	})
+
 	if err != nil {
 		respond(c, 1, "注册失败，服务器错误", nil)
 		println("// controllers/user_controller.go 注册失败，服务器错误 >>> err:", err.Error())
@@ -68,6 +81,25 @@ func Login(c *gin.Context) {
 		respond(c, 1, "登录失败，服务器错误", nil)
 		println("// controllers/user_controller.go 登录失败，服务器错误 >>> err:", err.Error())
 		return
+	}
+
+	// 检查用户信息是否存在，若不存在则创建
+	if _, err := userInfoRepository.GetUserInfoByID(authenticatedUser.ID); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			_, err := userInfoRepository.CreateUserInfo(models.UserInfo{
+				UserID:   authenticatedUser.ID,
+				Username: authenticatedUser.Username,
+			})
+			if err != nil {
+				respond(c, 1, "登录失败，服务器错误", nil)
+				println("// controllers/user_controller.go 登录失败，服务器错误 >>> err:", err.Error())
+				return
+			}
+		} else {
+			respond(c, 1, "登录失败，服务器错误", nil)
+			println("// controllers/user_controller.go 登录失败，服务器错误 >>> err:", err.Error())
+			return
+		}
 	}
 
 	type ResponseType struct {

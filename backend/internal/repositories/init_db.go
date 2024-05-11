@@ -24,17 +24,24 @@ func InitDB() {
 	}
 
 	// 迁移数据库模式
-	err = db.AutoMigrate(&models.User{}, &models.Room{}, &models.UserRoom{}, &models.Message{}, &models.File{})
+	err = db.AutoMigrate(
+		&models.User{},
+		&models.Room{},
+		&models.UserRoom{},
+		&models.Message{},
+		&models.File{},
+		&models.UserInfo{},
+	)
 	if err != nil {
 		panic("internal/config/init_db.go: failed to migrate database >>> " + err.Error())
 	}
 
 	// 向用户表中插入一条记录用于测试
-	db.Create(&models.User{Username: "admin", Password: "admin"})
+	//db.Create(&models.User{Username: "admin", Password: "admin"})
 
 	// 从数据库中获取第一条用户记录
-	var user models.User
-	db.First(&user)
-	println("internal/config/init_db.go: first user >>> ", user.Username, user.Password)
+	//var user models.User
+	//db.First(&user)
+	//println("internal/config/init_db.go: first user >>> ", user.Username, user.Password)
 
 }

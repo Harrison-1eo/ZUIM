@@ -39,6 +39,18 @@ func (repo *UserRoomRepository) GetRoomUsers(roomID uint) ([]models.User, error)
 	return users, nil
 }
 
+func (repo *UserRoomRepository) GetRoomUserInfos(roomID uint) ([]models.UserInfo, error) {
+	var userInfos []models.UserInfo
+	if err := db.Model(models.UserRoom{}).
+		Select("user_infos.*").
+		Joins("left join user_infos on user_infos.user_id = user_rooms.user_id").
+		Where("user_rooms.room_id = ?", roomID).
+		Find(&userInfos).Error; err != nil {
+		return nil, err
+	}
+	return userInfos, nil
+}
+
 // 判断用户是否在聊天室中
 func (repo *UserRoomRepository) IfUserInRoom(userID, roomID uint) bool {
 	var count int64
