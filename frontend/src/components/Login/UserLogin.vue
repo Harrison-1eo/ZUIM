@@ -1,12 +1,19 @@
 <template>
 
-  <div >
+  <div class="logincontainer">
+    <div class="loginorreg">
     <p>账号</p>
     <el-input v-model="loginUsername" placeholder="请输入账号" type="text" clearable/>
-
+    </div>
+    <div class="loginorreg">
     <p>密码</p>
-    <el-input v-model="loginPassword" placeholder="请输入密码" type="password" show-password/>
+    <el-input v-model="loginPassword" placeholder="请输入密码" type="password" style="text-align: center" show-password/>
+    </div>
+    <!-- div居中 -->
+
+    <div style="text-align: center">
     <el-button type="primary" @click="apiLogin">登录</el-button>
+    </div>
   </div>
 
 </template>
@@ -68,5 +75,36 @@ export default {
 
 
 <style>
+.logincontainer {
+  width: 100%;
+  max-width: 600px; /* 根据需要调整最大宽度 */
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column; /* 设置 flex 方向为垂直 */
+  align-items: center; /* 水平居中 */
+}
+/* loginorreg宽占container宽的一半 */
+.loginorreg {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+}
+.loginorreg p {
+    width: 30%;
+    text-align: center;
+    margin-right: 10px;
+}
+.loginorreg .el-input {
+    margin-bottom: 15px;
+    width: 50%; /* 只占整个宽度的一半 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+}
+
 
 </style>
