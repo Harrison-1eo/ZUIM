@@ -4,8 +4,8 @@
             <!-- <p>消息内容将在这里显示 {{ roomID }} </p> -->
             <el-scrollbar ref="scrollbar">
                 <div ref="inner" class="message-inner-list">
-                    <el-button type="text" link @click="getMoreHistoryMessages" style="margin-bottom: 9px"> 加载更多历史消息 </el-button>
-                    <MessageItem v-for="(message, index) in messages" :key="index" :message="message" class="message" />
+                  <el-button type="text" link @click="getMoreHistoryMessages" style="margin: 9px"> 加载更多历史消息 </el-button>
+                  <MessageItem v-for="(message, index) in messages" :key="index" :message="message" class="message" />
                 </div>
             </el-scrollbar>
         </div>
@@ -128,12 +128,6 @@ export default {
 
               // response.data.data 获取的消息列表ID是从大到小的，需要将其反转
               this.messages = [...response.data.data.reverse(), ...this.messages];
-
-
-
-              // this.messages = [...this.messages, ...response.data.data];
-              // this.messages.reverse();
-
           } catch (error) {
               console.error('Failed to fetch messages:', error);
           }
