@@ -5,12 +5,8 @@
         <div class="chat-list">
             <el-button type="primary" class="new-chat-button" @click="createRoomBox">创建新房间</el-button>
             <el-menu class="el-menu-vertical-demo">
-                <el-menu-item v-for="room in rooms" :key="room.ID" :index="room.ID" >
+                <el-menu-item v-for="room in rooms" :key="room.ID" :index="room.ID" @click="fetchRoomInfo(room.ID)">
                     {{ room.name }}
-                    <!-- 一个按钮，点击后获取该房间的信息 -->
-                    <el-button type="text" @click="fetchRoomInfo(room.ID)">进入</el-button>
-                    <!-- 一个按钮，删除该房间的按钮 -->
-                    <el-button type="text" @click="deleteRoom(room.ID)">删除</el-button>
                 </el-menu-item>
             </el-menu>
         </div>
@@ -160,5 +156,9 @@ export default {
 .el-menu-vertical-demo {
     border: none;
     overflow-y: auto;
+}
+
+.more-icon{
+  cursor: pointer;
 }
 </style>

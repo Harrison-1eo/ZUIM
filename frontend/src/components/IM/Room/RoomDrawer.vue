@@ -14,6 +14,9 @@
         </div>
       </template>
       <p>{{ room.description }}</p>
+      <template #footer>
+        <el-button type="primary" >修改房间描述（未设置方法）</el-button>
+      </template>
     </el-card>
 
     <p></p>
@@ -28,7 +31,7 @@
       <p v-for="user in roomUsers" :key="user.id">{{ user.username }}
       </p>
       <template #footer>
-        <el-button type="primary" @click="addUserBox">邀请成员（未绑定事件）</el-button>
+        <el-button type="primary" @click="addUserBox">邀请成员</el-button>
       </template>
 
     </el-card>
