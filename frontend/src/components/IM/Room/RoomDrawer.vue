@@ -1,6 +1,7 @@
-<template>
+<!-- /src/components/IM/Room/RoomDrawer.vue -->
 
-  <el-drawer show-close>
+<template>
+  <el-drawer show-close drawer>
     <template #header>
       <h2>{{ room.name }}</h2>
     </template>
@@ -17,7 +18,7 @@
 
     <p></p>
 
-    <!-- 用于显示房间成员列表 -->
+
     <el-card style="max-width: 480px">
       <template #header>
         <div class="card-header">
@@ -32,10 +33,8 @@
 
     </el-card>
 
-    <!-- 用于显示房间文件列表 -->
-
     <template #footer>
-      <el-button type="danger" >退出房间（未绑定事件）</el-button>
+      <el-button type="danger" @click="deleteRoom">退出房间</el-button>
     </template>
 
 
@@ -59,10 +58,6 @@ export default {
       type: Object,
       required: true
     },
-    drawer: {
-      type: Boolean,
-      required: true
-    }
   },
   data() {
     return{
@@ -78,6 +73,24 @@ export default {
     this.fetchRoomUsers();
   },
   methods: {
+    async deleteRoom() {
+      try {
+        const response = await axios.delete(
+            'http://localhost:8000/api/room/delete?room_id=' + this.roomID
+        );
+        console.log('Delete room:', response.data);
+        if (response.data.code !== 0) {
+          ElMessage.error(response.data.msg);
+          return false;
+        }
+        // 将v-model传递的ifFetch设置为true，触发父组件的watch
+        this.$emit('update:ifFetch', true);
+        ElMessage.success('退出房间成功');
+      } catch (error) {
+        console.error('Failed to delete room:', error);
+        return false;
+      }
+    },
     async fetchRoomUsers() {
       // 获取房间成员列表
       try {
