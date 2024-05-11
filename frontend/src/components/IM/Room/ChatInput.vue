@@ -5,10 +5,10 @@
     <div class="send-buttons">
       <!-- 发送文件 -->
       <el-button type="primary" class="send-button" @click="sendFile" style="margin-bottom: 10px">发送文件</el-button>
-      <el-button type="primary" class="send-button" @click="changeVisible" style="margin-bottom: 10px">添加附件</el-button>
+<!--      <el-button type="primary" class="send-button" @click="changeVisible" style="margin-bottom: 10px">添加附件</el-button>-->
       <el-button type="success" class="send-button" @click="sendMessage">发送消息</el-button>
       <!-- 开启视频 -->
-      <el-button type="success" class="send-button" @click="startVideo">开启视频</el-button>
+<!--      <el-button type="success" class="send-button" @click="startVideo">开启视频</el-button>-->
     </div>
 
     <!-- 对话框 -->

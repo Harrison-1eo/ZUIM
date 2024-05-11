@@ -60,6 +60,10 @@ export default {
             // this.getHistoryMessages(0, 10);
         },
         async sendMessageToServer(message) {
+          if (message === '') {
+            ElMessage.error('消息不能为空');
+            return;
+          }
             try {
                 const response = await axios.post('/api/message/send', {
                     room_id: this.roomID,
@@ -72,7 +76,8 @@ export default {
                     // 更新消息列表，这里假设服务器返回的消息格式与历史消息格式一致
                     // this.messages.push(response.data.data);// 将服务器返回的消息添加到消息列表
                     this.newMessage = ''; // 发送成功后清空输入框
-                    this.getHistoryMessages(0, 10);
+                    this.messages = [];
+                    await this.getHistoryMessages(0, 10);
                 } else {
                     console.error('Failed to send message:', response.data.msg);
                 }
@@ -94,7 +99,8 @@ export default {
                     return;
                 }
                 console.log('Fetched history messages:', response.data.data);
-                this.messages = [...response.data.data];
+                // this.messages = [...response.data.data];
+                this.messages = [...this.messages, ...response.data.data];
                 
                 // console.log('Fetched history messages:', response.data.data[0]);
                 // this.messages = [...response.data.data];
@@ -103,8 +109,11 @@ export default {
             }
         },
         getMoreHistoryMessages() {
-          
             console.log(this.messages);
+            if (this.messages.length === 0) {
+                ElMessage.info('没有更多历史消息了')
+                return;
+            }
             if (this.messages[this.messages.length - 1].ID <= 1) {
                 ElMessage.info('没有更多历史消息了')
                 return;

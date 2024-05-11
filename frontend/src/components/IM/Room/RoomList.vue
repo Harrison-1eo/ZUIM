@@ -2,7 +2,7 @@
     <div class="chatroom-container">
         <div class="chat-list">
             <el-button type="primary" class="new-chat-button" @click="createRoomBox">创建新房间</el-button>
-            <el-menu :default-active="activeRoomId" class="el-menu-vertical-demo">
+            <el-menu class="el-menu-vertical-demo">
                 <el-menu-item v-for="room in rooms" :key="room.ID" :index="room.ID" >
                     {{ room.name }}
                     <!-- 一个按钮，点击后获取该房间的信息 -->
@@ -14,16 +14,19 @@
         </div>
         <div class="chat-details">
             <div class="chat-header">
-                {{ activeRoom || '选择一个聊天室' }}
+              <p class="room-title"> {{ activeRoom===null ? '请选择聊天室' : activeRoom.name }} </p>
+              <el-icon v-if="activeRoomId" @click="drawer=true" class="more-icon"><More /></el-icon>
             </div>
             <RoomChat v-if="activeRoomId" :roomID="activeRoomId" />
+            <RoomDrawer v-if="activeRoomId" v-model="drawer" :roomID="activeRoomId" :room="activeRoom"/>
         </div>
     </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from '@/axios-config';
 import RoomChat from "@/components/IM/Room/RoomChat.vue";
+import RoomDrawer from "@/components/IM/Room/RoomDrawer.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 export default {
@@ -32,11 +35,13 @@ export default {
             rooms: [], // 存储聊天室列表
             activeRoom: null, // 当前激活的聊天室详情
             newMessage: '', // 绑定输入框的内容
-            activeRoomId: null // 当前激活的聊天室ID
+            activeRoomId: null, // 当前激活的聊天室ID
+            drawer: false
         };
     },
     components: {
-        RoomChat
+        RoomChat,
+        RoomDrawer
     },
     created() {
         this.fetchRooms(); // 获取聊天室列表
@@ -112,7 +117,6 @@ export default {
                 // );
                 const response = await axios.get(
                     'http://localhost:8000/api/room/list',
-                    { headers: { Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTUzOTg4MjYsInVzZXJfaWQiOjJ9.u1coQZoetjzqKRVjQqWdLWC1Jr5ymGoqcUCqLc0eLFY` } }
                 );
                 this.rooms = response.data.data; // 假设返回的数据是聊天室数组
                 console.log('Rooms:', this.rooms);
@@ -122,9 +126,9 @@ export default {
         },
         async fetchRoomInfo(id) {
             try {
-                const response = await axios.get('http://localhost:8000/api/room/members?room_id=' + id,
-                    { headers: { Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTUzOTg4MjYsInVzZXJfaWQiOjJ9.u1coQZoetjzqKRVjQqWdLWC1Jr5ymGoqcUCqLc0eLFY` } });
-                this.activeRoom = response.data.data; // 设置当前激活的聊天室详情
+                // const response = await axios.get('http://localhost:8000/api/room/members?room_id=' + id,
+                //     { headers: { Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTUzOTg4MjYsInVzZXJfaWQiOjJ9.u1coQZoetjzqKRVjQqWdLWC1Jr5ymGoqcUCqLc0eLFY` } });
+                this.activeRoom = this.rooms.find(room => room.ID === id); // 假设返回的数据是聊天室详情
                 this.activeRoomId = id; // 更新当前激活的聊天室ID
             } catch (error) {
                 console.error('Failed to fetch room info:', error);
@@ -164,6 +168,10 @@ export default {
     background-color: #f5f7fa;
     text-align: center;
     height: 2em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .new-chat-button {
