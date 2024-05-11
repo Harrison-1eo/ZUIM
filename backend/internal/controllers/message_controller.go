@@ -7,7 +7,6 @@ import (
 	"backend/internal/repositories"
 	"backend/internal/utils"
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"path"
 	"strconv"
 )
@@ -92,95 +91,7 @@ func GetMessages(c *gin.Context) {
 	respond(c, 0, "历史消息获取成功", sm)
 }
 
-// WebSocketSendMessage WebSocket方法 发送消息
-var upgrader = websocket.Upgrader{}
-var clients = make(map[uint]*websocket.Conn)
-
-func WebSocketMessage(c *gin.Context) {
-	// 将HTTP链接升级为WebSocket
-	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		respond(c, 1, "Failed to upgrade connection", nil)
-		return
-	} else {
-		respond(c, 0, "连接成功", nil)
-	}
-
-	// 从请求中获取用户ID，设置为消息发送者
-	userID := c.MustGet("userID").(uint)
-	clients[userID] = ws
-
-	defer func(ws *websocket.Conn) {
-		err := ws.Close()
-		if err != nil {
-			println("Failed to close connection")
-		}
-	}(ws)
-	defer delete(clients, userID)
-
-	for {
-		var msgGet models.MessageRequestBody
-		err := ws.ReadJSON(&msgGet)
-		if err != nil {
-			respond(c, 1, "Failed to read message", nil)
-			break
-		}
-
-		// 检查用户是否在聊天室中
-		if !userRoomRepo.IfUserInRoom(userID, msgGet.RoomID) {
-			respond(c, 1, "Failed to send message, user not in room", nil)
-			break
-		}
-
-		message := models.Message{
-			RoomID:   msgGet.RoomID,
-			SenderID: userID,
-			Type:     msgGet.Type,
-			Content:  msgGet.Content,
-		}
-
-		newMessage, err := messageRepo.CreateMessage(message)
-		if err != nil {
-			respond(c, 1, "Failed to send message", nil)
-			break
-		}
-
-		// 获取聊天室内的所有用户
-		roomUsers, err := userRoomRepo.GetRoomUsers(msgGet.RoomID)
-		if err != nil {
-			respond(c, 1, "Failed to send message", nil)
-			break
-		}
-
-		senderName, err := userRepository.GetUsernameByID(userID)
-		if err != nil {
-			respond(c, 1, "Failed to retrieve messages", nil)
-			return
-		}
-
-		msgSend := models.MessageResponseBody{
-			ID:         newMessage.ID,
-			SendTime:   newMessage.CreatedAt.Format("2006-01-02 15:04:05"),
-			RoomID:     newMessage.RoomID,
-			SenderID:   newMessage.SenderID,
-			SenderName: senderName,
-			Type:       newMessage.Type,
-			Content:    newMessage.Content,
-		}
-
-		// 发送消息给聊天室内的所有在线用户
-		for _, user := range roomUsers {
-			if client, ok := clients[user.ID]; ok {
-				err := client.WriteJSON(msgSend)
-				if err != nil {
-					println("Failed to send message to user:", user.ID)
-					return
-				}
-			}
-		}
-	}
-}
-
+// 上传文件
 func UploadFile(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {

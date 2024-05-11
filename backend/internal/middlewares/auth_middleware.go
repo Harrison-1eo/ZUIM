@@ -22,7 +22,6 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		// 检查Bearer格式
-		println("authHeader: ", authHeader)
 		bearerToken := strings.Split(authHeader, " ")
 		if len(bearerToken) != 2 || bearerToken[0] != "Bearer" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization header must be in 'Bearer {token}' format"})
@@ -68,6 +67,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		for key, value := range claims {
 			fmt.Printf("%s: %v\n", key, value)
 		}
+		println(" ======= claims ======== ")
 
 		userID, ok := claims["user_id"].(float64) // JWT库默认将数字解释为float64
 		println("userID: ", userID)

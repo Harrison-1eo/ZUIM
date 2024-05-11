@@ -40,7 +40,7 @@ export default {
         },
         sendMessage() {
             // 向父组件发送输入的消息
-            this.$emit('send', this.newMessage);
+            this.$emit('send', 'text', this.newMessage);
             this.newMessage = ''; // 发送后清空输入框
         },
         // 打开文件选择器
