@@ -2,12 +2,12 @@ export default class WebsocketClass {
   /**
    * @description: 初始化参数
    * @param {*} url ws资源路径
+   * @param token token
    * @param {*} callback 服务端信息回调
-   * @return {*}
-   * @author: gumingchen
    */
-  constructor(url, callback) {
-    this.url = url
+  constructor(url, token, callback) {
+    this.url = url + '?token=Bearer ' + token
+    this.token = token
     this.callback = callback
     this.ws = null // websocket 对象
     this.status = 0 // 连接状态: 0-关闭 1-连接 2-手动关闭
@@ -18,9 +18,6 @@ export default class WebsocketClass {
 
   /**
    * @description: 连接
-   * @param {*}
-   * @return {*}
-   * @author: gumingchen
    */
   connect() {
     this.ws = new WebSocket(this.url)
@@ -45,19 +42,14 @@ export default class WebsocketClass {
 
   /**
    * @description: 发送消息
-   * @param {*} data
-   * @return {*}
-   * @author: gumingchen
    */
   send(data) {
+    console.log('WS 发送的数据 ', JSON.stringify(data))
     return this.ws.send(JSON.stringify(data))
   }
 
   /**
-   * @description: 关闭weibsocket 主动关闭不会触发重连
-   * @param {*}
-   * @return {*}
-   * @author: gumingchen
+   * @description: 关闭 weibsocket 主动关闭不会触发重连
    */
   close() {
     this.status = 2
@@ -66,9 +58,6 @@ export default class WebsocketClass {
 
   /**
    * @description: socket关闭事件
-   * @param {*}
-   * @return {*}
-   * @author: gumingchen
    */
   onClose(e) {
     console.error(e)
@@ -82,13 +71,12 @@ export default class WebsocketClass {
 
   /**
    * @description: 心跳机制
-   * @param {*}
-   * @return {*}
-   * @author: gumingchen
    */
   heartHandler() {
     const data = {
-      type: 0
+      room_id: 0,
+      type: 'ping',
+      data: 'ping'
     }
     this.pingInterval = setInterval(() => {
       if (this.status === 1) {

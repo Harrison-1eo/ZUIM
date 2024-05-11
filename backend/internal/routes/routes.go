@@ -73,10 +73,14 @@ func SetupRouter() *gin.Engine {
 		message.POST("/send", controllers.SendMessage)
 		// 获取历史消息
 		message.POST("/list", controllers.GetMessages)
-		// 进入WebSocket实时聊天室
-		message.GET("/ws", controllers.WebSocketMessage)
 		// 接受上传的文件
 		message.POST("/upload", controllers.UploadFile)
+	}
+
+	ws := r.Group("/ws")
+	{
+		// 进入WebSocket实时聊天室
+		ws.GET("/join", controllers.WebSocketMessage)
 	}
 
 	return r

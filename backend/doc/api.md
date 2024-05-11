@@ -281,20 +281,13 @@ last_message_id 不为 0 时，表示获取 last_message_id **之前（不含）
 ```
 
 
-### 3.3 WebSocket 消息推送（未测试）
+### 3.3 WebSocket 消息推送（修改）
 
-地址：`/api/message/ws`
+地址：`/ws/join?token=xxx`
 
 方法：`GET`
 
-使用 WebSocket 连接到服务器，连接成功后，服务器会返回一个消息：
-```json
-{
-  "code": 0,
-  "msg": "连接成功",
-  "data": null
-}
-```
+注意：token 为登录成功后返回的 token，由于 JS 的 WebSocket 连接不支持在请求头中添加 token，所以需要将 token 作为参数传递
 
 连接成功后，向服务器发送消息，即向房间发送消息：
 ```json

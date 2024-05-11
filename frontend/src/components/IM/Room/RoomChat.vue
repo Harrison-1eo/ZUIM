@@ -3,11 +3,9 @@
         <div class="chat-messages" ref="messageContainer" id="message-box">
             <!-- <p>消息内容将在这里显示 {{ roomID }} </p> -->
             <el-scrollbar ref="scrollbar">
-                <div class="message-container">
-                    <div ref="inner" class="message-inner-list">
-                        <MessageItem v-for="(message, index) in messages" :key="index" :message="message" :align="message.sender_id === currentUser.user_id ? 'right' : 'left'" class="message" />
-                        <el-button type="text" link @click="getMoreHistoryMessages" style="margin-bottom: 9px"> 加载更多历史消息 </el-button>
-                    </div>
+                <div ref="inner" class="message-inner-list">
+                  <el-button type="text" link @click="getMoreHistoryMessages" style="margin: 9px"> 加载更多历史消息 </el-button>
+                  <MessageItem v-for="(message, index) in messages" :key="index" :message="message" class="message" />
                 </div>
             </el-scrollbar>
         </div>
@@ -23,6 +21,7 @@ import axios from "@/axios-config";
 import MessageItem from "@/components/IM/Room/MessageItem.vue";
 import ChatInput from "@/components/IM/Room/ChatInput.vue";
 import { ElMessage } from "element-plus";
+import WebsocketClass from "@/utils/websocket";
 
 export default {
     name: 'RoomChat',
@@ -40,13 +39,19 @@ export default {
         return {
             messages: [], // 用于存储消息列表
             newMessage: '', // 用于绑定输入框的内容
-            ws: null, // WebSocket 对象
-                        currentUser: null // 当前用户信息
+            ws: new WebsocketClass(
+                `ws://localhost:8000/ws/join`,
+                localStorage.getItem('token'),
+                this.addNewMessage
+            ), // WebSocket 对象
+            currentUser: null // 当前用户信息
 
         };
     },
     created() {
         this.getHistoryMessages(0, 10); // 组件创建时调用获取历史消息函数
+        this.ws.connect();
+         // 创建 WebSocket 实例
         // 定义当前用户信息
         const userId = localStorage.getItem('userId');
         const username = localStorage.getItem('user');
@@ -62,83 +67,108 @@ export default {
     },
     watch: {
         roomID() {
-            this.messages = []; // 切换房间时清空消息列表
+            this.messages = [];                           // 切换房间时清空消息列表
             this.getHistoryMessages(0, 10); // 监听 roomID 变化时重新获取历史消息
         },
-
+        messages: {
+            deep: true,
+            handler() {
+              this.handleNewMessage();
+            }
+        }
+    },
+    mounted() {
+      this.scrollMaxHeight = this.$refs.scrollbar.$el.clientHeight - 380;
     },
     methods: {
-        sendMessageToParent(type, message) {
-            // 接收来自子组件的消息并处理
-            console.log('Sending message to parent:', message);
-            // 在这里可以进行进一步的处理，比如发送给服务器等操作
-            this.sendMessageToServer(type, message);
-            // this.getHistoryMessages(0, 10);
-        },
-        async sendMessageToServer(type, message) {
-          if (message === '') {
-            ElMessage.error('消息不能为空');
-            return;
+      // 对新消息进行处理
+      addNewMessage(message) {
+          // 接收来自服务器的消息并处理
+          console.log('Received new message:', message);
+          if (message.code === 0) {
+            if (message.data.room_id !== this.roomID) {
+              return;
+            }
+            this.messages.push(message.data);
+          } else if (message.code === 1) {
+              console.error('收到错误消息:', message.msg);
+          } else if (message.code === 2) {
+              // 忽略心跳包
+          } else {
+              console.error('收到未知消息:', message);
           }
-            try {
-                const response = await axios.post('/api/message/send', {
-                    room_id: this.roomID,
-                    type: type, // 假设消息类型为文本，可以根据实际需要修改
-                    content: message // 将子组件传递过来的消息内容发送到服务器
-                });
+      },
+      // 接受来自 ChatInput 组件的消息并发送
+      sendMessageToParent(type, message) {
+          // 接收来自子组件的消息并处理
+          console.log('Sending message to parent:', message);
+          // 在这里可以进行进一步的处理，比如发送给服务器等操作
+          // this.sendMessageToServer(message);
+          this.ws.send({
+              room_id: this.roomID,
+              type: type,
+              content: message
+          });
+      },
+      // 用于获取历史消息
+      async getHistoryMessages(lastMessageId, limit) {
+          try {
+              const response = await axios.post(
+                  'http://localhost:8000/api/message/list',
+                  {
+                      "room_id": this.roomID,
+                      "last_message_id": lastMessageId,
+                      "limit": limit
+                  });
+              if (response.data.data.length === 0) {
+                  ElMessage.info('没有更多历史消息了')
+                  return;
+              }
+              console.log('Fetched history messages:', response.data.data);
 
-                // 检查服务器是否成功接收并处理消息
-                if (response.data.code === 0) {
-                    // 更新消息列表，这里假设服务器返回的消息格式与历史消息格式一致
-                    // this.messages.push(response.data.data);// 将服务器返回的消息添加到消息列表
-                    this.newMessage = ''; // 发送成功后清空输入框
-                    this.messages = [];
-                    await this.getHistoryMessages(0, 10);
-                } else {
-                    console.error('Failed to send message:', response.data.msg);
-                }
-            } catch (error) {
-                console.error('Failed to send message:', error);
-            }
-        },
-        async getHistoryMessages(lastMessageId, limit) {
-            try {
-                const response = await axios.post(
-                    'http://localhost:8000/api/message/list',
-                    {
-                        "room_id": this.roomID,
-                        "last_message_id": lastMessageId,
-                        "limit": limit
-                    });
-                if (response.data.data.length === 0) {
-                    ElMessage.info('没有更多历史消息了')
-                    return;
-                }
-                console.log('Fetched history messages:', response.data.data);
-                // this.messages = [...response.data.data];
-                this.messages = [...this.messages, ...response.data.data];
-                
-                // console.log('Fetched history messages:', response.data.data[0]);
-                // this.messages = [...response.data.data];
-            } catch (error) {
-                console.error('Failed to fetch messages:', error);
-            }
-        },
-        getMoreHistoryMessages() {
-            console.log(this.messages);
-            if (this.messages.length === 0) {
-                ElMessage.info('没有更多历史消息了')
-                return;
-            }
-            if (this.messages[this.messages.length - 1].ID <= 1) {
-                ElMessage.info('没有更多历史消息了')
-                return;
-            }
-            const lastMessageId = this.messages.length > 0 ? this.messages[this.messages.length - 1].ID : 0;
-            console.log('Called with lastMessageId:', lastMessageId);
-            this.getHistoryMessages(lastMessageId, 10);
-            
+              // response.data.data 获取的消息列表ID是从大到小的，需要将其反转
+              this.messages = [...response.data.data.reverse(), ...this.messages];
+          } catch (error) {
+              console.error('Failed to fetch messages:', error);
+          }
+      },
+      // 用于点击“加载更多历史消息”按钮时调用
+      getMoreHistoryMessages() {
+          console.log(this.messages);
+          if (this.messages.length === 0) {
+              ElMessage.info('没有更多历史消息了')
+              return;
+          }
+          if (this.messages[this.messages.length - 1].ID <= 1) {
+              ElMessage.info('没有更多历史消息了')
+              return;
+          }
+          const minMessageId = Math.min(...this.messages.map(item => item.ID));
+          console.log('Called with lastMessageId:', minMessageId);
+          this.getHistoryMessages(minMessageId, 10);
+      },
+      // 滚动消息列表到底部
+      scrollToBottom() {
+        this.$nextTick(() => {
+          const container = this.$refs.scrollbar.$el.querySelector('.el-scrollbar__wrap');
+          container.scrollTop = container.scrollHeight;
+        });
+        this.$refs.scrollbar.handleScroll(
+          { direction: 'bottom', target: this.$refs.scrollbar.$el.querySelector('.el-scrollbar__wrap') }
+        )
+      },
+      // 判断消息列表是否在底部
+      isAtBottom() {
+        const container = this.$refs.scrollbar.$el.querySelector('.el-scrollbar__wrap');
+        return container.scrollTop + container.clientHeight === container.scrollHeight;
+      },
+      // 当有新消息时，并且消息列表在底部时，自动滚动到底部，保持最新消息可见
+      handleNewMessage() {
+        if (this.isAtBottom()) {
+          console.log('scroll to bottom');
+          this.scrollToBottom();
         }
+      },
     }
 };
 </script>
