@@ -58,7 +58,7 @@ func Register(c *gin.Context) {
 			Username: newUser.Username})
 }
 
-// 用户登录
+// Login 用户登录
 func Login(c *gin.Context) {
 	var user models.User
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -111,4 +111,36 @@ func Login(c *gin.Context) {
 		Username: authenticatedUser.Username}
 
 	respond(c, 0, "登录成功", gin.H{"user": logIn, "token": token})
+}
+
+func UpdatePassword(c *gin.Context) {
+	type RequestBody struct {
+		Username    string `json:"username"`
+		OldPassword string `json:"old_password"`
+		NewPassword string `json:"new_password"`
+	}
+	var reqBody RequestBody
+	if err := c.ShouldBindJSON(&reqBody); err != nil {
+		respond(c, 1, "修改密码失败，请求错误", nil)
+		println("// controllers/user_controller.go 修改密码失败，请求错误 >>> err:", err.Error())
+		return
+	}
+
+	// 验证用户登录信息
+	authenticatedUser, err := userRepository.AuthenticateUser(reqBody.Username, reqBody.OldPassword)
+	if err != nil {
+		respond(c, 1, "修改密码失败，原密码错误", nil)
+		println("// controllers/user_controller.go 修改密码失败，用户名或密码错误 >>> err:", err.Error())
+		return
+	}
+
+	// 更新密码
+	err = userRepository.UpdatePassword(authenticatedUser.ID, reqBody.NewPassword)
+	if err != nil {
+		respond(c, 1, "修改密码失败，服务器错误", nil)
+		println("// controllers/user_controller.go 修改密码失败，服务器错误 >>> err:", err.Error())
+		return
+	}
+
+	respond(c, 0, "修改密码成功", nil)
 }

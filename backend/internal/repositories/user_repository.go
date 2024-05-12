@@ -67,3 +67,7 @@ func (repo *UserRepository) GetUserByUsername(username string) (*models.User, er
 	println("user : ", user.ID)
 	return &user, nil
 }
+
+func (repo *UserRepository) UpdatePassword(id uint, password string) error {
+	return db.Model(models.User{}).Where("id = ?", id).Update("password", password).Error
+}

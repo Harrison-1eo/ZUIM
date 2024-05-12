@@ -49,6 +49,8 @@ func SetupRouter() *gin.Engine {
 		user.GET("/my", controllers.GetMyInfo)
 		// 更新用户信息
 		user.POST("/update", controllers.UpdateUserInfo)
+		// 更新密码
+		user.POST("/update_password", controllers.UpdatePassword)
 		// 获取指定用户信息
 		user.GET("/info", controllers.GetUserInfo)
 	}
