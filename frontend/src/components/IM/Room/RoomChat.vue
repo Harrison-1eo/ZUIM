@@ -44,8 +44,7 @@ export default {
                 localStorage.getItem('token'),
                 this.addNewMessage
             ), // WebSocket 对象
-            currentUser: null // 当前用户信息
-
+            currentUser: null, // 当前用户信息
         };
     },
     created() {
@@ -79,6 +78,9 @@ export default {
     },
     mounted() {
       this.scrollMaxHeight = this.$refs.scrollbar.$el.clientHeight - 380;
+    },
+    beforeUnmount() {
+      this.ws.close();
     },
     methods: {
       // 对新消息进行处理

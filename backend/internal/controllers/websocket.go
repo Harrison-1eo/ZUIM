@@ -59,7 +59,8 @@ func WebSocketMessage(c *gin.Context) {
 		err := ws.ReadJSON(&msgGet)
 		if err != nil {
 			respondWebSocket(ws, 1, "读取信息失败", nil)
-			continue
+			log.Default().Println("Failed to read message from WebSocket, Breaking loop, err:", err)
+			break
 		}
 
 		// 如果是心跳包，直接返回
