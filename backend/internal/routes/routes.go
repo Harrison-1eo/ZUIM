@@ -53,6 +53,8 @@ func SetupRouter() *gin.Engine {
 		user.POST("/update_password", controllers.UpdatePassword)
 		// 获取指定用户信息
 		user.GET("/info", controllers.GetUserInfo)
+		// 获取用户好友列表
+		user.GET("/friends", controllers.GetFriends)
 	}
 
 	// 聊天室相关路由

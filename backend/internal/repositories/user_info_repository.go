@@ -29,13 +29,18 @@ func (repo *UserInfoRepository) CreateUserInfo(userInfo models.UserInfo) (*model
 
 func (repo *UserInfoRepository) UpdateUserInfo(userInfo models.UserInfo) (*models.UserInfo, error) {
 	// 首先检查用户信息是否存在，若不存在则创建
-	if _, err := repo.GetUserInfoByID(userInfo.ID); err != nil {
+	if _, err := repo.GetUserInfoByID(userInfo.UserID); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return repo.CreateUserInfo(userInfo)
+			if _, err := repo.CreateUserInfo(userInfo); err != nil {
+				return nil, err
+			}
+		} else {
+			return nil, err
+		}
+	} else {
+		if err := db.Model(models.UserInfo{}).Where("user_id = ?", userInfo.UserID).Updates(&userInfo).Error; err != nil {
+			return nil, err
 		}
 	}
-	if err := db.Model(models.UserInfo{}).Save(&userInfo).Error; err != nil {
-		return nil, err
-	}
-	return &userInfo, nil
+	return nil, nil
 }

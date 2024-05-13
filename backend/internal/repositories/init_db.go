@@ -44,4 +44,18 @@ func InitDB() {
 	//db.First(&user)
 	//println("internal/config/init_db.go: first user >>> ", user.Username, user.Password)
 
+	// 对用户表进行查询，每个没有Userinfo的用户插入一条Userinfo记录
+	var users []models.User
+	db.Find(&users)
+	for _, user := range users {
+		var userInfo models.UserInfo
+		db.Where("user_id = ?", user.ID).First(&userInfo)
+		if userInfo.UserID == 0 {
+			db.Create(&models.UserInfo{
+				UserID:   user.ID,
+				Username: user.Username,
+			})
+		}
+	}
+
 }

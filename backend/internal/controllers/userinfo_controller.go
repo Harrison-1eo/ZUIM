@@ -3,6 +3,7 @@ package controllers
 import (
 	"backend/internal/models"
 	"backend/internal/repositories"
+	"backend/internal/utils"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -81,4 +82,45 @@ func GetUserInfo(c *gin.Context) {
 		City:      userInfo.City,
 	})
 
+}
+
+func UploadAvatar(c *gin.Context) {
+	file, err := c.FormFile("file")
+	if err != nil {
+		respond(c, 1, "上传文件失败", nil)
+		return
+	}
+
+	userID := c.MustGet("userID").(uint)
+	fileName := utils.GenerateFilename(file.Filename)
+	filePath := "static/avatars/" + fileName
+	err = c.SaveUploadedFile(file, filePath)
+	if err != nil {
+		respond(c, 1, "上传文件失败", nil)
+		return
+	}
+
+	// 先删除原头像文件
+	//userInfo, err := userInfoRepository.GetUserInfoByID(userID)
+	//if err != nil {
+	//	respond(c, 1, "更新用户信息失败", nil)
+	//	return
+	//}
+	//if userInfo.Avatar != "" {
+	//	err = utils.DeleteFile("static/avatars/" + userInfo.Avatar)
+	//	if err != nil {
+	//		respond(c, 1, "更新用户信息失败", nil)
+	//		return
+	//	}
+	//}
+
+	updatedUserInfo, err := userInfoRepository.UpdateUserInfo(models.UserInfo{
+		UserID: userID,
+		Avatar: fileName,
+	})
+	if err != nil {
+		respond(c, 1, "更新用户信息失败", nil)
+		return
+	}
+	respond(c, 0, "更新用户信息成功", updatedUserInfo)
 }
