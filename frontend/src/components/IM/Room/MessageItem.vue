@@ -1,94 +1,99 @@
 <template>
-    <div class="message-item" :class="{ 'message-right': align === 'right', 'message-left': align === 'left' }">
-
-        <div v-if="message.type === 'text'" class="text-message">
-            <div v-if="align === 'left'" class="avatar">
-                <img src="avatar" alt="avatar" />
-            </div>
-            <span class="sender-name">{{ message.sender_name }}</span>
-            <span class="send-time">{{ message.send_time }}</span>
-            <!-- 如果message.content中含有you can download the file on http://localhost:8000/static/files/ 字段，例如dick1.png you can download the file on http://localhost:8000/static/files/171543589033018.png，就将整个链接用一个超链接替代 -->
-            <!-- <p>{{ message.content }}</p> -->
-            <p v-html="formatContent(message.content)"></p>
-        </div>
-        <div v-if="message.type === 'pic'">
-            <el-image :src="message.content.file_url" class="pic-message"></el-image>
-        </div>
-        <div v-if="message.type === 'file'">
-            <el-link :href="message.content.file_url" target="_blank" class="file-message">{{ message.content.file_name }}</el-link>
-            <span class="sender-name">{{ message.sender_name }}</span>
-            <span class="send-time">{{ message.send_time }}</span>
-            <!-- <p>{{ message.content }}</p> -->
-                        <p v-html="formatContent(message.content)"></p>
-
-
-        </div>
-        <!-- <el-image v-else-if="message.type === 'pic'" :src="message.content" class="pic-message"></el-image>
-    <el-link v-else-if="message.type === 'file'" :href="message.content" target="_blank" class="file-message">{{ message.content }}</el-link> -->
+  <div class="message-item" :class="{ 'message-from-user': isSenderUser }">
+    <el-avatar :src="message.sender_avatar || 'http://localhost:8000/static/avatars/nopic.png'"></el-avatar>
+    <div class="message-content">
+      <div :class="{'sender-name-from-user': isSenderUser, 'sender-name': !isSenderUser}">
+        {{ isSenderUser ? '我' : message.sender_name || 'No sender-name'}}
+      </div>
+      <div v-if="message.type === 'text'" class="text-message">
+        {{ message.content }}
+      </div>
+      <div v-else-if="message.type === 'image'" class="image-message">
+        <el-image :src="message.content" fit="contain" style="max-width: 100%; height: auto;"></el-image>
+      </div>
+      <div v-else-if="message.type === 'file'" class="file-message">
+        <el-icon><Link /></el-icon>
+        <el-link :href="getFileUrl(message.content)" target="_blank">下载文件：{{ this.getFileName(message.content) }}</el-link>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
+import { ElAvatar, ElImage, ElLink } from 'element-plus';
+import {Link} from "@element-plus/icons";
+
 export default {
-    props: {
-        message: {
-            type: Object,
-            required: true
-        }
-    },
-    methods: {
-        formatContent(content) {
-            // 匹配链接的正则表达式
-            const regex = /you can download the file on (http:\/\/localhost:8000\/static\/files\/\S+)/g;
-            // 使用 replace 方法将匹配到的链接替换为超链接
-            return content.replace(regex, '<a href="$1">$1</a>');
-        }
-    },
-    avatar: {
-        type: "../../assets/avatar/dick1.jpg", // 头像的URL
-        default: "../../assets/avatar/dick1.jpg" // 默认为空
+  components: {
+    Link,
+    ElAvatar,
+    ElImage,
+    ElLink
+  },
+  props: {
+    message: {
+      type: Object,
+      required: true
     }
-};
+  },
+  computed: {
+    isSenderUser() {
+      const userId = localStorage.getItem('userId');
+      return userId && parseInt(userId, 10) === this.message.sender_id;
+    }
+  },
+  methods: {
+    getFileUrl(content) {
+      const regex = /you can download the file on (http:\/\/localhost:8000\/static\/files\/\S+)/;
+      const match = content.match(regex);
+      if (match) {
+        console.log(match[1]); // 输出匹配到的URL
+        return match[1]; // 返回匹配到的完整URL
+      }
+      return ""; // 如果没有匹配到，返回null
+    },
+    getFileName(content) {
+      // content中的数据内容是：response.data.data.file_name + ' you can download the file on http://localhost:8000' + response.data.data.file_url
+      // 使用正则表达式匹配出文件的名称
+      const regex = /(.+) you can download the file on http:\/\/localhost:8000\/\S+/g;
+      return content.replace(regex, '$1');
+    }
+  }
+}
 </script>
 
 <style scoped>
 .message-item {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+  margin: 10px;
 }
-
-.message-right {
-    align-self: flex-end;
+.message-from-user {
+  flex-direction: row-reverse;
 }
-
-.message-left {
-    align-self: flex-start;
+.message-content {
+  margin-left: 10px;
+  margin-right: 10px;
 }
-
-.text-message {
-    padding: 10px;
-    border-radius: 5px;
-    background-color: #f0f0f0;
-}
-
 .sender-name {
-    font-weight: bold;
+  font-weight: bold;
+}
+.sender-name-from-user {
+  font-weight: bold;
+  text-align: right;
 }
 
-.send-time {
-    font-size: 12px;
-    color: #888;
-}
-
-.pic-message {
-    max-width: 200px;
-    max-height: 200px;
+.text-message, .image-message, .file-message {
+  background: #F2F2F2;
+  border: 1px solid #D9D9D9;
+  border-radius: 12px;
+  margin: 5px;
+  padding: 5px 10px 5px 10px;
 }
 
 .file-message {
-    padding: 5px 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+  display: flex;
+  align-items: center;
 }
+
 </style>

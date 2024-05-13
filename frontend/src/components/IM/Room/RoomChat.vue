@@ -5,7 +5,7 @@
             <el-scrollbar ref="scrollbar">
                 <div ref="inner" class="message-inner-list">
                   <el-button type="text" link @click="getMoreHistoryMessages" style="margin: 9px"> 加载更多历史消息 </el-button>
-                  <MessageItem v-for="(message, index) in messages" :key="index" :message="message" :align="message.sender_id === currentUser.user_id ? 'right' : 'left'" class="message" />
+                  <MessageItem v-for="(message, index) in messages" :key="index" :message="message" class="message" />
                 </div>
             </el-scrollbar>
         </div>

@@ -27,6 +27,7 @@
 
 <script>
 import axios from "@/axios-config";
+import {ElMessage} from "element-plus";
 export default {
     props: {
         roomID: {
@@ -47,6 +48,10 @@ export default {
             console.log("changeVisible", this.dialogVisible);
         },
         sendMessage(type) {
+            if (!this.newMessage) {
+                ElMessage.warning('消息不能为空');
+                return;
+            }
             // 向父组件发送输入的消息
             this.$emit('send', type, this.newMessage);
             this.newMessage = ''; // 发送后清空输入框
