@@ -3,7 +3,7 @@
         <div class="friend-list">
             <h2>好友列表</h2>
             <el-menu class="el-menu-vertical-demo">
-                <el-menu-item v-for="friend in friends" :key="friend.id" :index="friend.id" @click="fetchFriendInfo(friend.id)">
+                <el-menu-item v-for="friend in friends" :key="friend.ID" :index="friend.ID" @click="fetchFriendInfo(friend.ID)">
                     <i class="el-icon-user-solid"></i>
                     {{ friend.username }}
                 </el-menu-item>
@@ -13,12 +13,12 @@
 
         <div class="friend-details">
             <div class="friend-header">
-                <p class="friend-title"> {{ activeFriend === null ? '请选择好友' : activeFriend.Username }} </p>
+                <p class="friend-title"> {{ activeFriend === null ? '请选择好友' : activeFriend.username }} </p>
                 <el-icon v-if="activeFriendId" @click="drawer = true" class="more-icon">
                     <More />
                 </el-icon>
             </div>
-            <FriendChat v-if="activeFriendId" :friendID="activeFriendId" />
+            <FriendChat v-if="activeFriendId" :friendID="activeFriendId" :friendName="activeFriend.username" />
             <FriendDrawer v-if="activeFriendId" v-model="drawer" v-model:ifFetch="ifFetch" :friendID="activateFriendId" :friend="activeFriend" />
         </div>
     </div>
@@ -62,7 +62,7 @@ export default {
             this.fetchFriends();
         },
         createdRoomBoxwithChosenFriend() {
-            const description = "chat with" + this.activeFriend.Username;
+            const description = "chat with" + this.activeFriend.username;
             this.$emit('createRoom', description);
         },
         async fetchFriends() {
@@ -76,7 +76,8 @@ export default {
         },
         fetchFriendInfo(id) {
             this.activeFriendId = id;
-            this.activeFriend = this.friends.find(friend => friend.id === id);
+            console.log('fetchFriendInfo', id);
+            this.activeFriend = this.friends.find(friend => friend.ID === id);
 
         },
 
