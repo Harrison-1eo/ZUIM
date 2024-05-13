@@ -1,20 +1,29 @@
 <template>
   <div class="message-item" :class="{ 'message-from-user': isSenderUser }">
-    <el-avatar :src="message.sender_avatar || 'http://localhost:8000/static/avatars/nopic.png'"></el-avatar>
+    <el-avatar :src="getPicUrl(message.sender_avatar)"></el-avatar>
     <div class="message-content">
       <div :class="{'sender-name-from-user': isSenderUser, 'sender-name': !isSenderUser}">
         {{ isSenderUser ? '我' : message.sender_name || 'No sender-name'}}
       </div>
+<!--      文本显示 -->
       <div v-if="message.type === 'text'" class="text-message">
         {{ message.content }}
       </div>
+<!--      图片显示 -->
       <div v-else-if="message.type === 'image'" class="image-message">
-        <el-image :src="message.content" fit="contain" style="max-width: 100%; height: auto;"></el-image>
+        <el-image :src="getPicUrl(message.content)"
+                  fit="cover"
+                  :previewSrcList="[getPicUrl(message.content)]"
+                  style="width: 100px; height: auto"
+                  loading="lazy"
+        ></el-image>
       </div>
+<!--      文件显示 -->
       <div v-else-if="message.type === 'file'" class="file-message">
         <el-icon><Link /></el-icon>
         <el-link :href="getFileUrl(message.content)" target="_blank">下载文件：{{ this.getFileName(message.content) }}</el-link>
       </div>
+
     </div>
   </div>
 </template>
@@ -57,6 +66,12 @@ export default {
       // 使用正则表达式匹配出文件的名称
       const regex = /(.+) you can download the file on http:\/\/localhost:8000\/\S+/g;
       return content.replace(regex, '$1');
+    },
+    getPicUrl(url) {
+      if (url) {
+        return 'http://localhost:8000' + url;
+      }
+      return 'http://localhost:8000/static/avatars/nopic.png';
     }
   }
 }
