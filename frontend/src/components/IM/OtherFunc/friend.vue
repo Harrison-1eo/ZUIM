@@ -1,59 +1,109 @@
 <template>
-  <div class="friend-list">
-    <h2>好友列表</h2>
-    <el-divider></el-divider>
-    <el-scrollbar style="height: 300px;">
-      <el-menu
-        default-active="1"
-        class="el-menu-vertical-demo"
-        background-color="#ffffff"
-        text-color="#000000"
-        active-text-color="#ffffff"
-        @select="handleSelect"
-      >
-        <el-menu-item-group title="在线好友">
-          <el-menu-item v-for="friend in onlineFriends" :key="friend.id" :index="friend.id">
-            <i class="el-icon-user-solid"></i>
-            {{ friend.name }}
-          </el-menu-item>
-        </el-menu-item-group>
-        <el-menu-item-group title="离线好友">
-          <el-menu-item v-for="friend in offlineFriends" :key="friend.id" :index="friend.id">
-            <i class="el-icon-user"></i>
-            {{ friend.name }}
-          </el-menu-item>
-        </el-menu-item-group>
-      </el-menu>
-    </el-scrollbar>
-  </div>
+    <div class="friend-container">
+        <div class="friend-list">
+            <h2>好友列表</h2>
+            <el-menu class="el-menu-vertical-demo">
+                <el-menu-item v-for="friend in friends" :key="friend.id" :index="friend.id" @click="fetchFriendInfo(friend.id)">
+                    <i class="el-icon-user-solid"></i>
+                    {{ friend.username }}
+                </el-menu-item>
+            </el-menu>
+            
+        </div>
+
+        <div class="friend-details">
+            <div class="friend-header">
+                <p class="friend-title"> {{ activeFriend === null ? '请选择好友' : activeFriend.Username }} </p>
+                <el-icon v-if="activeFriendId" @click="drawer = true" class="more-icon">
+                    <More />
+                </el-icon>
+            </div>
+            <FriendChat v-if="activeFriendId" :friendID="activeFriendId" />
+            <FriendDrawer v-if="activeFriendId" v-model="drawer" v-model:ifFetch="ifFetch" :friendID="activateFriendId" :friend="activeFriend" />
+        </div>
+    </div>
+    
 </template>
 
 <script>
+import axios from "@/axios-config";
+import FriendDrawer from "@/components/IM/OtherFunc/FriendDrawer.vue";
+import FriendChat from "@/components/IM/OtherFunc/FriendChat.vue";
 export default {
-  data() {
-    return {
-      onlineFriends: [
-        { id: 1, name: '张三' },
-        { id: 2, name: '李四' },
-        { id: 3, name: '王五' }
-      ],
-      offlineFriends: [
-        { id: 4, name: '赵六' },
-        { id: 5, name: '钱七' }
-      ]
-    };
-  },
-  methods: {
-    handleSelect(index) {
-      console.log('选中的好友ID:', index);
-      // 在这里可以进行选中好友后的操作，比如打开聊天窗口等
+    data() {
+        return {
+            friends: [],
+            activateFriendId: null,
+            drawer: false,
+            ifFetch: false,
+            activeFriend: null,
+
+
+        };
+    },
+    components: {
+        FriendDrawer,
+        FriendChat
+    },
+    watch: {
+        ifFetch() {
+            this.selectNoFriend();
+            this.drawer = false;
+            this.ifFetch = false;
+        }
+    },
+    created() {
+        this.fetchFriends();
+    },
+    methods: {
+        selectNoFriend() {
+            this.activeFriend = null;
+            this.activeFriendId = null;
+            this.fetchFriends();
+        },
+        createdRoomBoxwithChosenFriend() {
+            const description = "chat with" + this.activeFriend.Username;
+            this.$emit('createRoom', description);
+        },
+        async fetchFriends() {
+            try {
+                const response = await axios.get('/api/user/friends');
+                this.friends = response.data.data;
+                console.log(this.friends);
+            } catch (error) {
+                console.error('Failed to fetch friends' ,error);
+            }
+        },
+        fetchFriendInfo(id) {
+            this.activeFriendId = id;
+            this.activeFriend = this.friends.find(friend => friend.id === id);
+
+        },
+
     }
-  }
 };
 </script>
 
 <style>
+.friend-container {
+    display: flex;
+    height: 100%;
+    overflow-y: hidden;
+}
+
 .friend-list {
-  padding: 20px;
+    padding: 20px;
+    width: 200px;
+    display: flex;
+
+    flex-direction: column;
+    border-right: 1px solid #ebeef5;
+}
+
+.friend-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
 }
 </style>

@@ -42,7 +42,7 @@
 <script setup>
 import { ref } from 'vue';
 import { ElCard, ElForm, ElFormItem, ElInput, ElButton, ElUpload } from 'element-plus';
-import axios from 'axios';
+import axios from "@/axios-config";
 
 const userInfo = ref({
   username: '',
@@ -68,8 +68,32 @@ const getUserInfo = async () => {
 };
 
 const updateUserInfo = async () => {
-  // Update user info code here
+  try {
+    const response = await axios.post('/api/user/update', {
+      user_id: userInfo.value.user_id,
+      username: userInfo.value.username,
+      nike_name: userInfo.value.nike_name,
+      avatar: userInfo.value.avatar,
+      sexuality: userInfo.value.sexuality,
+      year: userInfo.value.year,
+      month: userInfo.value.month,
+      day: userInfo.value.day,
+      country: userInfo.value.country,
+      province: userInfo.value.province,
+      city: userInfo.value.city,
+      email: userInfo.value.email
+    });
+    if (response.data.code === 0) {
+      this.$message.success('User information updated successfully!');
+    } else {
+      this.$message.error('Failed to update user information: ' + response.data.msg);
+    }
+  } catch (error) {
+    console.error('Error updating user information:', error);
+    this.$message.error('Failed to update user information. Please try again later.');
+  }
 };
+
 
 const handleAvatarSuccess = (response, file) => {
   userInfo.value.avatar = URL.createObjectURL(file.raw);

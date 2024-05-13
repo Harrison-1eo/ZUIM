@@ -19,8 +19,7 @@
             <span class="sender-name">{{ message.sender_name }}</span>
             <span class="send-time">{{ message.send_time }}</span>
             <!-- <p>{{ message.content }}</p> -->
-                        <p v-html="formatContent(message.content)"></p>
-
+            <p v-html="formatContent(message.content)"></p>
 
         </div>
         <!-- <el-image v-else-if="message.type === 'pic'" :src="message.content" class="pic-message"></el-image>
@@ -41,7 +40,10 @@ export default {
             // 匹配链接的正则表达式
             const regex = /you can download the file on (http:\/\/localhost:8000\/static\/files\/\S+)/g;
             // 使用 replace 方法将匹配到的链接替换为超链接
-            return content.replace(regex, '<a href="$1">$1</a>');
+            // 将dick1.png you can download the file on http://localhost:8000/static/files/171543589033018.png替换成logo.png you can download on 链接
+            const formattedContent = content.replace(regex, 'you can download on <a href="$1">链接</a>');
+            return formattedContent;
+            // return content.replace(regex, '<a href="$1">$1</a>');
         }
     },
     avatar: {

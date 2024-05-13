@@ -62,6 +62,7 @@ export default {
             };
         } else {
             // 处理未登录情况，比如跳转到登录页面
+            this.$router.push('/login');
         }
     },
     watch: {
@@ -122,6 +123,10 @@ export default {
                       "last_message_id": lastMessageId,
                       "limit": limit
                   });
+                //   console.log('roomID:', this.roomID);
+                //   console.log('lastMessageId:', lastMessageId);
+                //     console.log('limit:', limit);
+                //   console.log('Fetched history messages111:', response.data.data);
               if (response.data.data.length === 0) {
                   ElMessage.info('没有更多历史消息了')
                   return;
@@ -147,6 +152,7 @@ export default {
           }
           const minMessageId = Math.min(...this.messages.map(item => item.ID));
           console.log('Called with lastMessageId:', minMessageId);
+          console.log('minMessageId:', minMessageId);
           this.getHistoryMessages(minMessageId, 10);
       },
       // 滚动消息列表到底部
