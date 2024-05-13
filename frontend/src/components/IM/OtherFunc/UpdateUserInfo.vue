@@ -1,42 +1,13 @@
 <template>
-  <el-card class="update-user-info-card" shadow="hover">
-    <div class="form-container">
-      <el-form :model="userInfo" ref="userInfoForm" label-position="top">
-        <el-form-item label="Username">
-          <el-input v-model="userInfo.username"></el-input>
-        </el-form-item>
-        <el-form-item label="Email">
-          <el-input v-model="userInfo.email"></el-input>
-        </el-form-item>
-        <el-form-item label="Nickname">
-          <el-input v-model="userInfo.nike_name"></el-input>
-        </el-form-item>
-        <el-form-item label="Country">
-          <el-input v-model="userInfo.country"></el-input>
-        </el-form-item>
-        <el-form-item label="Province">
-          <el-input v-model="userInfo.province"></el-input>
-        </el-form-item>
-        <el-form-item label="City">
-          <el-input v-model="userInfo.city"></el-input>
-        </el-form-item>
-        <el-form-item label="Avatar">
-          <el-upload
-              class="avatar-uploader"
-              action="path-to-api-to-upload-avatar"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload">
-            <img v-if="userInfo.avatar" :src="userInfo.avatar" class="avatar">
-            <el-button size="small">Click to upload new avatar</el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="updateUserInfo">Update Information</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
-  </el-card>
+  <el-upload
+      class="avatar-uploader"
+      action="https://jsonplaceholder.typicode.com/posts/"
+      :show-file-list="false"
+      :on-success="handleAvatarSuccess"
+      :before-upload="beforeAvatarUpload">
+    <img v-if="imageUrl" :src="imageUrl" class="avatar" alt="+">
+    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+  </el-upload>
 </template>
 
 <script setup>
@@ -121,14 +92,44 @@ getUserInfo();
   max-width: 600px;
   margin: 50px auto;
 }
-
-.form-container {
-  padding: 20px;
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
 }
-
 .avatar {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
+  width: 178px;
+  height: 178px;
+  display: block;
 }
 </style>
+
+<script>
+export default {
+  data() {
+    return {
+      imageUrl: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png'
+    };
+  },
+  methods: {
+    handleAvatarSuccess(res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw);
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg';
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!');
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!');
+      }
+      return isJPG && isLt2M;
+    }
+  }
+}
+</script>

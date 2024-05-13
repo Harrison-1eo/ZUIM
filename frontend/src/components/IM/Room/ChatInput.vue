@@ -1,33 +1,65 @@
 <template>
     <div class="chat-input">
-        <el-input type="textarea" placeholder="输入消息..." v-model="newMessage" class="message-input" :rows="4" />
+        <el-input type="textarea"
+                  placeholder="输入消息..."
+                  v-model="newMessage"
+                  class="message-input"
+                  :rows="4"
+                  @keyup.enter="sendMessage()"
+        />
 
         <div class="send-buttons">
-            <!-- 发送文件 -->
-            <div class="Filecontainer">
-                <!-- 文件上传按钮 -->
-                <el-button type="primary" class="send-button" @click="openFileChooser" style="margin-bottom: 10px">发送文件</el-button>
-                <!-- 隐藏的文件输入 -->
-                <input type="file" ref="fileInput" style="display: none;" @change="handleFileUpload">
-            </div>
-            <!-- <el-button type="primary" class="send-button" @click="changeVisible" style="margin-bottom: 10px">添加附件</el-button> -->
 
-            <el-button type="success" class="send-button" @click="sendMessage('text')">发送消息</el-button>
+          <div class="upload-icon-box">
+            <!-- 发送图片 -->
+            <div class="upload-icon">
+              <el-tooltip
+                  class="box-item"
+                  effect="dark"
+                  content="发送图片"
+                  placement="top"
+              >
+                <el-icon size="30px" @click="openImageChooser"><Picture /></el-icon>
+              </el-tooltip>
+              <input type="file" ref="imageInput" style="display: none;" accept="image/*" @change="handleImageUpload">
+            </div>
+
+            <!-- 发送文件 -->
+            <div class="upload-icon">
+              <el-tooltip
+                  class="box-item"
+                  effect="dark"
+                  content="发送文件"
+                  placement="top"
+              >
+                <!-- 文件上传按钮 -->
+                <!--        <el-button type="primary" class="send-button" @click="openFileChooser" style="margin-bottom: 10px">发送文件</el-button>-->
+                <el-icon  size="30px" @click="openFileChooser"><FolderAdd /></el-icon>
+              </el-tooltip>
+              <!-- 隐藏的文件输入 -->
+              <input type="file" ref="fileInput" style="display: none;" @change="handleFileUpload">
+            </div>
+
+          </div>
+
+            <el-button type="success" class="send-button" @click="sendMessage()">发送消息</el-button>
             <!-- 开启视频 -->
-            <el-button type="success" class="send-button" @click="startVideo">开启视频</el-button>
+<!--            <el-button type="success" class="send-button" @click="startVideo">开启视频</el-button>-->
         </div>
 
-        <!-- 对话框 -->
-        <el-dialog title="上传文件" v-model="dialogVisible">
-            <!-- 上传组件 -->
-
-        </el-dialog>
     </div>
 </template>
 
 <script>
 import axios from "@/axios-config";
+import {ElMessage} from "element-plus";
+import {FolderAdd, Picture} from "@element-plus/icons";
+
 export default {
+  components: {
+    Picture,
+    FolderAdd,
+  },
     props: {
         roomID: {
             type: Number,
@@ -37,44 +69,49 @@ export default {
     data() {
         return {
             newMessage: '', // 绑定输入框的内容
-            dialogVisible: false,
             roomId: this.roomID
         };
     },
     methods: {
-        changeVisible() {
-            this.dialogVisible = !this.dialogVisible;
-            console.log("changeVisible", this.dialogVisible);
-        },
-        sendMessage(type) {
+        sendMessage() {
+            // 如果消息以回车结尾，去掉回车
+            this.newMessage = this.newMessage.trim();
+            // 如果消息为空，不发送
+            if (!this.newMessage) {
+              ElMessage.warning('消息不能为空');
+              return;
+            }
             // 向父组件发送输入的消息
-            this.$emit('send', type, this.newMessage);
+            this.$emit('send', 'text', this.newMessage);
             this.newMessage = ''; // 发送后清空输入框
         },
         // 打开文件选择器
         openFileChooser() {
             this.$refs.fileInput.click();
         },
-
+        openImageChooser() {
+          this.$refs.imageInput.click();
+        },
+        handleImageUpload(event) {
+          const file = event.target.files[0];
+          if (file) {
+            this.uploadFile(file, 'image');
+          }
+        },
         // 处理文件上传
         handleFileUpload(event) {
             const file = event.target.files[0]; // 获取文件
             if (!file) {
                 return;
             }
-
             // 在这里添加文件传输的逻辑
             console.log('文件选择成功：', file.name);
             // 假设有一个函数 uploadFile 来处理文件上传
-            this.uploadFile(file);
+            this.uploadFile(file, 'file');
         },
 
         // 示例上传函数（需要自己实现具体上传逻辑）
-        async uploadFile(file) {
-            // 使用 FormData 来包装文件
-            // const formData = new FormData();
-            // formData.append('file', file);
-
+        async uploadFile(file, type) {
             // 发送文件到服务器
             try {
                 const formData = new FormData();
@@ -98,28 +135,13 @@ export default {
                     }
                     console.log("msg", msg);
                     console.log(response.data.data.file_name);
-                    this.$emit('send', 'file', response.data.data.file_name + ' you can download the file on http://localhost:8000' + response.data.data.file_url);
-                    // this.sendMessage(msg); // 发送文件消息
-                    // try {
-                    //     const res = await axios.post('/api/message/send', {
-                    //         room_id: this.roomId,
-                    //         type: 'file', // 假设消息类型为文本，可以根据实际需要修改
-                    //         content: response.data.data.file_name // 将子组件传递过来的消息内容发送到服务器
-                    //     });
-                    //     if (res.data.code === 0) {
-                    //         // 更新消息列表，这里假设服务器返回的消息格式与历史消息格式一致
-                    //         // this.messages.push(response.data.data);// 将服务器返回的消息添加到消息列表
-                    //         console.log("response.data.data", res.data.data);
-                    //         this.newMessage = ''; // 发送成功后清空输入框
-                    //         this.messages = [];
-                    //         await this.getHistoryMessages(0, 10);
-                    //     } else {
-                    //         console.error('Failed to send message:', res.data.msg);
-                    //     }
-                    // } catch (error) {
-                    //     console.error('Failed to send message:', error);
-                    // }
-
+                    if (type === 'file'){
+                      this.$emit('send', 'file', response.data.data.file_name + ' you can download the file on http://localhost:8000' + response.data.data.file_url);
+                    } else if (type === 'image'){
+                      this.$emit('send', 'image', response.data.data.file_url);
+                    } else {
+                      throw new Error('上传文件失败，无效的文件类型');
+                    }
                     return response.data.data;
                 } else {
                     // 上传失败，抛出错误信息
@@ -130,53 +152,6 @@ export default {
                 throw error;
             }
         },
-
-
-
-
-        // uploadFile(file) {
-        //     // 使用 FormData 来包装文件
-        //     const formData = new FormData();
-        //     formData.append('file', file);
-
-        //     // 发送文件到服务器
-
-        // },
-        startVideo() {
-            // 开启视频
-            console.log('Starting video...');
-            // 开启摄像头
-            // 创建本地视频流
-            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-                .then(function (stream) {
-                    var localVideo = document.getElementById("localVideo");
-                    localVideo.srcObject = stream;
-
-                    // 初始化 PeerJS
-                    var peer = new Peer();
-
-                    // 当 Peer 连接到 PeerJS 服务器时执行
-                    peer.on('open', function (id) {
-                        console.log('My peer ID is: ' + id);
-
-                        // 当有来自其他 Peer 的连接请求时执行
-                        peer.on('call', function (call) {
-                            // 接听来自其他 Peer 的视频通话请求
-                            call.answer(stream);
-
-                            // 在远程视频元素中显示对方视频流
-                            var remoteVideo = document.getElementById('remoteVideo');
-                            call.on('stream', function (remoteStream) {
-                                remoteVideo.srcObject = remoteStream;
-                            });
-                        });
-                    });
-                })
-                .catch(function (err) {
-                    console.error('getUserMedia error:', err);
-                });
-
-        }
     }
 };
 </script>
@@ -200,7 +175,20 @@ export default {
     height: 40px; /* 设置按钮的高度，与输入框高度一致 */
     margin-right: 10px;
     margin-left: 10px;
-    margin-top: 10px;
+    margin-top: 8px;
     margin-block-end: 10px;
+}
+
+.upload-icon-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 5px;
+}
+
+.upload-icon {
+    margin-right: 10px;
+    margin-left: 10px;
+    cursor: pointer;
 }
 </style>

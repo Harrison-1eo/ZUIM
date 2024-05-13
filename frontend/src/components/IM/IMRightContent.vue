@@ -13,7 +13,8 @@ export default {
 
 <style scoped>
 .im-right-content {
-  background-color: #d8d8d8;
+  //background-color: #d8d8d8;
+
   padding: 0px;
 }
 </style>
