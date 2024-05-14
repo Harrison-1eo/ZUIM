@@ -21,10 +21,10 @@ app.mount('#app')
 for (let iconName in ElIconModules) {
     app.component(iconName, ElIconModules[iconName])
 }
-new Vue({
-    el: '#app',
-    router,
-    store, //使用store
-    components: { App },
-    template: '<App/>'
-})
+// new Vue({
+//     el: '#app',
+//     router,
+//     store, //使用store
+//     components: { App },
+//     template: '<App/>'
+// })

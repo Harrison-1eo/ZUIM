@@ -89,7 +89,7 @@ export default {
                 // 创建成功，跳转到聊天室界面
                 this.$router.push({ path: '/im/chat' });
                 await this.fetchRoomUsers();
-                await this.getHistoryMessages(0, 10);
+                // await this.getHistoryMessages(0, 10);
                 console.log('before commit');
                 store.commit('setActiveRoom', response.data.data);
                 console.log('after commit');

@@ -92,6 +92,8 @@ export default {
             if (message.data.room_id !== this.roomID) {
               return;
             }
+            // message.data.sender_avatar = this.currentUser.avatar;
+            console.log('Received new message:', message);
             this.messages.push(message.data);
           } else if (message.code === 1) {
               console.error('收到错误消息:', message.msg);
