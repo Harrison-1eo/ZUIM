@@ -14,8 +14,7 @@
               <el-image :src="getPicUrl(message.content)"
                         fit="cover"
                         :previewSrcList="[getPicUrl(message.content)]"
-                        style="width: 200px; height: auto"
-                        loading="lazy"
+                        style="width: 200px; height: auto; display: block;"
               ></el-image>
             </div>
             <!--      文件显示 -->

@@ -6,6 +6,7 @@
                 <div ref="inner" class="message-inner-list">
                   <el-button type="text" link @click="getMoreHistoryMessages" style="margin: 9px"> 加载更多历史消息 </el-button>
                   <MessageItem v-for="(message, index) in messages" :key="index" :message="message" class="message" />
+<!--                  <el-backtop :visibility-height="1" > </el-backtop>-->
                 </div>
             </el-scrollbar>
         </div>
@@ -78,7 +79,7 @@ export default {
         }
     },
     mounted() {
-      this.scrollMaxHeight = this.$refs.scrollbar.$el.clientHeight - 380;
+      this.scrollToBottom();
     },
     beforeUnmount() {
       this.ws.close();
@@ -165,10 +166,12 @@ export default {
           { direction: 'bottom', target: this.$refs.scrollbar.$el.querySelector('.el-scrollbar__wrap') }
         )
       },
-      // 判断消息列表是否在底部
+      //判断消息列表是否在底部
       isAtBottom() {
         const container = this.$refs.scrollbar.$el.querySelector('.el-scrollbar__wrap');
-        return container.scrollTop + container.clientHeight === container.scrollHeight;
+        // 判断精度，差值小于10px则认为在底部
+        return container.scrollTop + container.clientHeight + 10 >= container.scrollHeight;
+        // return container.scrollTop + container.clientHeight === container.scrollHeight;
       },
       // 当有新消息时，并且消息列表在底部时，自动滚动到底部，保持最新消息可见
       handleNewMessage() {

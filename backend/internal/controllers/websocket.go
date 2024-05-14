@@ -95,20 +95,21 @@ func WebSocketMessage(c *gin.Context) {
 			continue
 		}
 
-		senderName, err := userRepository.GetUsernameByID(userID)
+		senderInfo, err := userInfoRepository.GetUserInfoByID(userID)
 		if err != nil {
 			respondWebSocket(ws, 1, "获取发件人名称失败", nil)
 			continue
 		}
 
 		msgSend := models.MessageResponseBody{
-			ID:         newMessage.ID,
-			SendTime:   newMessage.CreatedAt.Format("2006-01-02 15:04:05"),
-			RoomID:     newMessage.RoomID,
-			SenderID:   newMessage.SenderID,
-			SenderName: senderName,
-			Type:       newMessage.Type,
-			Content:    newMessage.Content,
+			ID:           newMessage.ID,
+			SendTime:     newMessage.CreatedAt.Format("2006-01-02 15:04:05"),
+			RoomID:       newMessage.RoomID,
+			SenderID:     newMessage.SenderID,
+			SenderName:   senderInfo.Username,
+			SenderAvatar: senderInfo.Avatar,
+			Type:         newMessage.Type,
+			Content:      newMessage.Content,
 		}
 
 		// 发送消息给聊天室内的所有在线用户

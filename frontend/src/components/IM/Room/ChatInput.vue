@@ -3,6 +3,7 @@
         <el-input type="textarea"
                   placeholder="输入消息..."
                   v-model="newMessage"
+                  resize="none"
                   class="message-input"
                   :rows="4"
                   @keyup.enter="sendMessage()"
@@ -161,8 +162,8 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px;
-    background-color: #f4f4f4;
+    padding: 8px;
+    //background-color: #f4f4f4;
 }
 
 .message-input {

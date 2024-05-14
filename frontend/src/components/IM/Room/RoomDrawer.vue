@@ -1,7 +1,7 @@
 <!-- /src/components/IM/Room/RoomDrawer.vue -->
 
 <template>
-    <el-drawer show-close drawer>
+    <el-drawer show-close drawer size="450px">
         <template #header>
             <h2>{{ room.name }}</h2>
         </template>
@@ -53,7 +53,7 @@
 import axios from "@/axios-config";
 import { ElMessage, ElMessageBox } from "element-plus";
 import dick1 from '../../../assets/avatar/dick1.png';
-import { isNavigationFailure } from 'vue-router';
+
 export default {
     name: 'RoomDrawer',
     props: {
