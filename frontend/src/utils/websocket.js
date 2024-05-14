@@ -38,6 +38,7 @@ export default class WebsocketClass {
     this.ws.onclose = (e) => {
       this.onClose(e)
     }
+    console.log('WS 已连接')
   }
 
   /**
@@ -54,13 +55,19 @@ export default class WebsocketClass {
   close() {
     this.status = 2
     this.ws.close()
+    clearInterval(this.pingInterval)
+    console.log('WS 已关闭')
   }
 
   /**
    * @description: socket关闭事件
    */
   onClose(e) {
+    if (this.status === 2) {
+      return
+    }
     console.error(e)
+    console.log(this)
     this.status = this.status === 2 ? this.status : 0
     setTimeout(() => {
       if (this.status === 0) {
