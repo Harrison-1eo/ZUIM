@@ -1,6 +1,6 @@
 <template>
     <div class="message-item" :class="{ 'message-from-user': isSenderUser }">
-        <el-avatar :src="avatarUrl(message.sender_avatar)"></el-avatar>
+        <el-avatar :src="getAvatarUrl(message.sender_avatar)"></el-avatar>
         <div class="message-content">
             <div :class="{'sender-name-from-user': isSenderUser, 'sender-name': !isSenderUser}">
                 {{ isSenderUser ? '我' : message.sender_name || 'No sender-name'}}
@@ -11,14 +11,21 @@
             </div>
             <!--      图片显示 -->
             <div v-else-if="message.type === 'image'" class="image-message">
-                <el-image :src="avatarUrl(message.content)" fit="cover" :previewSrcList="[avatarUrl(message.content)]" style="width: 100px; height: auto" loading="lazy"></el-image>
+              <el-image :src="getPicUrl(message.content)"
+                        fit="cover"
+                        :previewSrcList="[getPicUrl(message.content)]"
+                        style="width: 200px; height: auto"
+                        loading="lazy"
+              ></el-image>
             </div>
             <!--      文件显示 -->
             <div v-else-if="message.type === 'file'" class="file-message">
                 <el-icon>
-                    <Link />
+                  <Link />
                 </el-icon>
-                <el-link :href="getFileUrl(message.content)" target="_blank">下载文件：{{ this.getFileName(message.content) }}</el-link>
+                <el-link :href="getFileUrl(message.content)" target="_blank">
+                  下载文件：{{ this.getFileName(message.content) }}
+                </el-link>
             </div>
 
         </div>
@@ -64,7 +71,7 @@ export default {
             const regex = /(.+) you can download the file on http:\/\/localhost:8000\/\S+/g;
             return content.replace(regex, '$1');
         },
-        avatarUrl(avatar) {
+        getAvatarUrl(avatar) {
             // console.log(user);
             console.log(avatar);
             if (!avatar) {
@@ -72,16 +79,18 @@ export default {
                 console.log('1');
                 return 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png';
             } else if (typeof avatar === 'string') {
+                // ？？？不能从前端获取用户头像，总不能访问网页时将所有用户头像都下载下来吧
                 // 如果 user.avatar 是字符串，则尝试查找对应的头像文件
-                const formats = ['png', 'jpg', 'jpeg'];
-                console.log('2');
-                for (const format of formats) {
-                    const url = require(`@/assets/avatar/${avatar}.${format}`);
-                    if (url) {
-                        console.log('3');
-                        return url;
-                    }
-                }
+                // const formats = ['png', 'jpg', 'jpeg'];
+                // console.log('2');
+                // for (const format of formats) {
+                //     const url = require(`@/assets/avatar/${avatar}.${format}`);
+                //     if (url) {
+                //         console.log('3');
+                //         return url;
+                //     }
+                // }
+                return 'http://localhost:8000' + avatar;
             }
             // 如果头像文件不存在或user.avatar格式不正确，则返回默认的 URL
             console.log('4');

@@ -91,6 +91,12 @@ func UploadAvatar(c *gin.Context) {
 		return
 	}
 
+	// 检查是否是图片，Content-Type只能是image/*
+	if file.Header.Get("Content-Type")[:5] != "image" {
+		respond(c, 1, "上传文件不是图片", nil)
+		return
+	}
+
 	userID := c.MustGet("userID").(uint)
 	fileName := utils.GenerateFilename(file.Filename)
 	filePath := "static/avatars/" + fileName
@@ -100,27 +106,26 @@ func UploadAvatar(c *gin.Context) {
 		return
 	}
 
-	// 先删除原头像文件
-	//userInfo, err := userInfoRepository.GetUserInfoByID(userID)
-	//if err != nil {
-	//	respond(c, 1, "更新用户信息失败", nil)
-	//	return
-	//}
-	//if userInfo.Avatar != "" {
-	//	err = utils.DeleteFile("static/avatars/" + userInfo.Avatar)
-	//	if err != nil {
-	//		respond(c, 1, "更新用户信息失败", nil)
-	//		return
-	//	}
-	//}
+	updatedUserInfo, err := userInfoRepository.GetUserInfoByID(userID)
+	if err != nil {
+		respond(c, 1, "获取用户信息失败", nil)
+		return
+	}
+	if updatedUserInfo.Avatar != "" {
+		err = utils.DeleteFile(updatedUserInfo.Avatar)
+		if err != nil {
+			respond(c, 1, "删除旧头像失败", nil)
+			return
+		}
+	}
 
-	updatedUserInfo, err := userInfoRepository.UpdateUserInfo(models.UserInfo{
-		UserID: userID,
-		Avatar: fileName,
-	})
+	updatedUserInfo.Avatar = "/" + filePath
+	_, err = userInfoRepository.UpdateUserInfo(*updatedUserInfo)
+
 	if err != nil {
 		respond(c, 1, "更新用户信息失败", nil)
 		return
 	}
+
 	respond(c, 0, "更新用户信息成功", updatedUserInfo)
 }
