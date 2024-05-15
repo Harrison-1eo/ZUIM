@@ -3,8 +3,8 @@
     <!-- createRoomBox函数接口： -->
     <el-drawer show-close drawe>
         <template #header>
-            <h2>{{friend.username}}</h2>
-            <h2>{{friend.ID}}</h2>
+            <h2>{{ friend.username }}</h2>
+            <h2>{{ friend.ID }}</h2>
         </template>
 
         <el-card style="max-width: 480px">
@@ -13,7 +13,8 @@
                 <span>创建聊天室</span>
             </div>
         </template> -->
-            <el-button type="primary" class="changedescription" @click="createRoomChatWithThisGuy(friend.ID, friend.username)">创建聊天室</el-button>
+            <el-button type="primary" class="changedescription"
+                @click="createRoomChatWithThisGuy(friend.ID, friend.username)">创建聊天室</el-button>
 
         </el-card>
     </el-drawer>

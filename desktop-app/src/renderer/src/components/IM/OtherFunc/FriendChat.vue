@@ -11,7 +11,8 @@
                 </template>
                 <el-scrollbar style="height: 300px;">
                     <el-menu class="el-menu-vertical-demo">
-                        <el-menu-item v-for="room in roomsBetween" :key="room.ID" :index="room.ID" @click="fetchRoomInfo(room.ID)">
+                        <el-menu-item v-for="room in roomsBetween" :key="room.ID" :index="room.ID"
+                            @click="fetchRoomInfo(room.ID)">
                             {{ room.name }}
                         </el-menu-item>
                     </el-menu>
@@ -20,8 +21,8 @@
         </div>
         <div class="friend-details">
             <div class="friend-header">
-                <p class="friend-title"> {{ activeRoom===null ? '请选择聊天室' : activeRoom.name }} </p>
-                <el-icon v-if="activeRoomId" @click="drawer=true" class="more-icon">
+                <p class="friend-title"> {{ activeRoom === null ? '请选择聊天室' : activeRoom.name }} </p>
+                <el-icon v-if="activeRoomId" @click="drawer = true" class="more-icon">
                     <More />
                 </el-icon>
             </div>
@@ -115,12 +116,15 @@ export default {
     justify-content: space-between;
     padding: 20px;
 }
+
 .friend-chat {
     width: 30%;
 }
+
 .friend-details {
     width: 68%;
 }
+
 .friend-header {
     display: flex;
     justify-content: space-between;
@@ -128,12 +132,15 @@ export default {
     padding: 10px;
     border-bottom: 1px solid #f4f4f4;
 }
+
 .friend-title {
     font-size: 20px;
 }
+
 .more-icon {
     cursor: pointer;
 }
+
 .card-description {
     display: flex;
     justify-content: space-between;

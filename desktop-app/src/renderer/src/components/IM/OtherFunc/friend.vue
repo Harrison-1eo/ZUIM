@@ -3,12 +3,13 @@
         <div class="friend-list">
             <h2>好友列表</h2>
             <el-menu class="el-menu-vertical-demo">
-                <el-menu-item v-for="friend in friends" :key="friend.ID" :index="friend.ID" @click="fetchFriendInfo(friend.ID)">
+                <el-menu-item v-for="friend in friends" :key="friend.ID" :index="friend.ID"
+                    @click="fetchFriendInfo(friend.ID)">
                     <i class="el-icon-user-solid"></i>
                     {{ friend.username }}
                 </el-menu-item>
             </el-menu>
-            
+
         </div>
 
         <div class="friend-details">
@@ -19,10 +20,11 @@
                 </el-icon>
             </div>
             <FriendChat v-if="activeFriendId" :friendID="activeFriendId" :friendName="activeFriend.username" />
-            <FriendDrawer v-if="activeFriendId" v-model="drawer" v-model:ifFetch="ifFetch" :friendID="activateFriendId" :friend="activeFriend" />
+            <FriendDrawer v-if="activeFriendId" v-model="drawer" v-model:ifFetch="ifFetch" :friendID="activateFriendId"
+                :friend="activeFriend" />
         </div>
     </div>
-    
+
 </template>
 
 <script>
@@ -71,7 +73,7 @@ export default {
                 this.friends = response.data.data;
                 console.log(this.friends);
             } catch (error) {
-                console.error('Failed to fetch friends' ,error);
+                console.error('Failed to fetch friends', error);
             }
         },
         fetchFriendInfo(id) {

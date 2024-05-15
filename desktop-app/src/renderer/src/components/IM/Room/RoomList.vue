@@ -12,13 +12,14 @@
         </div>
         <div class="chat-details">
             <div class="chat-header">
-                <p class="room-title"> {{ activeRoom===null ? '请选择聊天室' : activeRoom.name }} </p>
-                <el-icon v-if="activeRoomId" @click="drawer=true" class="more-icon">
+                <p class="room-title"> {{ activeRoom === null ? '请选择聊天室' : activeRoom.name }} </p>
+                <el-icon v-if="activeRoomId" @click="drawer = true" class="more-icon">
                     <More />
                 </el-icon>
             </div>
             <RoomChat v-if="activeRoomId" :roomID="activeRoomId" />
-            <RoomDrawer v-if="activeRoomId" v-model="drawer" v-model:ifFetch="ifFetch" :roomID="activeRoomId" :room="activeRoom" />
+            <RoomDrawer v-if="activeRoomId" v-model="drawer" v-model:ifFetch="ifFetch" :roomID="activeRoomId"
+                :room="activeRoom" />
         </div>
     </div>
 </template>

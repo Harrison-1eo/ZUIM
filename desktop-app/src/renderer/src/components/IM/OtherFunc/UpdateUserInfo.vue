@@ -1,6 +1,8 @@
 <template>
     <div class="avatar-uploader-box">
-        <el-upload class="avatar-uploader" action="http://localhost:8000/api/user/upload_avatar" :headers="{Authorization: 'Bearer ' + this.token}" :show-file-list="false" :on-success="handleAvatarSuccess" :on-error="handleAvatarError" :before-upload="beforeAvatarUpload">
+        <el-upload class="avatar-uploader" action="http://localhost:8000/api/user/upload_avatar"
+            :headers="{ Authorization: 'Bearer ' + this.token }" :show-file-list="false" :on-success="handleAvatarSuccess"
+            :on-error="handleAvatarError" :before-upload="beforeAvatarUpload">
             <img v-if="avatarUrl" :src="avatarUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
@@ -91,9 +93,11 @@ export default {
     position: relative;
     overflow: hidden;
 }
+
 .avatar-uploader .el-upload:hover {
     border-color: #409eff;
 }
+
 .avatar-uploader-icon {
     font-size: 28px;
     color: #8c939d;
@@ -102,6 +106,7 @@ export default {
     line-height: 178px;
     text-align: center;
 }
+
 .avatar {
     width: 178px;
     height: 178px;
