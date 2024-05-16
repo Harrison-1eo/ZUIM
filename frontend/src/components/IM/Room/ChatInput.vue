@@ -163,7 +163,6 @@ export default {
     align-items: center;
     justify-content: space-between;
     padding: 8px;
-    //background-color: #f4f4f4;
 }
 
 .message-input {

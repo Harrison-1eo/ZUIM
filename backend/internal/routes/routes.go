@@ -5,9 +5,10 @@ package routes
 import (
 	"backend/internal/controllers"
 	"backend/internal/middlewares"
+	"time"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"time"
 )
 
 func SetupRouter() *gin.Engine {
@@ -29,6 +30,9 @@ func SetupRouter() *gin.Engine {
 		//超时时间设定
 		MaxAge: 24 * time.Hour,
 	}))
+
+	// Base64解码中间件
+	r.Use(middlewares.Base64DecodeMiddleware())
 
 	// 用户注册和登录路由
 	r.POST("/register", controllers.Register)
