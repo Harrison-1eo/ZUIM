@@ -56,6 +56,9 @@ export default {
       activeIndex: 'home'
     }
   },
+  created() {
+    this.$emit('selectRoute', this.activeIndex)
+  },
   methods: {
     handleSelect(key, keyPath) {
       console.log(key, keyPath)
