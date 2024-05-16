@@ -48,15 +48,10 @@ function formatDate(dateString) {
 
 function getAvatar(url) {
   if (url) {
-    return 'http://localhost:8000' + url;
+    return axios.defaults.baseURL  + url;
   } else {
-    return 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png';
+    return axios.defaults.baseURL + '/static/avatars/nopic.png';
   }
-  // if (user.avatar) {
-  //   return 'http://localhost:8000' + user.avatar;
-  // } else {
-  //   return 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png';
-  // }
 }
 </script>
 

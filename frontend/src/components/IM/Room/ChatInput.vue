@@ -111,7 +111,6 @@ export default {
             this.uploadFile(file, 'file');
         },
 
-        // 示例上传函数（需要自己实现具体上传逻辑）
         async uploadFile(file, type) {
             // 发送文件到服务器
             try {
@@ -137,7 +136,7 @@ export default {
                     console.log("msg", msg);
                     console.log(response.data.data.file_name);
                     if (type === 'file'){
-                      this.$emit('send', 'file', response.data.data.file_name + ' you can download the file on http://localhost:8000' + response.data.data.file_url);
+                      this.$emit('send', 'file', response.data.data.file_name + ' you can download the file on ' + response.data.data.file_url);
                     } else if (type === 'image'){
                       this.$emit('send', 'image', response.data.data.file_url);
                     } else {

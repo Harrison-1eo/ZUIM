@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {ElMessage} from "element-plus";
+import { ElMessage } from "element-plus";
 
 // 设置Axios的基础URL
 axios.defaults.baseURL = 'http://localhost:8000';
@@ -8,17 +8,20 @@ var textDecoder = new TextDecoder('utf-8');
 var textEncoder = new TextEncoder('utf-8');
 
 // 设置Axios的请求拦截器
-
 axios.interceptors.request.use(
     config => {
         // 除了login和register外，请求发送之前，将token放入请求头中
         if (config.url !== '/login' && config.url !== '/register') {
             config.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
         }
-        // 将请求数据 config.data 进行Base64编码
-        if (config.data) {
-            config.data = btoa(String.fromCharCode.apply(null, textEncoder.encode(JSON.stringify(config.data))));
-            console.log("Base64编码结果：", config.data);
+        // 如果访问路径中包含upload，则不进行Base64编码
+        if (!config.url.includes('upload')) {
+            console.log(config.url);
+            // 将请求数据 config.data 进行Base64编码
+            if (config.data) {
+                config.data = btoa(String.fromCharCode.apply(null, textEncoder.encode(JSON.stringify(config.data))));
+                console.log("Base64编码结果：", config.data);
+            }
         }
         return config;
     },

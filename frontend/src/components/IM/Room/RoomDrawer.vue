@@ -102,7 +102,7 @@ export default {
         },
         async addUser(name) {
             try {
-                const response = await axios.post('http://localhost:8000/api/room/add_user',
+                const response = await axios.post('/api/room/add_user',
                     {
                         'room_id': this.roomID,
                         'user_name': name,
@@ -126,7 +126,7 @@ export default {
         async deleteRoom() {
             try {
                 const response = await axios.delete(
-                    'http://localhost:8000/api/room/delete?room_id=' + this.roomID
+                    '/api/room/delete?room_id=' + this.roomID
                 );
                 console.log('Delete room:', response.data);
                 if (response.data.code !== 0) {
@@ -144,7 +144,7 @@ export default {
         async fetchRoomUsers() {
             // 获取房间成员列表
             try {
-                const response = await axios.get('http://localhost:8000/api/room/members?room_id=' + this.roomID);
+                const response = await axios.get('/api/room/members?room_id=' + this.roomID);
 
                 if (response.data.code === 0) {
                     this.roomUsers = response.data.data;

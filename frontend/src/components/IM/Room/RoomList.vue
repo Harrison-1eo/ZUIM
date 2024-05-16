@@ -94,7 +94,7 @@ export default {
         },
         async createRoom(name) {
             try {
-                const response = await axios.post('http://localhost:8000/api/room/create',
+                const response = await axios.post('/api/room/create',
                     {
                         'name': name,
                         'description': ''
@@ -115,7 +115,7 @@ export default {
         async fetchRooms() {
             try {
                 const response = await axios.get(
-                    'http://localhost:8000/api/room/list',
+                    '/api/room/list',
                 );
                 this.rooms = response.data.data; // 假设返回的数据是聊天室数组
                 console.log('Rooms:', this.rooms);

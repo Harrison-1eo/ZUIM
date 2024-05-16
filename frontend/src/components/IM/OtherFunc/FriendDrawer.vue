@@ -65,7 +65,7 @@ export default {
             const description = "chat with " + username;
             const roomname = "chat with " + ID;
             try {
-                const response = await axios.post('http://localhost:8000/api/room/create', {
+                const response = await axios.post('/api/room/create', {
                     'name': roomname,
                     'description': description,
                 },
@@ -79,7 +79,7 @@ export default {
                 }
                 this.roomID = response.data.data.ID;
                 // 把他加入到聊天室中
-                const response2 = await axios.post('http://localhost:8000/api/room/add_user', {
+                const response2 = await axios.post('/api/room/add_user', {
                     'room_id': response.data.data.ID,
                     'user_name': username,
                     'role': 'member'
@@ -105,7 +105,7 @@ export default {
         async fetchRoomUsers() {
             // 获取房间成员列表
             try {
-                const response = await axios.get('http://localhost:8000/api/room/members?room_id=' + this.roomID);
+                const response = await axios.get('/api/room/members?room_id=' + this.roomID);
 
                 if (response.data.code === 0) {
                     this.roomUsers = response.data.data;
@@ -122,7 +122,7 @@ export default {
         async getHistoryMessages(lastMessageId, limit) {
             try {
                 const response = await axios.post(
-                    'http://localhost:8000/api/message/list',
+                    '/api/message/list',
                     {
                         "room_id": this.roomID,
                         "last_message_id": lastMessageId,

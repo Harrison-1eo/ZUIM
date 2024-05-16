@@ -43,7 +43,8 @@ export default {
             ws: new WebsocketClass(
                 `ws://localhost:8000/ws/join`,
                 localStorage.getItem('token'),
-                this.addNewMessage
+                this.addNewMessage,
+                true,
             ), // WebSocket 对象
             currentUser: null, // 当前用户信息
         };
@@ -120,7 +121,7 @@ export default {
       async getHistoryMessages(lastMessageId, limit) {
           try {
               const response = await axios.post(
-                  'http://localhost:8000/api/message/list',
+                  '/api/message/list',
                   {
                       "room_id": this.roomID,
                       "last_message_id": lastMessageId,

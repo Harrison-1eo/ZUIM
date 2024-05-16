@@ -4,8 +4,10 @@ import (
 	"backend/internal/models"
 	"backend/internal/repositories"
 	"backend/internal/utils"
-	"github.com/gin-gonic/gin"
+	"log"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 var userInfoRepository = repositories.NewUserInfoRepository()
@@ -87,6 +89,7 @@ func GetUserInfo(c *gin.Context) {
 func UploadAvatar(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
+		log.Println(err)
 		respond(c, 1, "上传文件失败", nil)
 		return
 	}
@@ -102,7 +105,7 @@ func UploadAvatar(c *gin.Context) {
 	filePath := "static/avatars/" + fileName
 	err = c.SaveUploadedFile(file, filePath)
 	if err != nil {
-		respond(c, 1, "上传文件失败", nil)
+		respond(c, 1, "保存文件失败", nil)
 		return
 	}
 

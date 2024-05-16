@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import axios from '@/axios-config';
 import { ElAvatar, ElImage, ElLink } from 'element-plus';
 import { Link } from "@element-plus/icons";
 
@@ -56,18 +57,18 @@ export default {
     },
     methods: {
         getFileUrl(content) {
-            const regex = /you can download the file on (http:\/\/localhost:8000\/static\/files\/\S+)/;
+            const regex = /you can download the file on (\/static\/files\/\S+)/;
             const match = content.match(regex);
             if (match) {
                 console.log(match[1]); // 输出匹配到的URL
-                return match[1]; // 返回匹配到的完整URL
+                return axios.defaults.baseURL + match[1]; // 返回匹配到的完整URL
             }
             return ""; // 如果没有匹配到，返回null
         },
         getFileName(content) {
-            // content中的数据内容是：response.data.data.file_name + ' you can download the file on http://localhost:8000' + response.data.data.file_url
+            // content中的数据内容是：response.data.data.file_name + ' you can download the file on ' + response.data.data.file_url
             // 使用正则表达式匹配出文件的名称
-            const regex = /(.+) you can download the file on http:\/\/localhost:8000\/\S+/g;
+            const regex = /(.+) you can download the file on \/\S+/g;
             return content.replace(regex, '$1');
         },
         getAvatarUrl(avatar) {
@@ -89,7 +90,7 @@ export default {
                 //         return url;
                 //     }
                 // }
-                return 'http://localhost:8000' + avatar;
+                return axios.defaults.baseURL + avatar;
             }
             // 如果头像文件不存在或user.avatar格式不正确，则返回默认的 URL
             console.log('4');
@@ -98,10 +99,10 @@ export default {
         getPicUrl(url) {
             // console.log(url);
             if (url) {
-                return 'http://localhost:8000' + url;
+                return axios.defaults.baseURL + url;
                 // return this.avatarUrl(url);
             }
-            return 'http://localhost:8000/static/avatars/nopic.png';
+            return axios.defaults.baseURL + '/static/avatars/nopic.png';
         }
     }
 }

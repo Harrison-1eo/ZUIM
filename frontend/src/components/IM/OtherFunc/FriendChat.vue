@@ -80,7 +80,7 @@ export default {
             //
             console.log('fetchRoomsWithMembers begin');
             try {
-                const response = await axios.post('http://localhost:8000/api/room/create');
+                const response = await axios.post('/api/room/create');
                 if (response.data.code === 200) {
                     this.rooms = response.data.data;
                     console.log('fetchRoomsWithMembers success');
