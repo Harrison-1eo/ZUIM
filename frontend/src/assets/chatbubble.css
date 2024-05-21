@@ -1,0 +1,65 @@
+.chat-bubble {
+    --chat-bubble-at: 50%;
+    --chat-bubble-background-color: #fff;
+    --chat-bubble-border-color: #A9A9A9;
+    --chat-bubble-text-color: #000;
+    max-width: 12rem;
+    min-width: 1rem;
+    width: fit-content;
+    padding: 6px;
+    background-color: var(--chat-bubble-background-color);
+    border: 1px solid var(--chat-bubble-border-color);
+    border-radius: 10px;
+    position: relative;
+    margin: 10px 0;
+    color: var(--chat-bubble-text-color);
+}
+.chat-bubble.chat-bubble-top {
+    --chat-bubble-at: 1em;
+}
+.chat-bubble.chat-bubble-bottom {
+    --chat-bubble-at: calc(100% - 1em);
+}
+.chat-bubble::before {
+    content: '';
+    position: absolute;
+    width: 0.5rem;
+    height: 1rem;
+}
+.chat-bubble::after {
+    content: '';
+    position: absolute;
+    width: 0.5rem;
+    height: 1rem;
+}
+.chat-bubble.chat-bubble-from-left::before {
+    background-color: var(--chat-bubble-border-color);
+    top: calc(var(--chat-bubble-at) - 0.5rem);
+    left: -0.5rem;
+    clip-path: polygon(0 50%, 100% 0, 100% 100%);
+}
+.chat-bubble.chat-bubble-from-left::after {
+    background-color: var(--chat-bubble-background-color);
+    top: calc(var(--chat-bubble-at) - 0.5rem);
+    left: calc(-0.5rem + 1.3px);
+    clip-path: polygon(0 50%, 100% 0, 100% 100%);
+}
+.chat-bubble.chat-bubble-from-right::before {
+  background-color: var(--chat-bubble-border-color);
+    top: calc(var(--chat-bubble-at) - 0.5rem);
+    right: -0.5rem;
+    clip-path: polygon(100% 50%, 0 0, 0 100%);
+}
+.chat-bubble.chat-bubble-from-right::after {
+  background-color: var(--chat-bubble-background-color);
+    top: calc(var(--chat-bubble-at) - 0.5rem);
+    right: calc(-0.5rem + 1.3px);
+    clip-path: polygon(100% 50%, 0 0, 0 100%);
+}
+.chat-bubble.chat-bubble-from-left {
+    margin-left: 10px;
+}
+.chat-bubble.chat-bubble-from-right {
+    margin-left: auto;
+    margin-right: 10px;
+}

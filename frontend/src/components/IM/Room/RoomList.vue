@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import axios from '@/axios-config';
+import axios_config from "@/utils/axios-config";
 import RoomChat from "@/components/IM/Room/RoomChat.vue";
 import RoomDrawer from "@/components/IM/Room/RoomDrawer.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -94,7 +94,7 @@ export default {
         },
         async createRoom(name) {
             try {
-                const response = await axios.post('/api/room/create',
+                const response = await axios_config.post('/api/room/create',
                     {
                         'name': name,
                         'description': ''
@@ -114,7 +114,7 @@ export default {
         },
         async fetchRooms() {
             try {
-                const response = await axios.get(
+                const response = await axios_config.get(
                     '/api/room/list',
                 );
                 this.rooms = response.data.data; // 假设返回的数据是聊天室数组

@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import axios from '@/axios-config';
+import axios_config from "@/utils/axios-config";
 import RoomDrawer from "@/components/IM/Room/RoomDrawer.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 
@@ -80,7 +80,7 @@ export default {
             //
             console.log('fetchRoomsWithMembers begin');
             try {
-                const response = await axios.post('/api/room/create');
+                const response = await axios_config.post('/api/room/create');
                 if (response.data.code === 200) {
                     this.rooms = response.data.data;
                     console.log('fetchRoomsWithMembers success');
@@ -94,7 +94,7 @@ export default {
             }
         },
         fetchRoomInfo(roomID) {
-            axios.get('/api/room/info', {
+            axios_config.get('/api/room/info', {
                 params: {
                     roomID: roomID
                 }

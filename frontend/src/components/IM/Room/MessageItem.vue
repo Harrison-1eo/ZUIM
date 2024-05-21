@@ -1,40 +1,57 @@
 <template>
+    <!--  消息显示框：如果是用户发送的消息，则显示在右侧，否则显示在左侧  -->
     <div class="message-item" :class="{ 'message-from-user': isSenderUser }">
-        <el-avatar :src="getAvatarUrl(message.sender_avatar)"></el-avatar>
+        <!--  头像显示  -->
+        <el-avatar :src="getAvatarUrl(message.sender_avatar)" style="margin-top: 20px"></el-avatar>
+        <!--  消息内容显示：包含发送者名称、消息内容  -->
         <div class="message-content">
+            <!--  用户名称显示  -->
             <div :class="{'sender-name-from-user': isSenderUser, 'sender-name': !isSenderUser}">
                 {{ isSenderUser ? '我' : message.sender_name || 'No sender-name'}}
             </div>
-            <!--      文本显示 -->
-            <div v-if="message.type === 'text'" class="text-message">
-                {{ message.content }}
-            </div>
-            <!--      图片显示 -->
-            <div v-else-if="message.type === 'image'" class="image-message">
-              <el-image :src="getPicUrl(message.content)"
-                        fit="cover"
-                        :previewSrcList="[getPicUrl(message.content)]"
-                        style="width: 200px; height: auto; display: block;"
-              ></el-image>
-            </div>
-            <!--      文件显示 -->
-            <div v-else-if="message.type === 'file'" class="file-message">
-                <el-icon>
-                  <Link />
-                </el-icon>
-                <el-link :href="getFileUrl(message.content)" target="_blank">
-                  下载文件：{{ this.getFileName(message.content) }}
-                </el-link>
-            </div>
 
+            <!--  消息内容显示  -->
+            <div class="chat-bubble chat-bubble-top"
+                 :class="isSenderUser ? 'chat-bubble-from-right' : 'chat-bubble-from-left'"
+                 style="--chat-bubble-background-color: #95EC69;
+                    --chat-bubble-border-color: rgba(0, 0, 0, 0);
+                    --chat-bubble-text-color: #000">
+
+                <!--      文本显示 -->
+                <!--            <div v-if="message.type === 'text'" class="text-message">-->
+                <div v-if="message.type === 'text'">
+                    {{ message.content }}
+                </div>
+                <!--      图片显示 -->
+                <!--            <div v-else-if="message.type === 'image'" class="image-message">-->
+                <div v-else-if="message.type === 'image'">
+                    <el-image :src="getPicUrl(message.content)"
+                              fit="contain"
+                              :previewSrcList="[getPicUrl(message.content)]"
+                              style="height: auto; display: block;"
+                    ></el-image>
+                </div>
+                <!--      文件显示 -->
+                <!--            <div v-else-if="message.type === 'file'" class="file-message file-message-link">-->
+                <div v-else-if="message.type === 'file'" class="file-message-link">
+                    <el-icon>
+                        <Link />
+                    </el-icon>
+                    <el-link :href="getFileUrl(message.content)" target="_blank">
+                        下载文件：{{ this.getFileName(message.content) }}
+                    </el-link>
+                </div>
+
+            </div>
         </div>
     </div>
 </template>
 
 <script>
-import axios from '@/axios-config';
 import { ElAvatar, ElImage, ElLink } from 'element-plus';
 import { Link } from "@element-plus/icons";
+import backendBaseUrl from "@/utils/base-url-setting";
+import "@/assets/chatbubble.css";
 
 export default {
     components: {
@@ -61,7 +78,7 @@ export default {
             const match = content.match(regex);
             if (match) {
                 console.log(match[1]); // 输出匹配到的URL
-                return axios.defaults.baseURL + match[1]; // 返回匹配到的完整URL
+                return backendBaseUrl + match[1]; // 返回匹配到的完整URL
             }
             return ""; // 如果没有匹配到，返回null
         },
@@ -79,18 +96,7 @@ export default {
                 console.log('1');
                 return 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png';
             } else if (typeof avatar === 'string') {
-                // ？？？不能从前端获取用户头像，总不能访问网页时将所有用户头像都下载下来吧
-                // 如果 user.avatar 是字符串，则尝试查找对应的头像文件
-                // const formats = ['png', 'jpg', 'jpeg'];
-                // console.log('2');
-                // for (const format of formats) {
-                //     const url = require(`@/assets/avatar/${avatar}.${format}`);
-                //     if (url) {
-                //         console.log('3');
-                //         return url;
-                //     }
-                // }
-                return axios.defaults.baseURL + avatar;
+                return backendBaseUrl + avatar;
             }
             // 如果头像文件不存在或user.avatar格式不正确，则返回默认的 URL
             console.log('4');
@@ -99,10 +105,10 @@ export default {
         getPicUrl(url) {
             // console.log(url);
             if (url) {
-                return axios.defaults.baseURL + url;
+                return backendBaseUrl + url;
                 // return this.avatarUrl(url);
             }
-            return axios.defaults.baseURL + '/static/avatars/nopic.png';
+            return backendBaseUrl + '/static/avatars/nopic.png';
         }
     }
 }
@@ -111,6 +117,7 @@ export default {
 <style scoped>
 .message-item {
     display: flex;
+    flex-direction: row;
     align-items: flex-start;
     margin: 10px;
 }
@@ -118,13 +125,16 @@ export default {
     flex-direction: row-reverse;
 }
 .message-content {
-    margin-left: 10px;
-    margin-right: 10px;
+    display: flex;
+    flex-direction: column;
+
 }
 .sender-name {
+    margin-left: 10px;
     font-weight: bold;
 }
 .sender-name-from-user {
+    margin-right: 10px;
     font-weight: bold;
     text-align: right;
 }
@@ -139,7 +149,7 @@ export default {
     padding: 5px 10px 5px 10px;
 }
 
-.file-message {
+.file-message-link {
     display: flex;
     align-items: center;
 }

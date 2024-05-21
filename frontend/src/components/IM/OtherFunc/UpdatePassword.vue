@@ -33,7 +33,7 @@
 </style>
 
 <script>
-import axios from "@/axios-config";
+import axios_config from "@/utils/axios-config";
 import {ElMessage} from "element-plus";
 
 export default {
@@ -94,7 +94,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate().then(valid => {
         if (valid) {
-          axios.post('/api/user/update_password', {
+          axios_config.post('/api/user/update_password', {
             username: JSON.parse(localStorage.getItem('user')),
             old_password: this.ruleForm.oriPass,
             new_password: this.ruleForm.pass

@@ -32,7 +32,7 @@ func SetupRouter() *gin.Engine {
 	}))
 
 	// Base64解码中间件
-	r.Use(middlewares.Base64DecodeMiddleware())
+	//r.Use(middlewares.CipherDecryptMiddleware())
 
 	// 用户注册和登录路由
 	r.POST("/register", controllers.Register)
@@ -42,6 +42,7 @@ func SetupRouter() *gin.Engine {
 	// 之后的操作需要用户认证，经过AuthCheck中间件
 	api := r.Group("/api")
 	api.Use(middlewares.AuthMiddleware())
+	api.Use(middlewares.CipherDecryptMiddleware())
 
 	// 静态文件路由
 	r.Static("/static", "./static")

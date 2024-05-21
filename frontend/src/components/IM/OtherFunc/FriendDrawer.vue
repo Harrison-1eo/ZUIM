@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import axios from "@/axios-config";
+import axios_config from "@/utils/axios-config";
 import { descriptionProps, ElMessage, ElMessageBox } from "element-plus";
 import store from "@/store/store";
 export default {
@@ -65,7 +65,7 @@ export default {
             const description = "chat with " + username;
             const roomname = "chat with " + ID;
             try {
-                const response = await axios.post('/api/room/create', {
+                const response = await axios_config.post('/api/room/create', {
                     'name': roomname,
                     'description': description,
                 },
@@ -79,7 +79,7 @@ export default {
                 }
                 this.roomID = response.data.data.ID;
                 // 把他加入到聊天室中
-                const response2 = await axios.post('/api/room/add_user', {
+                const response2 = await axios_config.post('/api/room/add_user', {
                     'room_id': response.data.data.ID,
                     'user_name': username,
                     'role': 'member'
@@ -105,7 +105,7 @@ export default {
         async fetchRoomUsers() {
             // 获取房间成员列表
             try {
-                const response = await axios.get('/api/room/members?room_id=' + this.roomID);
+                const response = await axios_config.get('/api/room/members?room_id=' + this.roomID);
 
                 if (response.data.code === 0) {
                     this.roomUsers = response.data.data;
@@ -121,7 +121,7 @@ export default {
         },
         async getHistoryMessages(lastMessageId, limit) {
             try {
-                const response = await axios.post(
+                const response = await axios_config.post(
                     '/api/message/list',
                     {
                         "room_id": this.roomID,

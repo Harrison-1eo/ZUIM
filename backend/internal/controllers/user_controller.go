@@ -7,9 +7,18 @@ import (
 	"backend/internal/repositories"
 	"backend/internal/utils"
 	"errors"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
+
+var UserEncryptKey = map[uint][3]string{}
+var UserCipherBackends = map[uint]*utils.StreamCipher{}
+var UserCipherFrontends = map[uint]*utils.StreamCipher{}
+var UserCipherWebsockets = map[uint]*utils.StreamCipher{}
+
+var keySalts = []string{"backend", "frontend", "websocket"}
 
 var userRepository = repositories.NewUserRepository()
 
@@ -17,14 +26,14 @@ var userRepository = repositories.NewUserRepository()
 func Register(c *gin.Context) {
 	var user models.User
 	if err := c.ShouldBindJSON(&user); err != nil {
-		respond(c, 1, "注册失败，请求错误", nil)
+		respondWithoutEncrypt(c, 1, "注册失败，请求错误", nil)
 		println("// controllers/user_controller.go 注册失败，请求错误 >>> err:", err.Error())
 		return
 	}
 
 	// 检查用户名是否已存在
 	if userRepository.UserExists(user.Username) {
-		respond(c, 1, "注册失败，用户名已存在", nil)
+		respondWithoutEncrypt(c, 1, "注册失败，用户名已存在", nil)
 		println("// controllers/user_controller.go 注册失败，用户名已存在 >>> err:")
 		return
 	}
@@ -32,7 +41,7 @@ func Register(c *gin.Context) {
 	// 创建用户
 	newUser, err := userRepository.CreateUser(user)
 	if err != nil {
-		respond(c, 1, "注册失败，服务器错误", nil)
+		respondWithoutEncrypt(c, 1, "注册失败，服务器错误", nil)
 		println("// controllers/user_controller.go 注册失败，服务器错误 >>> err:", err.Error())
 		return
 	}
@@ -43,7 +52,7 @@ func Register(c *gin.Context) {
 	})
 
 	if err != nil {
-		respond(c, 1, "注册失败，服务器错误", nil)
+		respondWithoutEncrypt(c, 1, "注册失败，服务器错误", nil)
 		println("// controllers/user_controller.go 注册失败，服务器错误 >>> err:", err.Error())
 		return
 	}
@@ -53,7 +62,7 @@ func Register(c *gin.Context) {
 		Username string `json:"username"`
 	}
 
-	respond(c, 0, "注册成功",
+	respondWithoutEncrypt(c, 0, "注册成功",
 		ResponseType{ID: newUser.ID,
 			Username: newUser.Username})
 }
@@ -62,7 +71,7 @@ func Register(c *gin.Context) {
 func Login(c *gin.Context) {
 	var user models.User
 	if err := c.ShouldBindJSON(&user); err != nil {
-		respond(c, 1, "登录失败，请求错误", nil)
+		respondWithoutEncrypt(c, 1, "登录失败，请求错误", nil)
 		println("// controllers/user_controller.go 登录失败，请求错误 >>> err:", err.Error())
 		return
 	}
@@ -70,16 +79,8 @@ func Login(c *gin.Context) {
 	// 验证用户登录信息
 	authenticatedUser, err := userRepository.AuthenticateUser(user.Username, user.Password)
 	if err != nil {
-		respond(c, 1, "登录失败，用户名或密码错误", nil)
+		respondWithoutEncrypt(c, 1, "登录失败，用户名或密码错误", nil)
 		println("// controllers/user_controller.go 登录失败，用户名或密码错误 >>> err:", err.Error())
-		return
-	}
-
-	// 生成JWT令牌
-	token, err := utils.CreateToken(authenticatedUser.ID)
-	if err != nil {
-		respond(c, 1, "登录失败，服务器错误", nil)
-		println("// controllers/user_controller.go 登录失败，服务器错误 >>> err:", err.Error())
 		return
 	}
 
@@ -91,16 +92,44 @@ func Login(c *gin.Context) {
 				Username: authenticatedUser.Username,
 			})
 			if err != nil {
-				respond(c, 1, "登录失败，服务器错误", nil)
+				respondWithoutEncrypt(c, 1, "登录失败，服务器错误", nil)
 				println("// controllers/user_controller.go 登录失败，服务器错误 >>> err:", err.Error())
 				return
 			}
 		} else {
-			respond(c, 1, "登录失败，服务器错误", nil)
+			respondWithoutEncrypt(c, 1, "登录失败，服务器错误", nil)
 			println("// controllers/user_controller.go 登录失败，服务器错误 >>> err:", err.Error())
 			return
 		}
 	}
+
+	// 生成JWT令牌
+	token, err := utils.CreateToken(authenticatedUser.ID)
+	if err != nil {
+		respondWithoutEncrypt(c, 1, "登录失败，服务器错误", nil)
+		println("// controllers/user_controller.go 登录失败，服务器错误 >>> err:", err.Error())
+		return
+	}
+
+	println("create token: ", token)
+
+	var userKeys [3]string
+	for index, salt := range keySalts {
+		k := token + utils.Sha256OfString(authenticatedUser.Password) + strconv.Itoa(int(authenticatedUser.ID)) + salt
+		userKeys[index] = (utils.Sha256OfString(k))
+	}
+	UserEncryptKey[authenticatedUser.ID] = userKeys
+
+	UserCipherBackends[authenticatedUser.ID] = utils.NewStreamCipher(userKeys[0])
+	UserCipherFrontends[authenticatedUser.ID] = utils.NewStreamCipher(userKeys[1])
+	UserCipherWebsockets[authenticatedUser.ID] = utils.NewStreamCipher(userKeys[2])
+
+	println(" ++++ UserEncryptKey ++++ ")
+	println("UserEncryptKey[authenticatedUser.ID]: ", authenticatedUser.ID)
+	println(UserEncryptKey[authenticatedUser.ID][0], UserCipherBackends[authenticatedUser.ID].Key)
+	println(UserEncryptKey[authenticatedUser.ID][1], UserCipherFrontends[authenticatedUser.ID].Key)
+	println(UserEncryptKey[authenticatedUser.ID][2], UserCipherWebsockets[authenticatedUser.ID].Key)
+	println(" ++++ UserEncryptKey ++++ \n")
 
 	type ResponseType struct {
 		ID       uint   `json:"ID"`
@@ -110,7 +139,7 @@ func Login(c *gin.Context) {
 	logIn := ResponseType{ID: authenticatedUser.ID,
 		Username: authenticatedUser.Username}
 
-	respond(c, 0, "登录成功", gin.H{"user": logIn, "token": token})
+	respondWithoutEncrypt(c, 0, "登录成功", gin.H{"user": logIn, "token": token})
 }
 
 func UpdatePassword(c *gin.Context) {

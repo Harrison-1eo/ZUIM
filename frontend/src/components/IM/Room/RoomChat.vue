@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import axios from "@/axios-config";
+import axios_config from "@/utils/axios-config";
 import MessageItem from "@/components/IM/Room/MessageItem.vue";
 import ChatInput from "@/components/IM/Room/ChatInput.vue";
 import { ElMessage } from "element-plus";
@@ -120,7 +120,7 @@ export default {
       // 用于获取历史消息
       async getHistoryMessages(lastMessageId, limit) {
           try {
-              const response = await axios.post(
+              const response = await axios_config.post(
                   '/api/message/list',
                   {
                       "room_id": this.roomID,

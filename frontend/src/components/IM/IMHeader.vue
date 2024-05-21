@@ -18,9 +18,7 @@ export default {
   methods: {
     logout() {
       ElMessage.success('登出成功');
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
-      localStorage.removeItem('userId')
+      localStorage.clear();
       this.$router.push('/login')
     }
   }

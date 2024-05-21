@@ -30,7 +30,7 @@
             <!--      </p>-->
             <el-row>
                 <el-col v-for="user in roomUsers" :key="user.id" :span="12" style="display:flex; text-align: center; margin: 10px 0;">
-                    <el-avatar :src="avatarUrl(user)" :size="40"></el-avatar>
+                    <el-avatar :src="avatarUrl(user.avatar)" :size="40"></el-avatar>
                     <span style="margin: auto auto auto 10px;">{{ user.username }}</span>
                 </el-col>
             </el-row>
@@ -50,9 +50,9 @@
 
 
 <script>
-import axios from "@/axios-config";
+import axios_config from "@/utils/axios-config";
 import { ElMessage, ElMessageBox } from "element-plus";
-import dick1 from '../../../assets/avatar/dick1.png';
+import backendBaseUrl from "@/utils/base-url-setting";
 
 export default {
     name: 'RoomDrawer',
@@ -68,7 +68,6 @@ export default {
     },
     data() {
         return {
-            dick1: dick1,
             roomUsers: [],
         }
     },
@@ -102,7 +101,7 @@ export default {
         },
         async addUser(name) {
             try {
-                const response = await axios.post('/api/room/add_user',
+                const response = await axios_config.post('/api/room/add_user',
                     {
                         'room_id': this.roomID,
                         'user_name': name,
@@ -125,7 +124,7 @@ export default {
         },
         async deleteRoom() {
             try {
-                const response = await axios.delete(
+                const response = await axios_config.delete(
                     '/api/room/delete?room_id=' + this.roomID
                 );
                 console.log('Delete room:', response.data);
@@ -144,7 +143,7 @@ export default {
         async fetchRoomUsers() {
             // 获取房间成员列表
             try {
-                const response = await axios.get('/api/room/members?room_id=' + this.roomID);
+                const response = await axios_config.get('/api/room/members?room_id=' + this.roomID);
 
                 if (response.data.code === 0) {
                     this.roomUsers = response.data.data;
@@ -158,28 +157,12 @@ export default {
 
 
         },
-        avatarUrl(user) {
-            console.log(user);
-            console.log(user.avatar);
-            if (!user.avatar) {
-                // 如果 user.avatar 为 null，返回默认的 URL
-                console.log('1');
-                return 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png';
-            } else if (typeof user.avatar === 'string') {
-                // 如果 user.avatar 是字符串，则尝试查找对应的头像文件
-                const formats = ['png', 'jpg', 'jpeg'];
-                console.log('2');
-                for (const format of formats) {
-                    const url = require(`@/assets/avatar/${user.avatar}.${format}`);
-                    if (url) {
-                        console.log('3');
-                        return url;
-                    }
-                }
+        avatarUrl(url) {
+            if (url) {
+                return backendBaseUrl + url;
+            } else {
+                return backendBaseUrl + '/static/avatars/nopic.png';
             }
-            // 如果头像文件不存在或user.avatar格式不正确，则返回默认的 URL
-            console.log('4');
-            return 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png';
         }
 
 

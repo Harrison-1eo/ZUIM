@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import axios from "@/axios-config";
+import axios_origin from "@/utils/axios-origin";
 import { ElMessage } from "element-plus";
 
 export default {
@@ -54,7 +54,7 @@ export default {
                 return;
             }
             try {
-                const res = await axios.post('/register', {
+                const res = await axios_origin.post('/register', {
                     'username': this.registerUsername,
                     'password': this.registerPassword
                 });

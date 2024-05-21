@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import axios from "@/axios-config";
+import axios_config from "@/utils/axios-config";
 import {ElMessage} from "element-plus";
 import {FolderAdd, Picture} from "@element-plus/icons";
 
@@ -118,7 +118,7 @@ export default {
                 formData.append('room_id', this.roomId);
                 formData.append('file', file);
 
-                const response = await axios.post('/api/message/upload', formData, {
+                const response = await axios_config.post('/api/message/upload', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }

@@ -1,36 +1,54 @@
-const crypto = require('crypto');
-
 // StreamCipher 类用于持有密钥和位置
-class StreamCipher {
+export default class StreamCipher {
     constructor(hexKey) {
+        this.hexKey = hexKey;
+        this.key = new Uint8Array(32); // 密钥数组长度为32，因为每个十六进制字符代表4位，64个字符代表256位
+        this.position = 0;
+        this.init(hexKey);
+    }
+
+    init(hexKey) {
         if (hexKey.length !== 64) {
             throw new Error('密钥必须是64个字符的十六进制字符串');
         }
 
-        this.key = [];
         for (let i = 0; i < 64; i += 2) {
-            this.key.push(parseInt(hexKey.slice(i, i + 2), 16));
+            this.key[i / 2] = parseInt(hexKey.slice(i, i + 2), 16);
         }
         this.position = 0;
     }
 
     // encrypt 方法用于加密明文，输出Base64编码的密文
     encrypt(plainText) {
-        const plainTextBytes = Buffer.from(plainText);
-        const cipherTextBytes = Buffer.alloc(plainTextBytes.length);
+        const originPosition = this.position;
+
+        console.log("encrypt.js  加密前数据:", plainText);
+
+        const plainTextBytes = new TextEncoder().encode(plainText);
+        const cipherTextBytes = new Uint8Array(plainTextBytes.length);
 
         for (let i = 0; i < plainTextBytes.length; i++) {
             cipherTextBytes[i] = plainTextBytes[i] ^ this.key[this.position];
             this.position = (this.position + 1) % this.key.length;
         }
 
-        return cipherTextBytes.toString('base64');
+        console.log("encrypt.js  加密后数据:", cipherTextBytes);
+
+        return {
+            cipherText: btoa(String.fromCharCode.apply(null, cipherTextBytes)),
+            position: originPosition
+        };
     }
 
     // decrypt 方法用于解密，输入为Base64编码的密文，输出为明文字符串
-    decrypt(cipherText) {
-        const cipherTextBytes = Buffer.from(cipherText, 'base64');
-        const plainTextBytes = Buffer.alloc(cipherTextBytes.length);
+    decrypt(cipherText, position) {
+        if (position !== this.position) {
+            console.log('解密位置不匹配，已重置位置', position, this.position);
+            this.position = position;
+        }
+
+        const cipherTextBytes = Uint8Array.from(atob(cipherText), c => c.charCodeAt(0));
+        const plainTextBytes = new Uint8Array(cipherTextBytes.length);
 
         for (let i = 0; i < cipherTextBytes.length; i++) {
             const keyUnit = this.key[this.position];
@@ -40,21 +58,12 @@ class StreamCipher {
             this.position = (this.position + 1) % this.key.length;
         }
 
-        return plainTextBytes.toString();
+        return new TextDecoder().decode(plainTextBytes);
     }
 }
 
-async function main() {
-    const hexKey = '0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF';
-    const cipher = new StreamCipher(hexKey);
-    const plainText = 'Hello, world!';
-    const encryptedText = cipher.encrypt(plainText);
+const userCipherFrontend = new StreamCipher('0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF');
+const userCipherBackend = new StreamCipher('0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF');
+const userCipherWebsocket = new StreamCipher('0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF');
 
-    const cipher2 = new StreamCipher(hexKey);
-    const decryptedText = cipher2.decrypt(encryptedText);
-
-    console.log('Encrypted Text:', encryptedText);
-    console.log('Decrypted Text:', decryptedText);
-}
-
-main();
+export {userCipherFrontend, userCipherBackend, userCipherWebsocket};

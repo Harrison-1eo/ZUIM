@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"errors"
-	"fmt"
 )
 
 // StreamCipher struct to hold the key and position
@@ -76,31 +75,32 @@ func (sc *StreamCipher) Decrypt(encryptedText string) (string, error) {
 	return string(plainTextBytes), nil
 }
 
-func main() {
-	hexKey := "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"
-	cipher, err := NewStreamCipher(hexKey)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-	plainText := "Hello, world!"
-	encryptedText, err := cipher.Encrypt(plainText)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-
-	cipher2, err := NewStreamCipher(hexKey)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-	decryptedText, err := cipher2.Decrypt(encryptedText)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-
-	fmt.Println("Encrypted Text:", encryptedText)
-	fmt.Println("Decrypted Text:", decryptedText)
-}
+//
+//func main() {
+//	hexKey := "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"
+//	cipher, err := NewStreamCipher(hexKey)
+//	if err != nil {
+//		fmt.Println("Error:", err)
+//		return
+//	}
+//	plainText := "Hello, world!"
+//	encryptedText, err := cipher.Encrypt(plainText)
+//	if err != nil {
+//		fmt.Println("Error:", err)
+//		return
+//	}
+//
+//	cipher2, err := NewStreamCipher(hexKey)
+//	if err != nil {
+//		fmt.Println("Error:", err)
+//		return
+//	}
+//	decryptedText, err := cipher2.Decrypt(encryptedText)
+//	if err != nil {
+//		fmt.Println("Error:", err)
+//		return
+//	}
+//
+//	fmt.Println("Encrypted Text:", encryptedText)
+//	fmt.Println("Decrypted Text:", decryptedText)
+//}

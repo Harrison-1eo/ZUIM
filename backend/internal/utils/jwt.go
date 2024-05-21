@@ -12,7 +12,7 @@ import (
 const JWT_PREFIX = "Bearer"
 
 // JWT_SECRET JWT 密钥
-const JWT_SECRET = "your-secret-key"
+const JWT_SECRET = "your-secret-Key"
 
 // CreateToken 生成JWT令牌
 func CreateToken(userID uint) (string, error) {
@@ -45,7 +45,7 @@ func ValidateToken(tokenString string) (uint, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, jwt.ErrSignatureInvalid
 		}
-		return []byte("your-secret-key"), nil
+		return []byte("your-secret-Key"), nil
 	})
 
 	var ve *jwt.ValidationError

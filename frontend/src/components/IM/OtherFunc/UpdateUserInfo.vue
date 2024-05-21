@@ -11,13 +11,15 @@
 
 
 <script>
-import axios from "@/axios-config";
+import axios_config from "@/utils/axios-config";
+import backendBaseUrl from "@/utils/base-url-setting";
+
 import { ElMessage } from "element-plus";
 
 export default {
     data() {
         return {
-            uploadUrl: axios.defaults.baseURL + '/api/user/upload_avatar',
+            uploadUrl: backendBaseUrl + '/api/user/upload_avatar',
             userInfo: {},
             token: localStorage.getItem('token'),
             avatarUrl: ''
@@ -30,7 +32,7 @@ export default {
     methods: {
         async getUserInfo() {
             try {
-                const response = await axios.get('/api/user/my');
+                const response = await axios_config.get('/api/user/my');
                 if (response.data.code === 0) {
                     this.userInfo = response.data.data;
                 } else {
@@ -41,7 +43,7 @@ export default {
                 console.error('Error fetching user information:', error);
                 ElMessage.error('获取用户信息失败');
             }
-            this.avatarUrl = this.userInfo.avatar ? axios.defaults.baseURL + this.userInfo.avatar : '';
+            this.avatarUrl = this.userInfo.avatar ? backendBaseUrl + this.userInfo.avatar : backendBaseUrl + '/static/avatars/nopic.png';
         },
         handleAvatarError(err, file, fileList) {
             console.error('上传头像失败:', err, file, fileList);
@@ -55,7 +57,7 @@ export default {
             if (res.code === 0) {
                 ElMessage.success('上传头像成功');
                 this.userInfo = res.data;
-                this.avatarUrl = this.userInfo.avatar ? axios.defaults.baseURL + this.userInfo.avatar : '';
+                this.avatarUrl = this.userInfo.avatar ? backendBaseUrl + this.userInfo.avatar : '';
                 var temp = {
                     'id': this.userInfo.ID,
                     'avatar': this.avatarUrl

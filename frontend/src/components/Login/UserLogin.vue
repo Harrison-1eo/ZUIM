@@ -19,7 +19,8 @@
 </template>
 
 <script>
-import axios from "@/axios-config";
+import axios_origin from "@/utils/axios-origin";
+import {userCipherFrontend, userCipherBackend, userCipherWebsocket} from "@/utils/encrypt";
 import { ElMessage } from "element-plus";
 
 export default {
@@ -45,18 +46,35 @@ export default {
                 return;
             }
             try {
-                const res = await axios.post('/login', {
+                const res = await axios_origin.post('/login', {
                     'username': this.loginUsername,
                     'password': this.loginPassword
                 });
                 if (res.status === 200) {
                     if (res.data.code === 0) {
                         // Save token and user information to local storage or Vuex
+                        console.log(res.data)
                         localStorage.setItem('token', res.data.data.token);
                         localStorage.setItem('user', JSON.stringify(res.data.data.user.username));
                         localStorage.setItem('userId', JSON.stringify(res.data.data.user.ID));
                         this.$router.push('/im');
-                        ElMessage.success('登录成功');
+
+                        let salts = ['backend', 'frontend', 'websocket']
+                        let keys = []
+                        for (let i = 0; i < salts.length; i++) {
+                            const sha256Password = require('js-sha256').sha256(this.loginPassword);
+                            const k = res.data.data.token + sha256Password + res.data.data.user.ID + salts[i];
+                            const kk = require('js-sha256').sha256(k);
+                            localStorage.setItem(salts[i] + 'Password', kk);
+                            keys.push(kk);
+                            console.log(salts[i] + 'Password >>> ', kk);
+                        }
+
+                        userCipherBackend.init(keys[0]);
+                        userCipherFrontend.init(keys[1]);
+                        userCipherWebsocket.init(keys[2]);
+
+                      ElMessage.success('登录成功');
                     } else {
                         ElMessage.error(res.data.msg);
                     }

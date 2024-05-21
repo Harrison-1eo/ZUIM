@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import axios from "@/axios-config";
+import axios_config from "@/utils/axios-config";
 import FriendDrawer from "@/components/IM/OtherFunc/FriendDrawer.vue";
 import FriendChat from "@/components/IM/OtherFunc/FriendChat.vue";
 export default {
@@ -67,7 +67,7 @@ export default {
         },
         async fetchFriends() {
             try {
-                const response = await axios.get('/api/user/friends');
+                const response = await axios_config.get('/api/user/friends');
                 this.friends = response.data.data;
                 console.log(this.friends);
             } catch (error) {

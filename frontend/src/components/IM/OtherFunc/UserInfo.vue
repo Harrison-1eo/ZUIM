@@ -22,13 +22,14 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import {ElCard, ElAvatar, ElDescriptions, ElDescriptionsItem, ElDivider, ElMessage} from 'element-plus';
-import axios from '@/axios-config';
+import axios_config from "@/utils/axios-config";
+import backendBaseUrl from "@/utils/base-url-setting";
 
 const userInfo = ref({});
 
 onMounted(async () => {
   try {
-    const response = await axios.get('/api/user/my');
+    const response = await axios_config.get('/api/user/my');
     if (response.data.code === 0) {
       userInfo.value = response.data.data;
     } else {
@@ -47,10 +48,11 @@ function formatDate(dateString) {
 }
 
 function getAvatar(url) {
+    console.log('get avatar', backendBaseUrl.baseURL, url)
   if (url) {
-    return axios.defaults.baseURL  + url;
+    return backendBaseUrl  + url;
   } else {
-    return axios.defaults.baseURL + '/static/avatars/nopic.png';
+    return backendBaseUrl + '/static/avatars/nopic.png';
   }
 }
 </script>

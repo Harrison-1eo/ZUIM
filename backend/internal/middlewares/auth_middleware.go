@@ -33,7 +33,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, jwt.ErrSignatureInvalid
 			}
-			return []byte("your-secret-key"), nil
+			return []byte("your-secret-Key"), nil
 		})
 
 		var ve *jwt.ValidationError
@@ -49,7 +49,7 @@ func AuthMiddleware() gin.HandlerFunc {
 				return
 			}
 		} else if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid JWT token"})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid JWT token format"})
 			return
 		} else if !token.Valid {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired JWT token"})
