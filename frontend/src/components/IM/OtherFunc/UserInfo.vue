@@ -23,7 +23,7 @@
 import { ref, onMounted } from 'vue';
 import {ElCard, ElAvatar, ElDescriptions, ElDescriptionsItem, ElDivider, ElMessage} from 'element-plus';
 import axios_config from "@/utils/axios-config";
-import backendBaseUrl from "@/utils/base-url-setting";
+import {backendBaseUrl} from "@/utils/base-url-setting";
 
 const userInfo = ref({});
 

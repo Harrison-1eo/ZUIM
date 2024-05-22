@@ -52,7 +52,7 @@
 <script>
 import axios_config from "@/utils/axios-config";
 import { ElMessage, ElMessageBox } from "element-plus";
-import backendBaseUrl from "@/utils/base-url-setting";
+import {backendBaseUrl} from "@/utils/base-url-setting";
 
 export default {
     name: 'RoomDrawer',

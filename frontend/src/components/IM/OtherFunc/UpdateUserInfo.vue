@@ -12,7 +12,7 @@
 
 <script>
 import axios_config from "@/utils/axios-config";
-import backendBaseUrl from "@/utils/base-url-setting";
+import { backendBaseUrl } from "@/utils/base-url-setting";
 
 import { ElMessage } from "element-plus";
 

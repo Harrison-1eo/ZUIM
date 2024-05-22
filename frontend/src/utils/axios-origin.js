@@ -1,24 +1,20 @@
 import axios from 'axios';
 import {ElMessage} from "element-plus";
-import backendBaseUrl from "@/utils/base-url-setting";
+import {backendBaseUrl} from "@/utils/base-url-setting";
+
+console.log('backendBaseUrl >>> ', backendBaseUrl);
 
 const axios_origin = axios.create({
     baseURL: backendBaseUrl,
-    timeout: 3000
+    timeout: 10000
 });
 
-axios_origin.interceptors.response.use(
-    response => {
-        return response;
+axios_origin.interceptors.request.use(
+    config => {
+        console.log('URL >>> ', config.url);
+        return config;
     },
     error => {
-        if (error.response.status === 401) {
-            ElMessage.error('登录无效或过期，请重新登录');
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            localStorage.removeItem('userId');
-            window.location.href = '/login';
-        }
         return Promise.reject(error);
     }
 );

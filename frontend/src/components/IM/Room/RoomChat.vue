@@ -23,7 +23,7 @@ import MessageItem from "@/components/IM/Room/MessageItem.vue";
 import ChatInput from "@/components/IM/Room/ChatInput.vue";
 import { ElMessage } from "element-plus";
 import WebsocketClass from "@/utils/websocket";
-import { wsBaseUrl } from "@/utils/base-url-setting";
+import {wsBaseUrl} from "@/utils/base-url-setting";
 
 export default {
     name: 'RoomChat',

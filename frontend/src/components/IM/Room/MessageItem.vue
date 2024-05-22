@@ -50,7 +50,7 @@
 <script>
 import { ElAvatar, ElImage, ElLink } from 'element-plus';
 import { Link } from "@element-plus/icons";
-import backendBaseUrl from "@/utils/base-url-setting";
+import {backendBaseUrl} from "@/utils/base-url-setting";
 import "@/assets/chatbubble.css";
 
 export default {

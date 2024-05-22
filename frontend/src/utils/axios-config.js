@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { ElMessage } from "element-plus";
 import {userCipherFrontend, userCipherBackend} from "@/utils/encrypt";
-import backendBaseUrl from "@/utils/base-url-setting";
+import {backendBaseUrl} from "@/utils/base-url-setting";
 
 const axios_config = axios.create({
     baseURL: backendBaseUrl,
-    timeout: 3000
+    timeout: 10000
 })
 
 // 设置Axios的请求拦截器
