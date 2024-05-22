@@ -62,8 +62,37 @@ export default class StreamCipher {
     }
 }
 
-const userCipherFrontend = new StreamCipher('0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF');
-const userCipherBackend = new StreamCipher('0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF');
-const userCipherWebsocket = new StreamCipher('0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF');
+const defaultKey = '0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF';
+
+// 如果在localStorage中backendPassword存在，则使用backendPassword作为密钥，否则使用默认密钥
+const backendPassword = localStorage.getItem('backendPassword');
+let userCipherBackend;
+if (backendPassword) {
+    console.log('使用localStorage中的backendPassword作为密钥');
+    userCipherBackend = new StreamCipher(backendPassword);
+} else {
+    console.log('使用默认密钥');
+    userCipherBackend = new StreamCipher(defaultKey);
+}
+
+const frontendPassword = localStorage.getItem('frontendPassword');
+let userCipherFrontend;
+if (frontendPassword) {
+    console.log('使用localStorage中的frontendPassword作为密钥');
+    userCipherFrontend = new StreamCipher(frontendPassword);
+} else {
+    console.log('使用默认密钥');
+    userCipherFrontend = new StreamCipher(defaultKey);
+}
+
+const websocketPassword = localStorage.getItem('websocketPassword');
+let userCipherWebsocket;
+if (websocketPassword) {
+    console.log('使用localStorage中的websocketPassword作为密钥');
+    userCipherWebsocket = new StreamCipher(websocketPassword);
+} else {
+    console.log('使用默认密钥');
+    userCipherWebsocket = new StreamCipher(defaultKey);
+}
 
 export {userCipherFrontend, userCipherBackend, userCipherWebsocket};

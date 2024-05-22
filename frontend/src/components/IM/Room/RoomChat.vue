@@ -23,6 +23,7 @@ import MessageItem from "@/components/IM/Room/MessageItem.vue";
 import ChatInput from "@/components/IM/Room/ChatInput.vue";
 import { ElMessage } from "element-plus";
 import WebsocketClass from "@/utils/websocket";
+import { wsBaseUrl } from "@/utils/base-url-setting";
 
 export default {
     name: 'RoomChat',
@@ -41,7 +42,7 @@ export default {
             messages: [], // 用于存储消息列表
             newMessage: '', // 用于绑定输入框的内容
             ws: new WebsocketClass(
-                `ws://localhost:8000/ws/join`,
+                wsBaseUrl,
                 localStorage.getItem('token'),
                 this.addNewMessage,
                 true,
