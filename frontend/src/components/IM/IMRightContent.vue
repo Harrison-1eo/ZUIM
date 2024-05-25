@@ -13,8 +13,7 @@ export default {
 
 <style scoped>
 .im-right-content {
-  //background-color: #d8d8d8;
-
-  padding: 0px;
+    background: linear-gradient(180deg,#f5f4f6,#e6ebf7);
+    padding: 0;
 }
 </style>

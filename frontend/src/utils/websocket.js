@@ -1,3 +1,6 @@
+import {userCipherWebsocketBackend, userCipherWebsocketFrontend} from '@/utils/encrypt.js';
+import {ElMessage} from "element-plus";
+
 export default class WebsocketClass {
     /**
      * @description: 初始化参数
@@ -33,8 +36,17 @@ export default class WebsocketClass {
             if (this.ifENCRYPT) {
                 console.log('WS 收到的数据 ', e.data)
                 let data = JSON.parse(e.data)
-                let decode = JSON.parse(this.textDecoder.decode(Uint8Array.from(atob(data.data), c => c.charCodeAt(0))));
-                data.data = decode
+                // let data = e.data
+                if (data.code === 0) {
+                    try {
+                        data.data.content = userCipherWebsocketBackend.decrypt(data.en_data.data, data.en_data.position)
+                        console.log('解密后的数据', data.data.content)
+                    } catch (e) {
+                        console.log('解密失败：', e)
+                        console.log('解密失败：', data.en_data.data, data.en_data.position)
+                        ElMessage.error('解密失败，请重新登录获取密钥');
+                    }
+                }
                 this.callback(data)
             } else {
                 this.callback(JSON.parse(e.data))
@@ -55,7 +67,38 @@ export default class WebsocketClass {
      * @description: 发送消息
      */
     send(data) {
-        console.log('WS 发送的数据 ', JSON.stringify(data))
+        /*
+        data的格式为：
+        {
+            room_id: 0,
+            type: 'text',
+            content: 'hello'
+         }
+         将data.data进行加密
+         */
+        // console.log('WS 发送的数据 ', JSON.stringify(data))
+        const dd = userCipherWebsocketFrontend.encrypt(data.content);
+        data.content = "";
+        data.en_data = {
+            data: dd.cipherText,
+            position: dd.position,
+            mac: '',
+            length: 0
+        };
+        /*
+        发送的数据格式为：
+        {
+            room_id: 0,
+            type: 'text',
+            data: {
+                data: '加密后的数据',
+                position: '加密位置',
+                mac: '',
+                length: 0
+            }
+         }
+         */
+        console.log('WS 发送的数据 ', data)
         return this.ws.send(JSON.stringify(data))
     }
 
@@ -93,7 +136,7 @@ export default class WebsocketClass {
         const data = {
             room_id: 0,
             type: 'ping',
-            data: 'ping'
+            data: ''
         }
         this.pingInterval = setInterval(() => {
             if (this.status === 1) {

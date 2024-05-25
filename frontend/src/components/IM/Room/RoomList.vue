@@ -3,12 +3,26 @@
 <template>
     <div class="chatroom-container">
         <div class="chat-list">
-            <el-button type="primary" class="new-chat-button" @click="createRoomBox">创建新房间</el-button>
-            <el-menu class="el-menu-vertical-demo">
-                <el-menu-item v-for="room in rooms" :key="room.ID" :index="room.ID" @click="fetchRoomInfo(room.ID)">
-                    {{ room.name }}
-                </el-menu-item>
+            <h2 style="padding-left: 20px">聊天室列表</h2>
+
+            <el-menu class="el-menu-rooms">
+                <el-scrollbar wrap-class="scrollbar-wrapper">
+                    <el-menu-item
+                        class="el-menu-item-button"
+                        v-for="room in rooms"
+                        :key="room.ID"
+                        :index="room.ID"
+                        @click="fetchRoomInfo(room.ID)">
+                        {{ room.name }}
+                    </el-menu-item>
+                </el-scrollbar>
             </el-menu>
+            <el-button
+                type="primary"
+                class="new-chat-button"
+                @click="createRoomBox">
+                创建新房间
+            </el-button>
         </div>
         <div class="chat-details">
             <div class="chat-header">
@@ -148,11 +162,12 @@ export default {
 }
 
 .chat-list {
+    padding: 20px;
     width: 200px;
     display: flex;
-
     flex-direction: column;
-    border-right: 1px solid #ebeef5;
+    border-right: 1px solid #ffffff;
+    background: linear-gradient(180deg,#f0edf7 .03%,#ebeaf5 32.19%,#e8e8f3 68.86%,#e4eaf7 99.12%);
 }
 
 .chat-details {
@@ -174,16 +189,36 @@ export default {
 }
 
 .new-chat-button {
-    margin: 10px;
+    margin: 20px;
     height: 40px;
+    background: linear-gradient(135deg, #897dfb, #3471f6);
+    border: none;
 }
 
-.el-menu-vertical-demo {
+.el-menu-rooms {
     border: none;
     overflow-y: auto;
+    background: none;
+}
+
+.el-menu-item-button {
+    background: none;
+    border-bottom: #333333 1px;
+    border-radius: 10px;
+}
+
+.el-menu-item-button:hover {
+    background: #ffffff;
 }
 
 .more-icon {
     cursor: pointer;
 }
+
+.room-title {
+    margin-left: 20px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
 </style>

@@ -97,6 +97,8 @@ export default {
             }
             // message.data.sender_avatar = this.currentUser.avatar;
             console.log('Received new message:', message);
+            message.data.encryptInfo = message.en_data;
+            message.data.encryptInfo.key = localStorage.getItem('websocketBackendPassword');
             this.messages.push(message.data);
           } else if (message.code === 1) {
               console.error('收到错误消息:', message.msg);
@@ -136,6 +138,10 @@ export default {
                   ElMessage.info('没有更多历史消息了')
                   return;
               }
+              response.data.data.forEach(item => {
+                  item.encryptInfo = response.data.en_data;
+                  item.encryptInfo.key = localStorage.getItem('backendPassword');
+              });
               console.log('Fetched history messages:', response.data.data);
 
               // response.data.data 获取的消息列表ID是从大到小的，需要将其反转
@@ -190,6 +196,7 @@ export default {
 
 <style scoped>
 .chat-box {
+    margin: 0 60px;
     height: calc(100vh - 7em);
     display: flex;
     flex-direction: column;
@@ -208,7 +215,7 @@ export default {
 }
 
 #message-box {
-    height: calc(100% - 72px - 42px); /* 减去头部和输入框的高度 */
+    height: calc(100% - 60px - 52px - 221px); /* 减去头部和输入框的高度 */
 }
 
 .message-inner-list {

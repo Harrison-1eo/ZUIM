@@ -13,12 +13,13 @@ import (
 	"gorm.io/gorm"
 )
 
-var UserEncryptKey = map[uint][3]string{}
+var UserEncryptKey = map[uint][4]string{}
 var UserCipherBackends = map[uint]*utils.StreamCipher{}
 var UserCipherFrontends = map[uint]*utils.StreamCipher{}
-var UserCipherWebsockets = map[uint]*utils.StreamCipher{}
+var UserCipherWebsocketsBackends = map[uint]*utils.StreamCipher{}
+var UserCipherWebsocketsFrontends = map[uint]*utils.StreamCipher{}
 
-var keySalts = []string{"backend", "frontend", "websocket"}
+var keySalts = []string{"backend", "frontend", "websocketBackend", "websocketFrontend"}
 
 var userRepository = repositories.NewUserRepository()
 
@@ -113,7 +114,7 @@ func Login(c *gin.Context) {
 
 	println("create token: ", token)
 
-	var userKeys [3]string
+	var userKeys [4]string
 	for index, salt := range keySalts {
 		k := token + utils.Sha256OfString(authenticatedUser.Password) + strconv.Itoa(int(authenticatedUser.ID)) + salt
 		userKeys[index] = (utils.Sha256OfString(k))
@@ -122,13 +123,15 @@ func Login(c *gin.Context) {
 
 	UserCipherBackends[authenticatedUser.ID] = utils.NewStreamCipher(userKeys[0])
 	UserCipherFrontends[authenticatedUser.ID] = utils.NewStreamCipher(userKeys[1])
-	UserCipherWebsockets[authenticatedUser.ID] = utils.NewStreamCipher(userKeys[2])
+	UserCipherWebsocketsBackends[authenticatedUser.ID] = utils.NewStreamCipher(userKeys[2])
+	UserCipherWebsocketsFrontends[authenticatedUser.ID] = utils.NewStreamCipher(userKeys[3])
 
 	println(" ++++ UserEncryptKey ++++ ")
 	println("UserEncryptKey[authenticatedUser.ID]: ", authenticatedUser.ID)
 	println(UserEncryptKey[authenticatedUser.ID][0], UserCipherBackends[authenticatedUser.ID].Key)
 	println(UserEncryptKey[authenticatedUser.ID][1], UserCipherFrontends[authenticatedUser.ID].Key)
-	println(UserEncryptKey[authenticatedUser.ID][2], UserCipherWebsockets[authenticatedUser.ID].Key)
+	println(UserEncryptKey[authenticatedUser.ID][2], UserCipherWebsocketsBackends[authenticatedUser.ID].Key)
+	println(UserEncryptKey[authenticatedUser.ID][3], UserCipherWebsocketsFrontends[authenticatedUser.ID].Key)
 	println(" ++++ UserEncryptKey ++++ \n")
 
 	type ResponseType struct {

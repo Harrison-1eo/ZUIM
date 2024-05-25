@@ -58,22 +58,31 @@ func WebSocketMessage(c *gin.Context) {
 		var msgGet models.MessageRequestBody
 		err := ws.ReadJSON(&msgGet)
 		if err != nil {
-			respondWebSocket(ws, 1, "读取信息失败", nil)
+			respondWebSocket(userID, ws, 1, "读取信息失败", nil)
 			log.Default().Println("Failed to read message from WebSocket, Breaking loop, err:", err)
 			break
 		}
 
 		// 如果是心跳包，直接返回
 		if msgGet.Type == "ping" {
-			respondWebSocket(ws, 2, "ok", nil)
+			respondWebSocket(userID, ws, 2, "", nil)
 			continue
 		}
 
 		// 检查用户是否在聊天室中
 		if !userRoomRepo.IfUserInRoom(userID, msgGet.RoomID) {
-			respondWebSocket(ws, 1, "当前用户已不在聊天室中", nil)
+			respondWebSocket(userID, ws, 1, "当前用户已不在聊天室中", nil)
 			continue
 		}
+
+		// 对消息解密
+		decodedContent, err := UserCipherWebsocketsFrontends[userID].Decrypt(msgGet.EnData.Data, msgGet.EnData.Position)
+		if err != nil {
+			respondWebSocket(userID, ws, 1, "解密失败", nil)
+			continue
+		}
+
+		msgGet.Content = decodedContent
 
 		message := models.Message{
 			RoomID:   msgGet.RoomID,
@@ -84,20 +93,20 @@ func WebSocketMessage(c *gin.Context) {
 
 		newMessage, err := messageRepo.CreateMessage(message)
 		if err != nil {
-			respondWebSocket(ws, 1, "创建新信息失败", nil)
+			respondWebSocket(userID, ws, 1, "创建新信息失败", nil)
 			continue
 		}
 
 		// 获取聊天室内的所有用户
 		roomUsers, err := userRoomRepo.GetRoomUsers(msgGet.RoomID)
 		if err != nil {
-			respondWebSocket(ws, 1, "获取房间内用户失败", nil)
+			respondWebSocket(userID, ws, 1, "获取房间内用户失败", nil)
 			continue
 		}
 
 		senderInfo, err := userInfoRepository.GetUserInfoByID(userID)
 		if err != nil {
-			respondWebSocket(ws, 1, "获取发件人名称失败", nil)
+			respondWebSocket(userID, ws, 1, "获取发件人名称失败", nil)
 			continue
 		}
 
@@ -115,7 +124,7 @@ func WebSocketMessage(c *gin.Context) {
 		// 发送消息给聊天室内的所有在线用户
 		for _, user := range roomUsers {
 			if client, ok := clients[user.ID]; ok {
-				respondWebSocket(client, 0, "新消息", msgSend)
+				respondWebSocket(user.ID, client, 0, "新消息", msgSend)
 			}
 		}
 	}

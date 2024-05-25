@@ -3,7 +3,7 @@
 package controllers
 
 import (
-	"encoding/base64"
+	"backend/internal/models"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -63,21 +63,49 @@ func respond(c *gin.Context, code int, msg string, data interface{}) {
 	})
 }
 
-func respondWebSocket(ws *websocket.Conn, code int, msg string, data interface{}) {
-	dataBase64 := base64Encode(data)
-	err := ws.WriteJSON(ResponseData{
-		Code: code,
-		Msg:  msg,
-		Data: dataBase64,
-	})
-	if err != nil {
-		println("Failed to write message")
-	}
-}
+func respondWebSocket(userID uint, ws *websocket.Conn, code int, msg string, data interface{}) {
+	if code != 0 {
+		err := ws.WriteJSON(ResponseData{
+			Code:   code,
+			Msg:    msg,
+			Data:   data,
+			EnData: empty{},
+		})
+		if err != nil {
+			println("Failed to write message")
+		}
+	} else {
+		// 首先将data转换为models.MessageResponseBody类型
+		msgData, ok := data.(models.MessageResponseBody)
+		if !ok {
+			println("Failed to convert data to models.MessageResponseBody")
+			return
+		}
+		decryptData, pos, err := UserCipherWebsocketsBackends[userID].Encrypt([]byte(msgData.Content))
+		if err != nil {
+			println("Failed to encrypt message data: ", err.Error())
+			return
+		}
 
-func base64Encode(data interface{}) string {
-	// 先将数据转为json字符串
-	jsonStr, _ := json.Marshal(data)
-	// 再进行base64编码
-	return base64.StdEncoding.EncodeToString(jsonStr)
+		msgData.Content = ""
+
+		db := decryptBody{
+			Length:   0,
+			Position: pos,
+			Mac:      "",
+			Data:     decryptData,
+		}
+
+		err = ws.WriteJSON(ResponseData{
+			Code:   code,
+			Msg:    msg,
+			Data:   msgData,
+			EnData: db,
+		})
+
+		if err != nil {
+			println("Failed to write message")
+		}
+	}
+
 }

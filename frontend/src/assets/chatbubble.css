@@ -1,17 +1,17 @@
 .chat-bubble {
     --chat-bubble-at: 50%;
     --chat-bubble-background-color: #fff;
-    --chat-bubble-border-color: #A9A9A9;
+    --chat-bubble-border-color: #8b8a8a;
     --chat-bubble-text-color: #000;
     max-width: 12rem;
     min-width: 1rem;
     width: fit-content;
-    padding: 6px;
+    padding: 6px 10px 7px 10px;
     background-color: var(--chat-bubble-background-color);
     border: 1px solid var(--chat-bubble-border-color);
     border-radius: 10px;
     position: relative;
-    margin: 10px 0;
+    margin: 3px 10px 0;
     color: var(--chat-bubble-text-color);
 }
 .chat-bubble.chat-bubble-top {

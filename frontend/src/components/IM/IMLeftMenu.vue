@@ -6,39 +6,39 @@
       <el-menu
           default-active="me"
           class="el-menu-vertical-demo"
-          style="height: 100%"
+          style="height: 100%; background: none;"
           @select="handleSelect"
           @open="handleOpen"
           @close="handleClose"
       >
-        <el-menu-item index="home">
+        <el-menu-item class="el-menu-item-button" index="home">
           <template #title>
             <el-icon><House /></el-icon>
             <span>首页</span>
           </template>
         </el-menu-item>
-        <el-sub-menu index="me">
+        <el-sub-menu class="el-menu-item-button" index="me" style="background: none">
           <template #title>
             <el-icon><Pointer /></el-icon>
             <span>关于我</span>
           </template>
-          <el-menu-item index="info">个人信息</el-menu-item>
-          <el-menu-item index="updateInfo">修改资料</el-menu-item>
-          <el-menu-item index="password">修改密码</el-menu-item>
+          <el-menu-item class="el-menu-item-button" index="info">个人信息</el-menu-item>
+          <el-menu-item class="el-menu-item-button" index="updateInfo">修改资料</el-menu-item>
+          <el-menu-item class="el-menu-item-button" index="password">修改密码</el-menu-item>
         </el-sub-menu>
-        <el-menu-item index="friend">
+        <el-menu-item class="el-menu-item-button" index="friend">
           <template #title>
             <el-icon><User /></el-icon>
             <span>好友</span>
           </template>
         </el-menu-item>
-        <el-menu-item index="chat">
+        <el-menu-item class="el-menu-item-button" index="chat">
           <template #title>
             <el-icon><ChatRound /></el-icon>
             <span>聊天室</span>
           </template>
         </el-menu-item>
-        <el-menu-item index="setting">
+        <el-menu-item class="el-menu-item-button" index="setting">
           <el-icon><setting /></el-icon>
           <span>设置</span>
         </el-menu-item>
@@ -76,11 +76,24 @@ export default {
 
 <style scoped>
 .im-left-menu {
-  height: 100%; /* 使导航占满整个左侧部分 */
-  text-align: center;
+    height: 100%; /* 使导航占满整个左侧部分 */
+    text-align: center;
+    background: linear-gradient(180deg, #F0EDF7 .03%, #ebeaf5 32.19%, #e8e8f3 68.86%, #e4eaf7 99.12%);
+    border-right: 1px solid #dee2eb;
 }
 
 .el-menu-vertical-demo {
-  border-right: 1px solid #ebeef5; /* 添加右侧边框 */
+    border-right: none;
+    background: none;
+}
+
+.el-menu-item-button {
+    background: none;
+    border-bottom: #333333 1px;
+    /*border-radius: 10px;*/
+}
+
+.el-menu-item-button:hover {
+    background: #ffffff;
 }
 </style>
