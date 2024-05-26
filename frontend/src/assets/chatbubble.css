@@ -3,7 +3,7 @@
     --chat-bubble-background-color: #fff;
     --chat-bubble-border-color: #8b8a8a;
     --chat-bubble-text-color: #000;
-    max-width: 12rem;
+    max-width: 18rem;
     min-width: 1rem;
     width: fit-content;
     padding: 6px 10px 7px 10px;

@@ -28,7 +28,7 @@ const routes = [
                 path: 'home',
                 name: 'home',
                 component: () =>
-                    import ( /* webpackChunkName: "chat" */ '../components/IM/OtherFunc/home.vue')
+                    import ( /* webpackChunkName: "chat" */ '../components/IM/Home/IMHome.vue')
             },
             {
                 path: 'info',

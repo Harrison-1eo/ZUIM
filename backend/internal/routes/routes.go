@@ -62,6 +62,8 @@ func SetupRouter() *gin.Engine {
 		user.GET("/info", controllers.GetUserInfo)
 		// 获取用户好友列表
 		user.GET("/friends", controllers.GetFriends)
+		// 获取统计信息
+		user.GET("/stats", controllers.GetStats)
 	}
 
 	// 聊天室相关路由

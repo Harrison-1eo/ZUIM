@@ -43,7 +43,7 @@
 <!--                      @keyup.enter="sendMessage()"-->
 <!--            />-->
             <textarea
-                    rows="4"
+                    rows="3"
                     v-model="newMessage"
                     placeholder="输入消息..."
                     class="message-input"
