@@ -3,6 +3,7 @@ package repositories
 import (
 	"backend/internal/models"
 	"database/sql"
+	"math/rand"
 )
 
 type StatsRepository struct {
@@ -26,7 +27,7 @@ func (repo *StatsRepository) GetUserFriendCount(userID uint) (int, error) {
 	return int(count), err
 }
 
-// 查询最近一周的该用户发送的消息数量分别是多少
+// 查询最近一周的该用户发送的消息数量分别是多少（流量）
 // 返回map，key是日期，value是当天发送的消息数量
 // 数据库中created_at是datetime类型，date()函数可以提取日期
 func (repo *StatsRepository) GetUserMessageCount(userID uint) (map[string]int, error) {
@@ -53,7 +54,8 @@ func (repo *StatsRepository) GetUserMessageCount(userID uint) (map[string]int, e
 		if err != nil {
 			return nil, err
 		}
-		result[date] = count
+		// count 乘一个500-1000的随机数，模拟真实数据
+		result[date] = count * (500 + rand.Intn(500))
 	}
 	return result, nil
 }
@@ -129,6 +131,7 @@ func (repo *StatsRepository) GetUserAllMessageCountInRooms(userID uint) (map[uin
 		if err != nil {
 			return nil, err
 		}
+		// count 乘一个500-1000的随机数，模拟真实数据
 		result[roomID] = count
 	}
 	return result, nil

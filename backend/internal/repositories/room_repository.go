@@ -20,6 +20,7 @@ func (repo *RoomRepository) CreateRoom(room models.Room) (*models.Room, error) {
 	}
 	return &room, nil
 }
+
 // 删除聊天室
 func (repo *RoomRepository) DeleteRoom(id uint) error {
 	if err := db.Delete(&models.Room{}, id).Error; err != nil {
@@ -32,6 +33,15 @@ func (repo *RoomRepository) DeleteRoom(id uint) error {
 func (repo *RoomRepository) GetRoom(id uint) (*models.Room, error) {
 	var room models.Room
 	if err := db.Model(models.Room{}).First(&room, id).Error; err != nil {
+		return nil, err
+	}
+	return &room, nil
+}
+
+// 获取聊天室信息，包含被删除的聊天室
+func (repo *RoomRepository) GetRoomWithDeleted(id uint) (*models.Room, error) {
+	var room models.Room
+	if err := db.Model(models.Room{}).Unscoped().First(&room, id).Error; err != nil {
 		return nil, err
 	}
 	return &room, nil

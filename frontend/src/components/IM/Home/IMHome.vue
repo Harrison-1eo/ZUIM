@@ -1,75 +1,30 @@
 <template>
     <div class="im-home">
-        <div class="title-box">
-            <div class="title-box-content">
-                <h1>{{ greeting }}，</h1>
-            </div>
-            <div class="user-avatar">
-                <el-avatar :size="60" :src="getAvatar(userInfo.avatar)" />
-            </div>
-            <div class="title-box-content">
-                <h1>{{ userInfo.username }}。</h1>
-            </div>
+        <div class="welcome-box">
+            <HomeWelcome :userInfo="userInfo" />
         </div>
 
         <el-divider />
 
         <div class="row-box">
-            <StatisticItem class="pointer-emphasis" :title="'在线终端'" :value="statsInfo.online_user_count" :icon="Avatar" />
-            <StatisticItem class="pointer-emphasis" :title="'警告消息'" :value="2" :icon="WarningFilled" />
-            <StatisticItem class="pointer-emphasis" :title="'错误消息'" :value="0" :icon="CircleCloseFilled" />
-        </div>
-        <div class="row-box">
-            <StatisticItem class="pointer-emphasis" :title="'终端总数'" :value="statsInfo.friend_count" :icon="Grid" />
-            <StatisticItem class="pointer-emphasis" :title="'房间总数'" :value="statsInfo.room_count" :icon="PhoneFilled" />
-            <StatisticItem class="pointer-emphasis" :title="'未读消息'" :value="statsInfo.unread_message_count" :icon="Comment" />
+            <StatisticItem :title="'在线终端'" :value="statsInfo.online_user_count" :icon="Avatar" :iconColor="'#40c9c6'"/>
+            <StatisticItem :title="'终端总数'" :value="statsInfo.friend_count" :icon="Grid" :iconColor="'#0fbe7d'"/>
+            <StatisticItem :title="'参与房间'" :value="statsInfo.room_count" :icon="PhoneFilled" :iconColor="'#36a3f7'"/>
+            <StatisticItem :title="'未读消息'" :value="statsInfo.unread_message_count" :icon="Comment" :iconColor="'#f4516c'"/>
         </div>
 
-        <el-divider />
-
-        <div class="home-statistic-box">
-            <div class="home-statistic-left-box">
-                <h1>具体统计信息：</h1>
-                <div class="table-box">
-                    <h3>房间消息数量统计</h3>
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th>序号</th>
-                            <th>房间名称</th>
-                            <th>消息数量</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="item in tableData" :key="item.no">
-                            <td>{{ item.no }}</td>
-                            <td>{{ item.name }}</td>
-                            <td>{{ item.number }}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-<!--                    <el-table :data="tableData" width="450" stripe>-->
-<!--                        <el-table-column type="index" label="序号" />-->
-<!--                        <el-table-column prop="name" label="房间名称" />-->
-<!--                        <el-table-column prop="number" label="消息数量" />-->
-<!--                    </el-table>-->
-
-                </div>
-
-            </div>
-
-            <div class="chart-box">
-                <!--            <div class="chart-title">-->
-                <!--                <h2>消息统计</h2>-->
-                <!--            </div>-->
-                <div class="chart-chart pointer-emphasis">
-                    <div ref="chart" style="width: 600px; height: 400px;"></div>
-                </div>
+        <div class="line-chart-box">
+            <div class="line-chart-chart pointer-emphasis">
+                <div ref="lineChart" style="width: 100%; height: 300px;"></div>
             </div>
         </div>
 
-
-
+        <div class="pie-chart-info-box">
+            <div class="pie-chart-chart pointer-emphasis">
+                <div ref="pieChart" style="width: 400px; height: 400px;"></div>
+            </div>
+            <InfoBox />
+        </div>
 
     </div>
 </template>
@@ -77,10 +32,11 @@
 <script>
 import axios_config from "@/utils/axios-config";
 import StatisticItem from "@/components/IM/Home/StatisticItem.vue";
+import HomeWelcome from "@/components/IM/Home/HomeWelcome.vue";
+import InfoBox from "@/components/IM/Home/InfoBox.vue";
 import {Avatar, CircleCloseFilled, Grid, WarningFilled, Comment, PhoneFilled} from "@element-plus/icons";
 import {ElMessage} from "element-plus";
 import * as echarts from 'echarts';
-import {backendBaseUrl} from "@/utils/base-url-setting";
 
 export default {
     name: 'IMHome',
@@ -104,13 +60,12 @@ export default {
             return WarningFilled
         },
     },
-    components: {StatisticItem},
+    components: {StatisticItem, InfoBox, HomeWelcome},
     data() {
         return {
             statsInfo: {},
             userInfo: {},
             message: '欢迎来到首页',
-            greeting: '',
             tableData: [
                 {
                     no: '1',
@@ -123,7 +78,6 @@ export default {
     created() {
         this.getStats();
         this.getUserInfo();
-        this.greeting = this.getGreeting();
     },
     methods: {
         getStats() {
@@ -139,7 +93,6 @@ export default {
                 this.statsInfo.message_count = sortedMessageCount;
                 this.statsInfo.room_message_count = sortedRoomMessageCount;
 
-                this.renderChart();
                 const tableData = [];
                 for (const [key, value] of Object.entries(this.statsInfo.room_message_count)) {
                     tableData.push({
@@ -149,6 +102,9 @@ export default {
                     });
                 }
                 this.tableData = tableData;
+
+                this.renderLineChart();
+                this.renderPieChar();
             }).catch(error => {
                 console.error('Error fetching stats:', error);
                 ElMessage.error('获取统计信息失败');
@@ -162,42 +118,17 @@ export default {
                 ElMessage.error('获取用户信息失败');
             });
         },
-        getGreeting() {
-            const now = new Date();
-            const hours = now.getHours();
-            let greeting;
-
-            if (hours >= 6 && hours < 12) {
-                greeting = "早上好";
-            } else if (hours >= 12 && hours < 14) {
-                greeting = "中午好";
-            } else if (hours >= 14 && hours < 18) {
-                greeting = "下午好";
-            } else {
-                greeting = "晚上好";
-            }
-
-            return greeting;
-        },
-        getAvatar(url) {
-            // console.log(url);
-            if (url) {
-                return backendBaseUrl + url;
-                // return this.avatarUrl(url);
-            }
-            return backendBaseUrl + '/static/avatars/nopic.png';
-        },
-        renderChart() {
+        renderLineChart() {
             const sortedMessageCount = this.statsInfo.message_count.reverse();
 
             const dates = sortedMessageCount.map(item => item[0]);
             const counts = sortedMessageCount.map(item => item[1]);
 
-            const chart = echarts.init(this.$refs.chart);
+            const chart = echarts.init(this.$refs.lineChart);
 
             const option = {
                 title:{
-                    text:'发送信息数量统计图',
+                    text:'终端流量统计图',
                     x:'center',
                     y:'top',
                     // textAlign:'center'
@@ -206,10 +137,12 @@ export default {
                     trigger: 'axis'
                 },
                 xAxis: {
+                    name: '时间',
                     type: 'category',
                     data: dates
                 },
                 yAxis: {
+                    name: '消息数量(B)',
                     type: 'value'
                 },
                 series: [
@@ -222,6 +155,48 @@ export default {
             };
             chart.setOption(option);
         },
+        renderPieChar(){
+            const top4 = this.statsInfo.room_message_count.slice(0, 4);
+            const otherTotal = this.statsInfo.room_message_count.slice(4).reduce((sum, item) => sum + item[1], 0);
+
+            const data = top4.map(item => ({ value: item[1], name: item[0] }));
+            if (otherTotal > 0) {
+                data.push({ value: otherTotal, name: '其他' });
+            }
+
+            const chart = echarts.init(this.$refs.pieChart);
+            const option = {
+                title:{
+                    text:'房间消息数量统计图',
+                    x:'center',
+                    y:'top',
+                    // textAlign:'center'
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b} : {c} ({d}%)'
+                },
+                legend: {
+                    left: 'center',
+                    bottom: '40',
+                    data: data.map(item => item.name)
+                },
+                series: [
+                    {
+                        name: '房间消息数量',
+                        type: 'pie',
+                        roseType: 'radius',
+                        radius: [15, 95],
+                        center: ['50%', '38%'],
+                        data: data,
+                        animationEasing: 'cubicInOut',
+                        animationDuration: 2600
+                    }
+                ]
+            };
+            chart.setOption(option);
+        },
+
     }
 };
 </script>
@@ -237,14 +212,8 @@ h1 {
     margin: 20px 60px;
 }
 
-.title-box {
-    display: flex;
-    align-items: center;
-    margin: 40px 0 20px 0 ;
-}
-
-.user-avatar {
-    margin: 0 10px;
+.welcome-box {
+    margin: 40px 0 20px 30px;
 }
 
 .row-box {
@@ -253,47 +222,28 @@ h1 {
     margin: 20px 0;
 }
 
-.home-statistic-box {
+.line-chart-box {
+    margin: 30px;
+}
+
+.pie-chart-info-box {
     display: flex;
-    flex-direction: row;
-    align-items: center;
     justify-content: space-between;
+    flex-direction: row;
 }
 
-.table-box {
-    width: 100%;
-    margin: 20px;
-    padding: 20px;
-    background: #ffffff;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.table {
-    width: 100%;
-    text-align: center;
-}
-
-.chart-box {
-    margin: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.chart-title {
-    margin: 20px 0;
-}
-
-.chart-chart {
+.line-chart-chart, .pie-chart-chart {
     display: flex;
     justify-content: center;
     background: #ffffff;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     padding: 20px 0 0 0;
+}
+
+.pie-chart-chart {
+    margin: 15px 30px 20px 30px;
+    padding: 20px 20px 0 20px;
 }
 
 .pointer-emphasis {

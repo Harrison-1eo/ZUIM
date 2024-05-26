@@ -64,6 +64,7 @@ export default {
         activeRoomId() {
             return store.state.activeRoom.ID
         },
+        // eslint-disable-next-line vue/no-dupe-keys
         activeRoom() {
             return store.state.activeRoom; // 从 Vuex store 中获取激活的房间ID
         }

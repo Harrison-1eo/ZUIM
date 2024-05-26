@@ -231,7 +231,7 @@ func GetStats(c *gin.Context) {
 
 	roomNameMessageCount := map[string]int{}
 	for roomID, count := range roomMessageCount {
-		room, err := roomRepo.GetRoom(roomID)
+		room, err := roomRepo.GetRoomWithDeleted(roomID)
 		if err != nil {
 			respond(c, 1, "获取统计信息（房间消息数）失败1", nil)
 			println("// controllers/user_controller.go 获取统计信息（房间消息数）失败1 >>> err:", err.Error())

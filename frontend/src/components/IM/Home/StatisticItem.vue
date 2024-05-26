@@ -1,5 +1,5 @@
 <template>
-    <div class="statistic-box">
+    <div class="statistic-box" :style="cssVars">
         <div class="statistic-info">
             <div class="statistic-title">
                 {{ title }}
@@ -9,7 +9,7 @@
             </div>
         </div>
         <div class="statistic-icon-box">
-            <div class="statistic-icon-bg">
+            <div class="statistic-icon-bg" :style="{background: iconColor}">
                 <div class="statistic-icon">
                     <el-icon size="30px" color="#ffffff">
                         <component :is="icon" />
@@ -35,13 +35,24 @@ export default {
         icon: {
             type: String,
             default: 'Avatar'
+        },
+        iconColor: {
+            type: String,
+            default: 'linear-gradient(322deg,#1f6ff5 7.93%,#9a7ffc 92.22%)'
+        }
+    },
+    computed: {
+        cssVars() {
+            return {
+                "--color": this.iconColor
+            };
         }
     }
 }
 
 </script>
 
-<style>
+<style scoped>
 .statistic-box {
     width: 100%;
     display: flex;
@@ -52,6 +63,12 @@ export default {
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     background-color: #ffffff;
     margin: 10px 30px;
+    border: 1px solid #ffffff;
+    transition: border 0.5s linear;
+}
+
+.statistic-box:hover {
+    border: 1px solid var(--color);
 }
 
 .statistic-info {
