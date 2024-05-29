@@ -52,7 +52,7 @@ const routes = [
                 path: 'friend',
                 name: 'friend',
                 component: () =>
-                    import ( /* webpackChunkName: "discover" */ '../components/IM/Friend/friend.vue')
+                    import ( /* webpackChunkName: "discover" */ '../components/IM/Friend/FriendList.vue')
             },
             {
                 path: 'chat',

@@ -3,7 +3,7 @@
 <template>
     <div class="chatroom-container">
         <div class="chat-list">
-            <h2 style="padding-left: 20px">聊天室列表</h2>
+            <h2 style="padding-left: 20px">通讯列表</h2>
 
             <el-menu class="el-menu-rooms">
                 <el-scrollbar wrap-class="scrollbar-wrapper">
@@ -21,12 +21,12 @@
                 type="primary"
                 class="new-chat-button"
                 @click="createRoomBox">
-                创建新房间
+                创建新通讯
             </el-button>
         </div>
         <div class="chat-details">
             <div class="chat-header">
-                <p class="room-title"> {{ activeRoom===null ? '请选择聊天室' : activeRoom.name }} </p>
+                <p class="room-title"> {{ activeRoom===null ? '请选择通讯' : activeRoom.name }} </p>
                 <el-icon v-if="activeRoomId" @click="drawer=true" class="more-icon">
                     <More />
                 </el-icon>
@@ -66,7 +66,7 @@ export default {
         },
         // eslint-disable-next-line vue/no-dupe-keys
         activeRoom() {
-            return store.state.activeRoom; // 从 Vuex store 中获取激活的房间ID
+            return store.state.activeRoom; // 从 Vuex store 中获取激活的通讯ID
         }
     },
     watch: {
@@ -92,12 +92,12 @@ export default {
             this.fetchRooms();
         },
         createRoomBox() {
-            ElMessageBox.prompt('请输入房间名称', '创建新房间').then(({ value }) => {
+            ElMessageBox.prompt('请输入通讯名称', '创建新通讯').then(({ value }) => {
                 if (!value) {
-                    ElMessage.error('房间名称不能为空');
+                    ElMessage.error('通讯名称不能为空');
                     return;
                 }
-                // 创建新房间
+                // 创建新通讯
                 if (this.createRoom(value)) {
                     ElMessage.success('创建成功');
                 } else {
@@ -120,7 +120,7 @@ export default {
                 if (response.data.code !== 0) {
                     return false;
                 }
-                await this.fetchRooms(); // 创建成功后刷新房间列表
+                await this.fetchRooms(); // 创建成功后刷新通讯列表
             } catch (error) {
                 console.error('Failed to create room:', error);
                 return false;
