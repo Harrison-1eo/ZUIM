@@ -31,6 +31,15 @@ func SetupRouter() *gin.Engine {
 		MaxAge: 24 * time.Hour,
 	}))
 
+	// 添加 Cross-Origin-Resource-Policy 头部，解决资源跨域问题
+	r.Use(func(c *gin.Context) {
+		c.Header("Cross-Origin-Resource-Policy", "cross-origin")
+		c.Next()
+	})
+
+	// 静态文件路由
+	r.Static("/static", "./static")
+
 	// Base64解码中间件
 	//r.Use(middlewares.CipherDecryptMiddleware())
 
@@ -43,9 +52,6 @@ func SetupRouter() *gin.Engine {
 	api := r.Group("/api")
 	api.Use(middlewares.AuthMiddleware())
 	api.Use(middlewares.CipherDecryptMiddleware())
-
-	// 静态文件路由
-	r.Static("/static", "./static")
 
 	// 用户信息相关路由
 	user := api.Group("/user")
