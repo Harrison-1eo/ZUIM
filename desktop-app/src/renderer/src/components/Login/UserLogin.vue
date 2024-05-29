@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import axios from "@/axios-config";
+import axios_config from "@/utils/axios-config";
 import { ElMessage } from "element-plus";
 
 export default {

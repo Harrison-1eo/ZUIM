@@ -70,6 +70,7 @@ export default {
         roomID: {
             type: Number,
             required: true
+        },
         VideoChunk: {
             type: String,
             required: true

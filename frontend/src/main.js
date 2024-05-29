@@ -8,7 +8,7 @@ import 'element-plus/dist/index.css'
 import store from './store/store'
 import * as ElIconModules from '@element-plus/icons-vue'
 import JSMpeg from '@/utils/jsmpeg.min'
-import VideoPlayer from 'vue-video-player'
+// import VideoPlayer from 'vue-video-player'
 // import 'vue-video-player/src/custom-theme.css'
 // import 'video.js/dist/video-js.css'
 // import 'videojs-contrib-hls'
@@ -21,7 +21,7 @@ app.use(router)
 app.use(ElementPlus)
 app.use(store)
 app.use(JSMpeg)
-app.use(VideoPlayer)
+    // app.use(VideoPlayer)
 app.mount('#app')
 
 // 统一注册el-icon图标
