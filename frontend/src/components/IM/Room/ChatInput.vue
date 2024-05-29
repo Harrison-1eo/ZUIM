@@ -31,8 +31,8 @@
             </div>
             <!-- 开启视频 -->
             <div class="upload-icon">
-                <el-tooltip content="点击打开摄像头" placement="top">
-                    <el-icon size="30px" @click="openCameraandVideoChat">
+                <el-tooltip content="打开摄像头" placement="top">
+                    <el-icon size="20px" @click="openCameraandVideoChat">
                         <VideoCamera />
                     </el-icon>
                 </el-tooltip>
