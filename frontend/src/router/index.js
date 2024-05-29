@@ -34,25 +34,25 @@ const routes = [
                 path: 'info',
                 name: 'info',
                 component: () =>
-                    import ( /* webpackChunkName: "chat" */ '../components/IM/OtherFunc/UserInfo.vue')
+                    import ( /* webpackChunkName: "chat" */ '../components/IM/Me/UserInfo.vue')
             },
             {
                 path: 'updateInfo',
                 name: 'updateInfo',
                 component: () =>
-                    import ( /* webpackChunkName: "chat" */ '../components/IM/OtherFunc/UpdateUserInfo.vue')
+                    import ( /* webpackChunkName: "chat" */ '../components/IM/Me/UpdateUserInfo.vue')
             },
             {
                 path: 'password',
                 name: 'password',
                 component: () =>
-                    import ( /* webpackChunkName: "contacts" */ '../components/IM/OtherFunc/UpdatePassword.vue')
+                    import ( /* webpackChunkName: "contacts" */ '../components/IM/Me/UpdatePassword.vue')
             },
             {
                 path: 'friend',
                 name: 'friend',
                 component: () =>
-                    import ( /* webpackChunkName: "discover" */ '../components/IM/OtherFunc/friend.vue')
+                    import ( /* webpackChunkName: "discover" */ '../components/IM/Friend/friend.vue')
             },
             {
                 path: 'chat',

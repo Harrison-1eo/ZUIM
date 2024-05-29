@@ -1,7 +1,7 @@
 <template>
     <div class="friend-container">
         <div class="friend-list">
-            <h2>好友列表</h2>
+            <h2>终端列表</h2>
             <el-menu class="el-menu-vertical-demo">
                 <el-menu-item v-for="friend in friends" :key="friend.ID" :index="friend.ID" @click="fetchFriendInfo(friend.ID)">
                     <i class="el-icon-user-solid"></i>
@@ -13,7 +13,7 @@
 
         <div class="friend-details">
             <div class="friend-header">
-                <p class="friend-title"> {{ activeFriend === null ? '请选择好友' : activeFriend.username }} </p>
+                <p class="friend-title"> {{ activeFriend === null ? '请选择终端' : activeFriend.username }} </p>
                 <el-icon v-if="activeFriendId" @click="drawer = true" class="more-icon">
                     <More />
                 </el-icon>
@@ -27,8 +27,8 @@
 
 <script>
 import axios_config from "@/utils/axios-config";
-import FriendDrawer from "@/components/IM/OtherFunc/FriendDrawer.vue";
-import FriendChat from "@/components/IM/OtherFunc/FriendChat.vue";
+import FriendDrawer from "@/components/IM/Friend/FriendDrawer.vue";
+import FriendChat from "@/components/IM/Friend/FriendChat.vue";
 export default {
     data() {
         return {

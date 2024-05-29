@@ -1,10 +1,12 @@
 <!-- src/components/IMHeader.vue -->
-
 <template>
   <el-header class="header-container">
     <div class="logo-container">
-      <img src="../../assets/logo.png" alt="Logo" height="50px"/>
-      <span>IM SYSTEM</span>
+<!--      <img src="../../assets/logo.png" alt="Logo" height="50px"/>-->
+        <FluentCommunicationShield24Filled/>
+<!--      <span>IM SYSTEM</span>-->
+<!--        <span class="system-title">IoT Messaging and Domestic Security Base (IMDSB) System</span>-->
+        <span class="system-title">IMDSB System</span>
     </div>
     <el-button @click="logout" class="logout-button">登出</el-button>
   </el-header>
@@ -12,9 +14,14 @@
 
 <script>
 import {ElMessage} from "element-plus";
+import FluentCommunicationShield24Filled from "@/components/IM/Frame/IMIcon.vue";
+
 
 export default {
   name: 'IMHeader',
+    components: {
+        FluentCommunicationShield24Filled
+    },
   methods: {
     logout() {
       ElMessage.success('登出成功');
@@ -40,5 +47,11 @@ export default {
 
 .logout-button {
   /* 根据需要可以添加更多样式 */
+}
+
+.system-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-left: 10px;
 }
 </style>

@@ -35,6 +35,7 @@ func SetupRouter() *gin.Engine {
 	r.Use(func(c *gin.Context) {
 		c.Header("Cross-Origin-Resource-Policy", "cross-origin")
 		c.Next()
+		c.Header("Cross-Origin-Resource-Policy", "cross-origin")
 	})
 
 	// 静态文件路由

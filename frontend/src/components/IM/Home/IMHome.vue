@@ -142,7 +142,7 @@ export default {
                     data: dates
                 },
                 yAxis: {
-                    name: '消息数量(B)',
+                    name: '消息流量(KB)',
                     type: 'value'
                 },
                 series: [

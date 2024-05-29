@@ -11,9 +11,9 @@
 </template>
 
 <script>
-import IMHeader from "@/components/IM/IMHeader.vue";
-import IMLeftMenu from '@/components/IM/IMLeftMenu.vue'
-import IMRightContent from '@/components/IM/IMRightContent.vue'
+import IMHeader from "@/components/IM/Frame/IMHeader.vue";
+import IMLeftMenu from '@/components/IM/Frame/IMLeftMenu.vue'
+import IMRightContent from '@/components/IM/Frame/IMRightContent.vue'
 
 export default {
   name: 'IMView',

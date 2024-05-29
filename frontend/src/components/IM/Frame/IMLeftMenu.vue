@@ -29,13 +29,14 @@
         <el-menu-item class="el-menu-item-button" index="friend">
           <template #title>
             <el-icon><User /></el-icon>
-            <span>好友</span>
+<!--              <span>好友</span>-->
+              <span>终端</span>
           </template>
         </el-menu-item>
         <el-menu-item class="el-menu-item-button" index="chat">
           <template #title>
             <el-icon><ChatRound /></el-icon>
-            <span>聊天室</span>
+            <span>通讯</span>
           </template>
         </el-menu-item>
         <el-menu-item class="el-menu-item-button" index="setting">
