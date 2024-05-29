@@ -1,55 +1,80 @@
 <template>
     <div class="chat-input">
-        <el-input type="textarea" placeholder="输入消息..." v-model="newMessage" resize="none" class="message-input" :rows="4" @keyup.enter="sendMessage()" />
 
-        <div class="send-buttons">
-
-            <div class="upload-icon-box">
-                <!-- 发送图片 -->
-                <div class="upload-icon">
-                    <el-tooltip class="box-item" effect="dark" content="发送图片" placement="top">
-                        <el-icon size="30px" @click="openImageChooser">
-                            <Picture />
-                        </el-icon>
-                    </el-tooltip>
-                    <input type="file" ref="imageInput" style="display: none;" accept="image/*" @change="handleImageUpload">
-                </div>
-
-                <!-- 发送文件 -->
-                <div class="upload-icon">
-                    <el-tooltip class="box-item" effect="dark" content="发送文件" placement="top">
-                        <!-- 文件上传按钮 -->
-                        <!--        <el-button type="primary" class="send-button" @click="openFileChooser" style="margin-bottom: 10px">发送文件</el-button>-->
-                        <el-icon size="30px" @click="openFileChooser">
-                            <FolderAdd />
-                        </el-icon>
-                    </el-tooltip>
-                    <!-- 隐藏的文件输入 -->
-                    <input type="file" ref="fileInput" style="display: none;" @change="handleFileUpload">
-                </div>
-                <!-- 开启视频 -->
-                <div class="upload-icon">
-                    <el-tooltip content="点击打开摄像头" placement="top">
-                        <el-icon size="30px" @click="openCameraandVideoChat">
-                            <VideoCamera />
-                        </el-icon>
-                    </el-tooltip>
-                    <div class="video-container" v-if="videocontainerVisible">
-                        <el-dialog v-model="videoVisible" title="视频聊天" width="660" height="480" :visible.sync="videoVisible" :close-on-click-modal="false" :close-on-press-escape="false">
-                            <video ref="video" id="video" width="640" height="480" autoplay></video>
-                            <el-button @click="startSendingVideo">连接</el-button>
-                            <el-button class="close-button" @click="closeCamera">关闭摄像头</el-button>
-                        </el-dialog>
-                        <!-- <video id="video" width="500px" height="500px" autoplay="autoplay"></video> -->
-
-                    </div>
-
-                </div>
-
+        <div class="chat-input-icon-box">
+            <!-- 发送图片 -->
+            <div class="upload-icon">
+                <el-tooltip
+                        class="box-item"
+                        effect="dark"
+                        content="发送图片"
+                        placement="top"
+                >
+                    <el-icon size="20px" @click="openImageChooser"><Picture /></el-icon>
+                </el-tooltip>
+                <input type="file" ref="imageInput" style="display: none;" accept="image/*" @change="handleImageUpload">
             </div>
+            <!-- 发送文件 -->
+            <div class="upload-icon">
+                <el-tooltip
+                        class="box-item"
+                        effect="dark"
+                        content="发送文件"
+                        placement="top"
+                >
+                    <!-- 文件上传按钮 -->
+                    <!--        <el-button type="primary" class="send-button" @click="openFileChooser" style="margin-bottom: 10px">发送文件</el-button>-->
+                    <el-icon  size="20px" @click="openFileChooser"><FolderAdd /></el-icon>
+                </el-tooltip>
+                <!-- 隐藏的文件输入 -->
+                <input type="file" ref="fileInput" style="display: none;" @change="handleFileUpload">
+            </div>
+            <!-- 开启视频 -->
+            <div class="upload-icon">
+                <el-tooltip content="点击打开摄像头" placement="top">
+                    <el-icon size="30px" @click="openCameraandVideoChat">
+                        <VideoCamera />
+                    </el-icon>
+                </el-tooltip>
+                <div class="video-container" v-if="videocontainerVisible">
+                    <el-dialog v-model="videoVisible" title="视频聊天" width="660" height="480" v-model:visible="videoVisible" :close-on-click-modal="false" :close-on-press-escape="false">
+                        <video ref="video" id="video" width="640" height="480" autoplay></video>
+                        <el-button @click="startSendingVideo">连接</el-button>
+                        <el-button class="close-button" @click="closeCamera">关闭摄像头</el-button>
+                    </el-dialog>
+                    <!-- <video id="video" width="500px" height="500px" autoplay="autoplay"></video> -->
+                </div>
+            </div>
+        </div>
 
-            <el-button type="success" class="send-button" @click="sendMessage()">发送消息</el-button>
+        <el-divider style="margin: 0 5px"/>
 
+        <div class="chat-input-input-box">
+<!--            <el-input type="textarea"-->
+<!--                      placeholder="输入消息..."-->
+<!--                      v-model="newMessage"-->
+<!--                      resize="none"-->
+<!--                      style="padding: 10px; border-radius: 10px;"-->
+<!--                      :rows="4"-->
+<!--                      @keyup.enter="sendMessage()"-->
+<!--            />-->
+            <textarea
+                    rows="3"
+                    v-model="newMessage"
+                    placeholder="输入消息..."
+                    class="message-input"
+                    @keyup.enter="sendMessage()"
+            />
+        </div>
+
+        <div class="chat-input-send-box">
+            <el-button
+                type="success"
+                class="send-button"
+                @click="sendMessage()">
+                <!-- 发送消息 -->
+                <el-icon size="20px"><Promotion /></el-icon>
+            </el-button>
         </div>
 
     </div>
@@ -59,17 +84,20 @@
 import axios_config from "@/utils/axios-config";
 import { ElMessage } from "element-plus";
 import { FolderAdd, Picture, VideoCamera } from "@element-plus/icons";
+import { Bottom } from "@element-plus/icons-vue";
 
 export default {
     components: {
         Picture,
         FolderAdd,
         VideoCamera,
+        Bottom,
     },
     props: {
         roomID: {
             type: Number,
-            required: true
+            required: true,
+        },
         VideoChunk: {
             type: String,
             required: true
@@ -195,7 +223,7 @@ export default {
         //     };
         //     this.mediaRecorder.start(1000); // 每秒录制一帧
 
-            
+
         // },
 
         reopenCamera() {
@@ -260,15 +288,8 @@ export default {
             }
             // 向父组件发送输入的消息
             this.$emit('send', 'text', this.newMessage);
-            console.log('this.newmwssage:', this.newMessage);
             this.newMessage = ''; // 发送后清空输入框
         },
-        // async sendVideo() {
-        //     // 向父组件发送视频流中的一帧
-
-        //     this.$emit('send', 'video', this.stream);
-        //     console.log('发送视频流喽');
-        // },
         // 打开文件选择器
         openFileChooser() {
             this.$refs.fileInput.click();
@@ -342,41 +363,78 @@ export default {
 <style scoped>
 .chat-input {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: space-between;
-    padding: 8px;
+    margin: 10px 0px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid #ffffff;
+    background: #ffffff;
+    box-shadow: 0 16px 20px 0 rgba(174,167,223,.2);
+    transition: border 0.5s linear;
 }
 
-.message-input {
-    flex: 1; /* 输入框占据剩余空间 */
-    margin-right: 10px; /* 输入框和按钮之间的间隔 */
+.chat-input:hover {
+    border: 1px solid #4955f5;
 }
 
-.send-button {
-    width: 80px; /* 设置发送按钮的宽度 */
-    height: 40px; /* 设置按钮的高度，与输入框高度一致 */
-    margin-right: 10px;
-    margin-left: 10px;
-    margin-top: 8px;
-    margin-block-end: 10px;
-}
-
-.upload-icon-box {
+.chat-input-icon-box {
+    padding: 5px 10px;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 5px;
+    flex-direction: row;
+    justify-content: start;
 }
 
 .upload-icon {
     margin-right: 10px;
-    margin-left: 10px;
     cursor: pointer;
 }
-#app {
-    text-align: center;
-    margin-top: 50px;
+
+.chat-input-input-box {
+    padding: 5px 10px;
+    caret-color: transparent;
 }
+
+.message-input {
+    resize: none;
+    flex: 1; /* 输入框占据剩余空间 */
+    border: none;
+    background: none;
+    width: 100%;
+    font-size: medium;
+    font-family: "微软雅黑","黑体",serif;
+    caret-color: #000000;
+}
+
+.message-input:focus {
+    outline: none;
+}
+
+
+
+.chat-input-send-box {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: end;
+}
+
+.send-button {
+    width: 60px; /* 设置发送按钮的宽度 */
+    height: 35px; /* 设置按钮的高度，与输入框高度一致 */
+    margin-right: 10px;
+    margin-left: 10px;
+    margin-top: 8px;
+    margin-block-end: 10px;
+    background: linear-gradient(322deg,#1f6ff5 7.93%,#9a7ffc 92.22%);
+    border: none;
+    border-radius: 20px;
+    transition: background 0.5s linear;
+}
+
+.send-button:hover {
+    background: linear-gradient(322deg, #628eed 7.93%, #a1a4f8 92.22%);
+}
+
 .video-container {
     position: fixed;
     top: 0;

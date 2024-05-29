@@ -1,59 +1,104 @@
 <template>
+
     <!--  消息显示框：如果是用户发送的消息，则显示在右侧，否则显示在左侧  -->
-    <div class="message-item" :class="{ 'message-from-user': isSenderUser }">
+    <div class="message-item"
+         :class="{ 'message-from-user': isSenderUser }">
         <!--  头像显示  -->
-        <el-avatar :src="getAvatarUrl(message.sender_avatar)" style="margin-top: 20px"></el-avatar>
+        <el-avatar shape="square" :src="getAvatarUrl(message.sender_avatar)" style="margin-top: 0px"></el-avatar>
         <!--  消息内容显示：包含发送者名称、消息内容  -->
         <div class="message-content">
             <!--  用户名称显示  -->
-            <div :class="{'sender-name-from-user': isSenderUser, 'sender-name': !isSenderUser}">
-                {{ isSenderUser ? '我' : message.sender_name || 'No sender-name'}}
+            <div v-if="isSenderUser===false" class="sender-name, sender-name-from-other">
+                {{ message.sender_name }}
             </div>
 
             <!--  消息内容显示  -->
-            <div class="chat-bubble chat-bubble-top"
-                 :class="isSenderUser ? 'chat-bubble-from-right' : 'chat-bubble-from-left'"
-                 style="--chat-bubble-background-color: #95EC69;
-                    --chat-bubble-border-color: rgba(0, 0, 0, 0);
-                    --chat-bubble-text-color: #000">
+            <div @mouseenter="showMoreButton = true"
+                 @mouseleave="showMoreButton = false">
+                <div :class="{ 'bubble-and-more-left': !isSenderUser, 'bubble-and-more-right': isSenderUser }">
+                    <div class="chat-bubble chat-bubble-top"
+                         :class="isSenderUser ? 'chat-bubble-from-right' : 'chat-bubble-from-left'"
+                         style="--chat-bubble-background-color: #ffffff;
+                        --chat-bubble-border-color: rgba(0, 0, 0, 0);
+                        --chat-bubble-text-color: #000">
 
-                <!--      文本显示 -->
-                <!--            <div v-if="message.type === 'text'" class="text-message">-->
-                <div v-if="message.type === 'text'">
-                    {{ message.content }}
-                </div>
-                <!--      图片显示 -->
-                <!--            <div v-else-if="message.type === 'image'" class="image-message">-->
-                <div v-else-if="message.type === 'image'">
-                    <el-image :src="getPicUrl(message.content)"
-                              fit="contain"
-                              :previewSrcList="[getPicUrl(message.content)]"
-                              style="height: auto; display: block;"
-                    ></el-image>
-                </div>
-                <!--      文件显示 -->
-                <!--            <div v-else-if="message.type === 'file'" class="file-message file-message-link">-->
-                <div v-else-if="message.type === 'file'" class="file-message-link">
-                    <el-icon>
-                        <Link />
+                        <!--      文本显示 -->
+                        <!--            <div v-if="message.type === 'text'" class="text-message">-->
+                        <div v-if="message.type === 'text'">
+                            {{ message.content }}
+                        </div>
+                        <!--      图片显示 -->
+                        <!--            <div v-else-if="message.type === 'image'" class="image-message">-->
+                        <div v-else-if="message.type === 'image'">
+                            <el-image :src="getPicUrl(message.content)"
+                                      fit="contain"
+                                      :previewSrcList="[getPicUrl(message.content)]"
+                                      style="height: auto; display: block;"
+                            ></el-image>
+                        </div>
+                        <!--      文件显示 -->
+                        <!--            <div v-else-if="message.type === 'file'" class="file-message file-message-link">-->
+                        <div v-else-if="message.type === 'file'" class="file-message-link">
+                            <el-icon>
+                                <Link/>
+                            </el-icon>
+                            <el-link :href="getFileUrl(message.content)" target="_blank">
+                                下载文件：{{ this.getFileName(message.content) }}
+                            </el-link>
+                        </div>
+                    </div>
+                    <el-icon v-if="showMoreButton" style="margin: 5px 10px; cursor: pointer;" @click="showDialog = true">
+                        <More/>
                     </el-icon>
-                    <el-link :href="getFileUrl(message.content)" target="_blank">
-                        下载文件：{{ this.getFileName(message.content) }}
-                    </el-link>
                 </div>
-
             </div>
         </div>
     </div>
+    <el-dialog v-model="showDialog" title="加密信息" width="800">
+        <template #header>
+            <div>加密信息</div>
+        </template>
+        <!-- 展示message.encryptInfo中的信息 -->
+        <div class="message-encrypt-info">
+            <div class="message-encrypt-info-key">加密方式： </div>
+            <div class="message-encrypt-info-value">ZUC-256 加速算法</div>
+        </div>
+
+        <div class="message-encrypt-info">
+            <div class="message-encrypt-info-key">消息长度：</div>
+            <div class="message-encrypt-info-value">{{ message.encryptInfo.length }}</div>
+        </div>
+
+        <div class="message-encrypt-info">
+            <div class="message-encrypt-info-key">起始位置：</div>
+            <div class="message-encrypt-info-value">{{ message.encryptInfo.position }}</div>
+        </div>
+
+        <div class="message-encrypt-info">
+            <div class="message-encrypt-info-key">加密密钥：</div>
+            <div class="message-encrypt-info-value">{{ message.encryptInfo.key }}</div>
+        </div>
+
+        <div class="message-encrypt-info">
+            <div class="message-encrypt-info-key">加密结果（经过Base64编码）：</div>
+            <div class="message-encrypt-info-value">{{ message.encryptInfo.data }}</div>
+        </div>
+    </el-dialog>
 </template>
 
 <script>
-import { ElAvatar, ElImage, ElLink } from 'element-plus';
-import { Link } from "@element-plus/icons";
+import {ElAvatar, ElImage, ElLink} from 'element-plus';
+import {Link} from "@element-plus/icons";
 import {backendBaseUrl} from "@/utils/base-url-setting";
 import "@/assets/chatbubble.css";
 
 export default {
+    data() {
+        return {
+            showMoreButton: false,
+            showDialog: false,
+        }
+    },
     components: {
         Link,
         ElAvatar,
@@ -119,23 +164,34 @@ export default {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
-    margin: 10px;
+    margin: 10px 20px;
 }
+
 .message-from-user {
     flex-direction: row-reverse;
 }
+
 .message-content {
     display: flex;
     flex-direction: column;
 
 }
+
 .sender-name {
-    margin-left: 10px;
-    font-weight: bold;
+    /* font-weight: lighter; */
+    font-size: 14px;
+    font-stretch: semi-condensed;
+    color: #808080;
 }
+
+
+.sender-name-from-other {
+    margin-left: 10px;
+    text-align: left;
+}
+
 .sender-name-from-user {
     margin-right: 10px;
-    font-weight: bold;
     text-align: right;
 }
 
@@ -152,5 +208,28 @@ export default {
 .file-message-link {
     display: flex;
     align-items: center;
+}
+
+.bubble-and-more-left {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.bubble-and-more-right {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+}
+
+.message-encrypt-info {
+    display: flex;
+    flex-direction: column;
+    margin: 15px;
+}
+
+.message-encrypt-info-key {
+    font-weight: bold;
+    font-size: large;
 }
 </style>

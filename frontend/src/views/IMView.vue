@@ -41,6 +41,6 @@ export default {
 .main {
   display: flex;
   flex: 1;
-  height: 100%; /* 占据整个可视区域的高度 */
+  height: calc(100% - 60px); /* 占据整个可视区域的高度 */
 }
 </style>

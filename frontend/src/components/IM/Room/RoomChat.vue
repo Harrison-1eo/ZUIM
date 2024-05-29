@@ -4,16 +4,17 @@
             <!-- <p>消息内容将在这里显示 {{ roomID }} </p> -->
             <el-scrollbar ref="scrollbar">
                 <div ref="inner" class="message-inner-list">
-                    <el-button type="text" link @click="getMoreHistoryMessages" style="margin: 9px"> 加载更多历史消息 </el-button>
-                    <MessageItem v-for="(message, index) in messages" :key="index" :message="message" class="message" />
-                    <!--                  <el-backtop :visibility-height="1" > </el-backtop>-->
+                  <el-button type="text" link @click="getMoreHistoryMessages" style="margin: 9px"> 加载更多历史消息 </el-button>
+                  <MessageItem v-for="(message, index) in messages" :key="index" :message="message" class="message" />
+<!--                  <el-backtop :visibility-height="1" > </el-backtop>-->
                 </div>
             </el-scrollbar>
         </div>
+
         <el-dialog v-model="recieveVideoVisible" title="视频聊天室" width="640" height="480" :visible.sync="recieveVideoVisible" :close-on-click-modal="false" :close-on-press-escape="false">
             <div class="video-container" width="640" height="500" v-if="recieveVideoVisible">
                 <!-- <LiveStream :roomID="roomID" :VideoChunks="VideoChunks" /> -->
-                
+
                 <LiveStream :roomID="roomID" :VideoChunk="VideoChunk" />
 
             </div>
@@ -22,8 +23,6 @@
         <div class="input-box" id="input-box">
             <ChatInput :roomID="roomID" @send="sendMessageToParent" />
         </div>
-        <!-- 隐藏的视频 -->
-
     </div>
 
 </template>
@@ -36,6 +35,7 @@ import { ElMessage } from "element-plus";
 import WebsocketClass from "@/utils/websocket";
 // import { createFFmpeg, fetchFile, FFmpeg } from "@ffmpeg/ffmpeg";
 import LiveStream from "@/components/IM/Room/LiveStream.vue"
+// ？？？？
 import LoginView from '../../../../../desktop-app/src/renderer/src/views/LoginView.vue';
 import {wsBaseUrl} from "@/utils/base-url-setting";
 
@@ -102,151 +102,80 @@ export default {
             handler() {
                 this.handleNewMessage();
             }
-        },
-        // VideoChunks: {
-        //     deep: true,
-        //     handler() {
-        //         console.log('VideoChunks changed in RoomChat');
-        //     }
-        // }
-
+        }
     },
     mounted() {
         this.scrollToBottom();
-        // this.setupVideoPlayer();
-        // this.initializeLiveStreaming();
-
-
     },
     beforeUnmount() {
         this.ws.close();
     },
     methods: {
-
-        addNewMessage(message) {
-            // 接收来自服务器的消息并处理
-            // console.log('Received new message:', message);
-            if (message.code === 0) {
-                if (message.data.room_id !== this.roomID) {
-                    return;
-                }
-                // message.data.sender_avatar = this.currentUser.avatar;
-                console.log('Received new message:', message);
-                // 如果不是video类型的数据，直接添加到消息列表
-                if (message.data.type === 'video') {
-                    // 视频流的处理方式，将视频展示出来
-                    // 先解码
-                    console.log('丢雷老母');
-                    // console.log('Received video message:', message.data.content);
-                    this.recieveVideoVisible = true;
-                    console.log('recieveVideoVisible changed to true');
-                    // console.log('Received video message:', message.data);
-                    this.ReceiveVideoChunk_Base64(message.data.content);
-                    console.log('god damn it');
-
-                } else {
-                    console.log('in else   Received text message:', message.data);
-                    this.messages.push(message.data);
-
-                }
-            } else if (message.code === 1) {
-                console.error('收到错误消息:', message.msg);
-            } else if (message.code === 2) {
-                // 忽略心跳包
-            } else {
-                console.error('收到未知消息:', message);
+      // 对新消息进行处理
+      addNewMessage(message) {
+          // 接收来自服务器的消息并处理
+          console.log('Received new message:', message);
+          if (message.code === 0) {
+            if (message.data.room_id !== this.roomID) {
+              return;
             }
-        },
-
-
-
+            // message.data.sender_avatar = this.currentUser.avatar;
+            console.log('Received new message:', message);
+            message.data.encryptInfo = message.en_data;
+            message.data.encryptInfo.key = localStorage.getItem('websocketBackendPassword');
+              if (message.data.type === 'video') {
+                  this.recieveVideoVisible = true;
+                  this.ReceiveVideoChunk_Base64(message.data.content);
+              } else {
+                  this.messages.push(message.data);
+              }
+          } else if (message.code === 1) {
+              console.error('收到错误消息:', message.msg);
+          } else if (message.code === 2) {
+              // 忽略心跳包
+          } else {
+              console.error('收到未知消息:', message);
+          }
+      },
+      // 接受来自 ChatInput 组件的消息并发送
+      sendMessageToParent(type, message) {
+          // 接收来自子组件的消息并处理
+          console.log('Sending message to parent:', message);
+          // 在这里可以进行进一步的处理，比如发送给服务器等操作
+          // this.sendMessageToServer(message);
+          this.ws.send({
+              room_id: this.roomID,
+              type: type,
+              content: message
+          });
+      },
         ReceiveVideoChunk_Base64(VideoChunk_Base64) {
-            // console.log('old videochunks:', this.VideoChunks);
             this.VideoChunks.push(VideoChunk_Base64);
-            // console.log('new videochunks:', this.VideoChunks);
-            console.log('is videochunk will change?', this.VideoChunk === VideoChunk_Base64);
             this.VideoChunk = VideoChunk_Base64;
-            // console.log('VideoChunk change in room chat:', this.VideoChunk);
-            // 直接向子组件LiveStream传递VideoChunks得了
-            // this.$emit('update:VideoChunks', this.VideoChunks);
-
         },
-        // handleReceivedVideoChunk_Base64(VideoChunk_Base64) {
-        //     if (!this.sourceBuffer || this.mediaSource.readyState !== 'open') {
-        //         console.log('MediaSource not ready or SourceBuffer not initialized.');
-        //         return;
-        //     }
-        //     // 创建一个新的video对象用来播放视频
-        //     this.videoElement.autoplay = true;
-        //     this.videoElement.muted = true;
-        //     // 对VideoChunk_Base64进行处理，在videoElement中播放
-        //     const videoBlob = this.base64ToBlob(VideoChunk_Base64, 'video/webm');
-        //     // 将视频块添加到SourceBuffer
-        //     const fileReader = new FileReader();
-        //     fileReader.onload = () => {
-        //         this.VideoChunks.push(fileReader.result);
-        //         this.sourceBuffer.push(new Uint8Array(fileReader.result));
-        //     };
-        //     fileReader.readAsArrayBuffer(videoBlob);
-        //     // 播放视频
-        //     this.videoElement.src = URL.createObjectURL(videoBlob);
-        //     this.videoElement.play();
-
-
-        // },
-        // base64ToBlob(base64, mimeType) {
-        //     const bytes = atob(base64);
-        //     const len = bytes.length;
-        //     const buffer = new ArrayBuffer(len);
-        //     const view = new Uint8Array(buffer);
-        //     for (let i = 0; i < len; i++) {
-        //         view[i] = bytes.charCodeAt(i);
-        //     }
-        //     return new Blob([buffer], { type: mimeType });
-        // },
-
-
-
-        // 接受来自 ChatInput 组件的消息并发送
-        sendMessageToParent(type, message) {
-            // 接收来自子组件的消息并处理
-            // console.log('Sending message to parent:', message);
-            // 在这里可以进行进一步的处理，比如发送给服务器等操作
-            // this.sendMessageToServer(message);
-            console.log('type:', type);
-            try {
-                this.ws.send({
-                    room_id: this.roomID,
-                    type: type,
-                    content: message
-                });
-                console.log('send send!!!!!');
-
-            } catch (error) {
-                console.error('Failed to send message:', error);
-            }
-
-        },
-
-        // 用于获取历史消息
-        async getHistoryMessages(lastMessageId, limit) {
-            try {
-                const response = await axios.post(
-                    '/api/message/list',
-                    {
-                        "room_id": this.roomID,
-                        "last_message_id": lastMessageId,
-                        "limit": limit
-                    });
+      // 用于获取历史消息
+      async getHistoryMessages(lastMessageId, limit) {
+          try {
+              const response = await axios_config.post(
+                  '/api/message/list',
+                  {
+                      "room_id": this.roomID,
+                      "last_message_id": lastMessageId,
+                      "limit": limit
+                  });
                 //   console.log('roomID:', this.roomID);
                 //   console.log('lastMessageId:', lastMessageId);
                 //     console.log('limit:', limit);
                 //   console.log('Fetched history messages111:', response.data.data);
-                if (response.data.data.length === 0) {
-                    ElMessage.info('没有更多历史消息了')
-                    return;
-                }
-                console.log('Fetched history messages:', response.data.data);
+              if (response.data.data.length === 0) {
+                  ElMessage.info('没有更多历史消息了')
+                  return;
+              }
+              response.data.data.forEach(item => {
+                  item.encryptInfo = response.data.en_data;
+                  item.encryptInfo.key = localStorage.getItem('backendPassword');
+              });
+              console.log('Fetched history messages:', response.data.data);
 
                 // response.data.data 获取的消息列表ID是从大到小的，需要将其反转
                 this.messages = [...response.data.data.reverse(), ...this.messages];
@@ -300,6 +229,7 @@ export default {
 
 <style scoped>
 .chat-box {
+    margin: 0 60px;
     height: calc(100vh - 7em);
     display: flex;
     flex-direction: column;
@@ -318,7 +248,7 @@ export default {
 }
 
 #message-box {
-    height: calc(100% - 72px - 42px); /* 减去头部和输入框的高度 */
+    height: calc(100% - 60px - 52px - 221px); /* 减去头部和输入框的高度 */
 }
 
 .message-inner-list {

@@ -59,9 +59,10 @@ axios_config.interceptors.response.use(
             } catch (e) {
                 console.log('解密失败：', e);
                 console.log('解密失败：', encryptedData, position);
-                ElMessage.error('解密失败');
+                ElMessage.error('解密失败，请重新登录获取密钥');
             }
             response.data.data = JSON.parse(decryptedData);
+
             console.log("解密解码结果：", response.data.data);
         }
         return response;

@@ -20,6 +20,13 @@ export default class StreamCipher {
 
     // encrypt 方法用于加密明文，输出Base64编码的密文
     encrypt(plainText) {
+        if (plainText === '') {
+            return {
+                cipherText: '',
+                position: this.position
+            };
+        }
+
         const originPosition = this.position;
 
         console.log("encrypt.js  加密前数据:", plainText);
@@ -85,14 +92,25 @@ if (frontendPassword) {
     userCipherFrontend = new StreamCipher(defaultKey);
 }
 
-const websocketPassword = localStorage.getItem('websocketPassword');
-let userCipherWebsocket;
-if (websocketPassword) {
+const websocketBackendPassword = localStorage.getItem('websocketBackendPassword');
+let userCipherWebsocketBackend;
+if (websocketBackendPassword) {
     console.log('使用localStorage中的websocketPassword作为密钥');
-    userCipherWebsocket = new StreamCipher(websocketPassword);
+    userCipherWebsocketBackend = new StreamCipher(websocketBackendPassword);
 } else {
     console.log('使用默认密钥');
-    userCipherWebsocket = new StreamCipher(defaultKey);
+    userCipherWebsocketBackend = new StreamCipher(defaultKey);
 }
 
-export {userCipherFrontend, userCipherBackend, userCipherWebsocket};
+const websocketFrontendPassword = localStorage.getItem('websocketFrontendPassword');
+let userCipherWebsocketFrontend;
+if (websocketFrontendPassword) {
+    console.log('使用localStorage中的websocketPassword作为密钥');
+    userCipherWebsocketFrontend = new StreamCipher(websocketFrontendPassword);
+} else {
+    console.log('使用默认密钥');
+    userCipherWebsocketFrontend = new StreamCipher(defaultKey);
+}
+
+
+export {userCipherFrontend, userCipherBackend, userCipherWebsocketBackend, userCipherWebsocketFrontend};

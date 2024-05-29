@@ -20,7 +20,12 @@
 
 <script>
 import axios_origin from "@/utils/axios-origin";
-import {userCipherFrontend, userCipherBackend, userCipherWebsocket} from "@/utils/encrypt";
+import {
+    userCipherFrontend,
+    userCipherBackend,
+    userCipherWebsocketFrontend,
+    userCipherWebsocketBackend
+} from "@/utils/encrypt";
 import { ElMessage } from "element-plus";
 
 export default {
@@ -59,7 +64,7 @@ export default {
                         localStorage.setItem('userId', JSON.stringify(res.data.data.user.ID));
                         this.$router.push('/im');
 
-                        let salts = ['backend', 'frontend', 'websocket']
+                        let salts = ['backend', 'frontend', 'websocketBackend', 'websocketFrontend']
                         let keys = []
                         for (let i = 0; i < salts.length; i++) {
                             const sha256Password = require('js-sha256').sha256(this.loginPassword);
@@ -72,7 +77,9 @@ export default {
 
                         userCipherBackend.init(keys[0]);
                         userCipherFrontend.init(keys[1]);
-                        userCipherWebsocket.init(keys[2]);
+                        userCipherWebsocketBackend.init(keys[2]);
+                        userCipherWebsocketFrontend.init(keys[3]);
+
 
                       ElMessage.success('登录成功');
                     } else {

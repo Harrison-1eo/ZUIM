@@ -13,14 +13,16 @@ import (
 	"gorm.io/gorm"
 )
 
-var UserEncryptKey = map[uint][3]string{}
+var UserEncryptKey = map[uint][4]string{}
 var UserCipherBackends = map[uint]*utils.StreamCipher{}
 var UserCipherFrontends = map[uint]*utils.StreamCipher{}
-var UserCipherWebsockets = map[uint]*utils.StreamCipher{}
+var UserCipherWebsocketsBackends = map[uint]*utils.StreamCipher{}
+var UserCipherWebsocketsFrontends = map[uint]*utils.StreamCipher{}
 
-var keySalts = []string{"backend", "frontend", "websocket"}
+var keySalts = []string{"backend", "frontend", "websocketBackend", "websocketFrontend"}
 
 var userRepository = repositories.NewUserRepository()
+var statsRepository = repositories.NewStatsRepository()
 
 // Register 注册用户
 func Register(c *gin.Context) {
@@ -113,7 +115,7 @@ func Login(c *gin.Context) {
 
 	println("create token: ", token)
 
-	var userKeys [3]string
+	var userKeys [4]string
 	for index, salt := range keySalts {
 		k := token + utils.Sha256OfString(authenticatedUser.Password) + strconv.Itoa(int(authenticatedUser.ID)) + salt
 		userKeys[index] = (utils.Sha256OfString(k))
@@ -122,13 +124,15 @@ func Login(c *gin.Context) {
 
 	UserCipherBackends[authenticatedUser.ID] = utils.NewStreamCipher(userKeys[0])
 	UserCipherFrontends[authenticatedUser.ID] = utils.NewStreamCipher(userKeys[1])
-	UserCipherWebsockets[authenticatedUser.ID] = utils.NewStreamCipher(userKeys[2])
+	UserCipherWebsocketsBackends[authenticatedUser.ID] = utils.NewStreamCipher(userKeys[2])
+	UserCipherWebsocketsFrontends[authenticatedUser.ID] = utils.NewStreamCipher(userKeys[3])
 
 	println(" ++++ UserEncryptKey ++++ ")
 	println("UserEncryptKey[authenticatedUser.ID]: ", authenticatedUser.ID)
 	println(UserEncryptKey[authenticatedUser.ID][0], UserCipherBackends[authenticatedUser.ID].Key)
 	println(UserEncryptKey[authenticatedUser.ID][1], UserCipherFrontends[authenticatedUser.ID].Key)
-	println(UserEncryptKey[authenticatedUser.ID][2], UserCipherWebsockets[authenticatedUser.ID].Key)
+	println(UserEncryptKey[authenticatedUser.ID][2], UserCipherWebsocketsBackends[authenticatedUser.ID].Key)
+	println(UserEncryptKey[authenticatedUser.ID][3], UserCipherWebsocketsFrontends[authenticatedUser.ID].Key)
 	println(" ++++ UserEncryptKey ++++ \n")
 
 	type ResponseType struct {
@@ -172,4 +176,86 @@ func UpdatePassword(c *gin.Context) {
 	}
 
 	respond(c, 0, "修改密码成功", nil)
+}
+
+func GetStats(c *gin.Context) {
+	userID := c.MustGet("userID").(uint)
+
+	// 查询用户在多少个房间中
+	roomCount, err := statsRepository.GetUserRoomCount(userID)
+	if err != nil {
+		respond(c, 1, "获取统计信息（用户所在房间数）失败", nil)
+		println("// controllers/user_controller.go 获取统计信息（用户所在房间数）失败 >>> err:", err.Error())
+		return
+	}
+
+	// 查询用户有多少个好友
+	friendCount, err := statsRepository.GetUserFriendCount(userID)
+	if err != nil {
+		respond(c, 1, "获取统计信息（用户好友数）失败", nil)
+		println("// controllers/user_controller.go 获取统计信息（用户好友数）失败 >>> err:", err.Error())
+		return
+	}
+
+	// 查询在线用户
+	onlineUserCount, err := statsRepository.GetOnlineUserCount()
+	if err != nil {
+		respond(c, 1, "获取统计信息（在线用户数）失败", nil)
+		println("// controllers/user_controller.go 获取统计信息（在线用户数）失败 >>> err:", err.Error())
+		return
+	}
+
+	// 查看未读消息数
+	unreadMessageCount, err := statsRepository.GetUnreadMessageCount(userID)
+	if err != nil {
+		respond(c, 1, "获取统计信息（未读消息数）失败", nil)
+		println("// controllers/user_controller.go 获取统计信息（未读消息数）失败 >>> err:", err.Error())
+		return
+	}
+
+	// 查询最近一周的该用户每天发送的消息数量
+	messageCount, err := statsRepository.GetUserMessageCount(userID)
+	if err != nil {
+		respond(c, 1, "获取统计信息（用户消息数）失败", nil)
+		println("// controllers/user_controller.go 获取统计信息（用户消息数）失败 >>> err:", err.Error())
+		return
+	}
+
+	// 查询该用户在的各个房间中的所有消息数量分别是多少
+	roomMessageCount, err := statsRepository.GetUserAllMessageCountInRooms(userID)
+	if err != nil {
+		respond(c, 1, "获取统计信息（房间消息数）失败", nil)
+		println("// controllers/user_controller.go 获取统计信息（房间消息数）失败 >>> err:", err.Error())
+		return
+	}
+
+	roomNameMessageCount := map[string]int{}
+	for roomID, count := range roomMessageCount {
+		room, err := roomRepo.GetRoomWithDeleted(roomID)
+		if err != nil {
+			respond(c, 1, "获取统计信息（房间消息数）失败1", nil)
+			println("// controllers/user_controller.go 获取统计信息（房间消息数）失败1 >>> err:", err.Error())
+			return
+		}
+		roomNameMessageCount[room.Name] = count
+	}
+
+	type ResponseType struct {
+		RoomCount          int            `json:"room_count"`
+		FriendCount        int            `json:"friend_count"`
+		OnlineUserCount    int            `json:"online_user_count"`
+		UnreadMessageCount int            `json:"unread_message_count"`
+		MessageCount       map[string]int `json:"message_count"`
+		RoomMessageCount   map[string]int `json:"room_message_count"`
+	}
+
+	respond(c, 0, "获取统计信息成功", ResponseType{
+		RoomCount:          roomCount,
+		FriendCount:        friendCount,
+		OnlineUserCount:    onlineUserCount,
+		UnreadMessageCount: unreadMessageCount,
+		MessageCount:       messageCount,
+		RoomMessageCount:   roomNameMessageCount,
+	})
+
 }

@@ -16,9 +16,10 @@ type Message struct {
 }
 
 type MessageRequestBody struct {
-	RoomID  uint   `json:"room_id"`
-	Type    string `json:"type"`
-	Content string `json:"content"`
+	RoomID  uint        `json:"room_id"`
+	Type    string      `json:"type"`
+	Content string      `json:"content"`
+	EnData  DecryptBody `json:"en_data"`
 }
 
 type MessageResponseBody struct {
@@ -30,4 +31,11 @@ type MessageResponseBody struct {
 	SenderAvatar string `json:"sender_avatar"`
 	Type         string `json:"type"`
 	Content      string `json:"content"`
+}
+
+type DecryptBody struct {
+	Length   int    `json:"length"`
+	Position int    `json:"position"`
+	Mac      string `json:"mac"`
+	Data     string `json:"data"`
 }
