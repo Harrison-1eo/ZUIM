@@ -69,7 +69,10 @@ export default {
             try {
                 const response = await axios_config.get('/api/user/friends');
                 this.friends = response.data.data;
-                console.log(this.friends);
+                // 排除自己
+                console.log('localStorage.getItem(userId): ', localStorage.getItem('userId'));
+                this.friends = this.friends.filter(friend => friend.ID.toString() !== localStorage.getItem('userId').toString());
+                console.log('friends: ', this.friends);
             } catch (error) {
                 console.error('Failed to fetch friends' ,error);
             }

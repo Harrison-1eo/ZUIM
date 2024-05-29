@@ -74,7 +74,7 @@ func WebSocketMessage(c *gin.Context) {
 			respondWebSocket(ws, 1, "当前用户已不在聊天室中", nil)
 			continue
 		}
-
+		
 		message := models.Message{
 			RoomID:   msgGet.RoomID,
 			SenderID: userID,
