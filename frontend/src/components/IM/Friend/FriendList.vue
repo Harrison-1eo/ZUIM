@@ -1,12 +1,19 @@
 <template>
     <div class="friend-container">
-        <div class="friend-list">
-            <h2>终端列表</h2>
-            <el-menu class="el-menu-vertical-demo">
-                <el-menu-item v-for="friend in friends" :key="friend.ID" :index="friend.ID" @click="fetchFriendInfo(friend.ID)">
-                    <i class="el-icon-user-solid"></i>
-                    {{ friend.username }}
-                </el-menu-item>
+        <div class="chat-list">
+            <h2 style="padding-left: 20px">终端列表</h2>
+            <el-menu class="el-menu-rooms">
+                <el-scrollbar wrap-class="scrollbar-wrapper">
+                    <el-menu-item
+                        class="el-menu-item-button"
+                        v-for="friend in friends"
+                        :key="friend.ID"
+                        :index="friend.ID"
+                        @click="fetchFriendInfo(friend.ID)">
+<!--                        <i class="el-icon-user-solid"></i>-->
+                        {{ friend.username }}
+                    </el-menu-item>
+                </el-scrollbar>
             </el-menu>
             
         </div>
@@ -90,10 +97,39 @@ export default {
 
 <style>
 .friend-container {
-    display: flex;
+    margin: 0;
+    padding: 0;
     height: 100%;
     overflow-y: hidden;
 }
+
+.chat-list {
+    padding: 20px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #ffffff;
+    background: linear-gradient(180deg,#f0edf7 .03%,#ebeaf5 32.19%,#e8e8f3 68.86%,#e4eaf7 99.12%);
+}
+
+.el-menu-rooms {
+    border: none;
+    overflow-y: auto;
+    background: none;
+}
+
+.el-menu-item-button {
+    background: none;
+    border-bottom: #333333 1px;
+    border-radius: 10px;
+}
+
+.el-menu-item-button:hover {
+    background: #ffffff;
+}
+
+
+
 
 .friend-list {
     padding: 20px;
