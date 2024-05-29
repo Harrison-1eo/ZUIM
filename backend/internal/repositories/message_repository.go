@@ -24,7 +24,7 @@ func (repo *MessageRepository) CreateMessage(message models.Message) (*models.Me
 // 从lastMessageID开始（不包含）往前获取limit条消息
 func (repo *MessageRepository) GetMessagesByRoomID(roomID uint, lastMessageID uint, limit int) ([]models.Message, error) {
 	var messages []models.Message
-	query := db.Model(models.Message{}).Where("room_id = ?", roomID).Order("id desc")
+	query := db.Model(models.Message{}).Where("room_id = ? and type != 'video' ", roomID).Order("id desc")
 
 	if lastMessageID != 0 {
 		query = query.Where("id < ?", lastMessageID)

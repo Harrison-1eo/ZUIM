@@ -1,8 +1,8 @@
 <template>
     <div class="avatar-uploader-box">
-        <el-upload class="avatar-uploader" :action="uploadUrl" :headers="{ Authorization: 'Bearer ' + this.token }"
-            :show-file-list="false" :on-success="handleAvatarSuccess" :on-error="handleAvatarError"
-            :before-upload="beforeAvatarUpload">
+        <el-upload class="avatar-uploader" action="http://localhost:8000/api/user/upload_avatar"
+            :headers="{ Authorization: 'Bearer ' + this.token }" :show-file-list="false" :on-success="handleAvatarSuccess"
+            :on-error="handleAvatarError" :before-upload="beforeAvatarUpload">
             <img v-if="avatarUrl" :src="avatarUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
@@ -17,7 +17,6 @@ import { ElMessage } from "element-plus";
 export default {
     data() {
         return {
-            uploadUrl: axios.defaults.baseURL + '/api/user/upload_avatar',
             userInfo: {},
             token: localStorage.getItem('token'),
             avatarUrl: ''
@@ -41,21 +40,17 @@ export default {
                 console.error('Error fetching user information:', error);
                 ElMessage.error('获取用户信息失败');
             }
-            this.avatarUrl = this.userInfo.avatar ? axios.defaults.baseURL + this.userInfo.avatar : '';
+            this.avatarUrl = this.userInfo.avatar ? 'http://localhost:8000' + this.userInfo.avatar : '';
         },
         handleAvatarError(err, file, fileList) {
             console.error('上传头像失败:', err, file, fileList);
             ElMessage.error('上传头像失败');
         },
         handleAvatarSuccess(res) {
-            // 没通过拦截器，手动解码
-            var textDecoder = new TextDecoder('utf-8');
-            res.data = JSON.parse(textDecoder.decode(Uint8Array.from(atob(res.data), c => c.charCodeAt(0))));
-            
             if (res.code === 0) {
                 ElMessage.success('上传头像成功');
                 this.userInfo = res.data;
-                this.avatarUrl = this.userInfo.avatar ? axios.defaults.baseURL + this.userInfo.avatar : '';
+                this.avatarUrl = this.userInfo.avatar ? 'http://localhost:8000' + this.userInfo.avatar : '';
                 var temp = {
                     'id': this.userInfo.ID,
                     'avatar': this.avatarUrl
@@ -68,7 +63,7 @@ export default {
                     sender_id_avatar_temp = [temp];
                 }
                 localStorage.setItem('sender_id_avatar', JSON.stringify(sender_id_avatar_temp));
-                console.log('本地头像更改：', this.avatarUrl);
+                console.log('本地头像更改');
             } else {
                 ElMessage.error('上传头像失败');
                 console.error('Failed to upload avatar:', res.data.msg);

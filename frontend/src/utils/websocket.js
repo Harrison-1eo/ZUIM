@@ -23,28 +23,28 @@ export default class WebsocketClass {
      */
     connect() {
         this.ws = new WebSocket(this.url)
-        // 监听socket连接
+            // 监听socket连接
         this.ws.onopen = () => {
-            this.status = 1
-            this.heartHandler()
-        }
-        // 监听socket消息
-        this.ws.onmessage = (e) => {
-            if (this.ifENCRYPT) {
-                console.log('WS 收到的数据 ', e.data)
-                let data = JSON.parse(e.data)
-                let decode = JSON.parse(this.textDecoder.decode(Uint8Array.from(atob(data.data), c => c.charCodeAt(0))));
-                data.data = decode
-                this.callback(data)
-            } else {
-                this.callback(JSON.parse(e.data))
+                this.status = 1
+                this.heartHandler()
             }
-        }
-        // 监听socket错误信息
+            // 监听socket消息
+        this.ws.onmessage = (e) => {
+                if (this.ifENCRYPT) {
+                    // console.log('WS 收到的数据 ', e.data)
+                    let data = JSON.parse(e.data)
+                    let decode = JSON.parse(this.textDecoder.decode(Uint8Array.from(atob(data.data), c => c.charCodeAt(0))));
+                    data.data = decode
+                    this.callback(data)
+                } else {
+                    this.callback(JSON.parse(e.data))
+                }
+            }
+            // 监听socket错误信息
         this.ws.onerror = (e) => {
-            console.log(e)
-        }
-        // 监听socket关闭
+                console.log(e)
+            }
+            // 监听socket关闭
         this.ws.onclose = (e) => {
             this.onClose(e)
         }
@@ -55,8 +55,11 @@ export default class WebsocketClass {
      * @description: 发送消息
      */
     send(data) {
-        console.log('WS 发送的数据 ', JSON.stringify(data))
-        return this.ws.send(JSON.stringify(data))
+        // console.log('WS 发送的数据 ', JSON.stringify(data))
+        console.log('WS 发送的数据 ', data)
+        this.ws.send(JSON.stringify(data))
+        console.log('WS 发送成功')
+        return
     }
 
     /**
