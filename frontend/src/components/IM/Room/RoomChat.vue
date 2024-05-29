@@ -35,8 +35,6 @@ import { ElMessage } from "element-plus";
 import WebsocketClass from "@/utils/websocket";
 // import { createFFmpeg, fetchFile, FFmpeg } from "@ffmpeg/ffmpeg";
 import LiveStream from "@/components/IM/Room/LiveStream.vue"
-// ？？？？
-import LoginView from '../../../../../desktop-app/src/renderer/src/views/LoginView.vue';
 import {wsBaseUrl} from "@/utils/base-url-setting";
 
 export default {

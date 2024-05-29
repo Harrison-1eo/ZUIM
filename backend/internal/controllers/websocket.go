@@ -82,22 +82,6 @@ func WebSocketMessage(c *gin.Context) {
 			continue
 		}
 
-		msgGet.Content = decodedContent
-
-
-		message := models.Message{
-			RoomID:   msgGet.RoomID,
-			SenderID: userID,
-			Type:     msgGet.Type,
-			Content:  msgGet.Content,
-		}
-
-		newMessage, err := messageRepo.CreateMessage(message)
-		if err != nil {
-			respondWebSocket(userID, ws, 1, "创建新信息失败", nil)
-			continue
-		}
-
 		// 获取聊天室内的所有用户
 		roomUsers, err := userRoomRepo.GetRoomUsers(msgGet.RoomID)
 		if err != nil {
@@ -111,15 +95,45 @@ func WebSocketMessage(c *gin.Context) {
 			continue
 		}
 
-		msgSend := models.MessageResponseBody{
-			ID:           newMessage.ID,
-			SendTime:     newMessage.CreatedAt.Format("2006-01-02 15:04:05"),
-			RoomID:       newMessage.RoomID,
-			SenderID:     newMessage.SenderID,
-			SenderName:   senderInfo.Username,
-			SenderAvatar: senderInfo.Avatar,
-			Type:         newMessage.Type,
-			Content:      newMessage.Content,
+		msgGet.Content = decodedContent
+
+		message := models.Message{
+			RoomID:   msgGet.RoomID,
+			SenderID: userID,
+			Type:     msgGet.Type,
+			Content:  msgGet.Content,
+		}
+
+		var msgSend models.MessageResponseBody
+
+		if message.Type == "video" {
+			msgSend = models.MessageResponseBody{
+				ID:           0,
+				SendTime:     "",
+				RoomID:       message.RoomID,
+				SenderID:     message.SenderID,
+				SenderName:   senderInfo.Username,
+				SenderAvatar: senderInfo.Avatar,
+				Type:         message.Type,
+				Content:      message.Content,
+			}
+		} else {
+			newMessage, err := messageRepo.CreateMessage(message)
+			if err != nil {
+				respondWebSocket(userID, ws, 1, "创建新信息失败", nil)
+				continue
+			}
+
+			msgSend = models.MessageResponseBody{
+				ID:           newMessage.ID,
+				SendTime:     newMessage.CreatedAt.Format("2006-01-02 15:04:05"),
+				RoomID:       newMessage.RoomID,
+				SenderID:     newMessage.SenderID,
+				SenderName:   senderInfo.Username,
+				SenderAvatar: senderInfo.Avatar,
+				Type:         newMessage.Type,
+				Content:      newMessage.Content,
+			}
 		}
 
 		// 发送消息给聊天室内的所有在线用户
