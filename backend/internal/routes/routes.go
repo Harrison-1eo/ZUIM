@@ -82,6 +82,10 @@ func SetupRouter() *gin.Engine {
 		room.POST("/create", controllers.CreateRoom)
 		// 删除聊天室
 		room.DELETE("/delete", controllers.DeleteRoom)
+		// 获取聊天室信息
+		room.GET("/info", controllers.GetRoomInfo)
+		// 修改聊天室信息
+		room.POST("/update", controllers.UpdateRoom)
 		// 添加用户到聊天室
 		room.POST("/add_user", controllers.AddUserToRoom)
 		// 获取我的聊天室列表

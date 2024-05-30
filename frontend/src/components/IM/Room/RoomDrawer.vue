@@ -3,7 +3,10 @@
 <template>
     <el-drawer show-close drawer size="450px">
         <template #header>
-            <h2>{{ room.name }}</h2>
+            <div class="room-drawer-header">
+                <h2>{{ roomInfo.name }}</h2>
+                <el-icon style="margin: 20px; cursor: pointer;" @click="updateRoomNameBox"><Edit /></el-icon>
+            </div>
         </template>
 
         <el-card style="max-width: 480px">
@@ -12,9 +15,9 @@
                     <span>房间描述</span>
                 </div>
             </template>
-            <p>{{ room.description }}</p>
+            <p>{{ roomInfo.description }}</p>
             <template #footer>
-                <el-button type="primary" class="changedescription" @click="changedescrpition">修改房间描述（未设置方法）</el-button>
+                <el-button type="primary" class="changedescription" @click="updateRoomInfoBox">修改房间信息</el-button>
             </template>
         </el-card>
 
@@ -61,7 +64,7 @@ export default {
             type: Number,
             required: true
         },
-        room: {
+        roomInfo: {
             type: Object,
             required: true
         },
@@ -71,7 +74,6 @@ export default {
             roomUsers: [],
         }
     },
-
     watch: {
         roomID() {
             this.fetchRoomUsers();
@@ -80,15 +82,68 @@ export default {
     created() {
         this.fetchRoomUsers();
     },
-    computed: {
-
-    },
     methods: {
-        changedescrpition() {
-            ElMessage.info('修改房间描述功能未实现');
+        // ElMessageBox.prompt 的参数设置参考：https://blog.csdn.net/weixin_47872288/article/details/139044826
+        updateRoomNameBox() {
+            ElMessageBox.prompt(
+                    '请输入新的房间名称',
+                    '修改房间名称',
+                    {
+                        inputValue: this.roomInfo.name,
+                        confirmButtonText: '修改',
+                        cancelButtonText: '取消',
+                        inputPattern: /\S/,
+                        inputErrorMessage: '房间名称不能为空'
+                    }
+            ).then(({ value }) => {
+                if (!value) {
+                    ElMessage.error('房间名称不能为空');
+                    return;
+                }
+                // 修改房间名称
+                const newRoomInfo = this.roomInfo;
+                newRoomInfo.name = value;
+                this.updateRoomInfo(newRoomInfo);
+            }).catch(() => {
+                ElMessage.info('取消修改');
+            });
+        },
+        updateRoomInfoBox() {
+            ElMessageBox.prompt(
+                    '请输入新的房间描述',
+                    '修改房间信息',
+                    {
+                        inputValue: this.roomInfo.description,
+                        confirmButtonText: '修改',
+                        cancelButtonText: '取消',
+                        inputType: 'textarea',
+                        inputPattern: /\S/,
+                        inputErrorMessage: '房间描述不能为空'
+                    }
+            ).then(({ value }) => {
+                if (!value) {
+                    ElMessage.error('房间描述不能为空');
+                    return;
+                }
+                // 修改房间描述
+                const newRoomInfo = this.roomInfo;
+                newRoomInfo.description = value;
+                this.updateRoomInfo(newRoomInfo);
+            }).catch(() => {
+                ElMessage.info('取消修改');
+            });
         },
         addUserBox() {
-            ElMessageBox.prompt('请输入邀请的用户名称', '邀请朋友').then(({ value }) => {
+            ElMessageBox.prompt(
+                    '请输入邀请的用户名称',
+                    '邀请朋友',
+                    {
+                        confirmButtonText: '邀请',
+                        cancelButtonText: '取消',
+                        inputType: 'textarea',
+                        inputErrorMessage: '用户名称不能为空'
+                    }
+            ).then(({ value }) => {
                 if (!value) {
                     ElMessage.error('用户名称不能为空');
                     return;
@@ -98,6 +153,30 @@ export default {
             }).catch(() => {
                 ElMessage.info('取消邀请');
             });
+        },
+        async updateRoomInfo(newRoomInfo) {
+            try {
+                const response = await axios_config.post('/api/room/update',
+                    {
+                        'room_id': this.roomID,
+                        'name': newRoomInfo.name,
+                        'description': newRoomInfo.description
+                    },
+                );
+                console.log('Update room info:', response.data);
+                if (response.data.code !== 0) {
+                    ElMessage.error(response.data.msg);
+                    return false;
+                }
+                ElMessage.success('修改成功');
+                this.$emit('update:roomInfo', newRoomInfo);
+                this.$emit('update:ifUpdate', true);
+            } catch (error) {
+                console.error('Failed to update room info:', error);
+                ElMessage.error('服务器错误');
+                return false;
+            }
+            return true;
         },
         async addUser(name) {
             try {
@@ -132,8 +211,8 @@ export default {
                     ElMessage.error(response.data.msg);
                     return false;
                 }
-                // 将v-model传递的ifFetch设置为true，触发父组件的watch
-                this.$emit('update:ifFetch', true);
+                // 将v-model传递的ifUpdate设置为true，触发父组件的watch
+                this.$emit('update:ifUpdate', true);
                 ElMessage.success('退出房间成功');
             } catch (error) {
                 console.error('Failed to delete room:', error);
@@ -169,3 +248,13 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+
+.room-drawer-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+</style>
