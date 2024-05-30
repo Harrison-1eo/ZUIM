@@ -51,6 +51,7 @@ func Register(c *gin.Context) {
 	_, err = userInfoRepository.CreateUserInfo(models.UserInfo{
 		UserID:   newUser.ID,
 		Username: newUser.Username,
+		Avatar:   "/static/avatars/nopic.png",
 	})
 
 	if err != nil {

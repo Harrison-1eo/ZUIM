@@ -9,7 +9,10 @@ import (
 
 func main() {
 	// 连接SQLite数据库
-	repositories.InitDB()
+	//repositories.InitDBSqlite()
+
+	// 连接MySQL数据库
+	repositories.InitDBMySQL()
 
 	router := routes.SetupRouter()
 	err := router.Run(":8000")
