@@ -58,7 +58,6 @@ export default {
                 if (res.status === 200) {
                     if (res.data.code === 0) {
                         // Save token and user information to local storage or Vuex
-                        console.log(res.data)
                         localStorage.setItem('token', res.data.data.token);
                         localStorage.setItem('user', JSON.stringify(res.data.data.user.username));
                         localStorage.setItem('userId', JSON.stringify(res.data.data.user.ID));
@@ -72,7 +71,6 @@ export default {
                             const kk = require('js-sha256').sha256(k);
                             localStorage.setItem(salts[i] + 'Password', kk);
                             keys.push(kk);
-                            console.log(salts[i] + 'Password >>> ', kk);
                         }
 
                         userCipherBackend.init(keys[0]);

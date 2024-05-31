@@ -122,7 +122,6 @@ export default {
             const regex = /you can download the file on (\/static\/files\/\S+)/;
             const match = content.match(regex);
             if (match) {
-                console.log(match[1]); // 输出匹配到的URL
                 return backendBaseUrl + match[1]; // 返回匹配到的完整URL
             }
             return ""; // 如果没有匹配到，返回null
@@ -134,21 +133,16 @@ export default {
             return content.replace(regex, '$1');
         },
         getAvatarUrl(avatar) {
-            // console.log(user);
-            console.log(avatar);
             if (!avatar) {
                 // 如果 user.avatar 为 null，返回默认的 URL
-                console.log('1');
                 return 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png';
             } else if (typeof avatar === 'string') {
                 return backendBaseUrl + avatar;
             }
             // 如果头像文件不存在或user.avatar格式不正确，则返回默认的 URL
-            console.log('4');
             return 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png';
         },
         getPicUrl(url) {
-            // console.log(url);
             if (url) {
                 return backendBaseUrl + url;
                 // return this.avatarUrl(url);

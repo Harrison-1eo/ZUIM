@@ -7,10 +7,10 @@
         <el-divider />
 
         <div class="row-box">
-            <StatisticItem :title="'在线终端'" :value="statsInfo.online_user_count" :icon="Avatar" :iconColor="'#40c9c6'"/>
-            <StatisticItem :title="'终端总数'" :value="statsInfo.friend_count" :icon="Grid" :iconColor="'#0fbe7d'"/>
-            <StatisticItem :title="'参与房间'" :value="statsInfo.room_count" :icon="PhoneFilled" :iconColor="'#36a3f7'"/>
-            <StatisticItem :title="'未读消息'" :value="statsInfo.unread_message_count" :icon="Comment" :iconColor="'#f4516c'"/>
+            <StatisticItem :title="'在线终端'" :value="statsInfo.online_user_count" :icon="Avatar" :iconColor="'#40c9c6'" />
+            <StatisticItem :title="'终端总数'" :value="statsInfo.friend_count" :icon="Grid" :iconColor="'#0fbe7d'" />
+            <StatisticItem :title="'参与房间'" :value="statsInfo.room_count" :icon="PhoneFilled" :iconColor="'#36a3f7'" />
+            <StatisticItem :title="'未读消息'" :value="statsInfo.unread_message_count" :icon="Comment" :iconColor="'#f4516c'" />
         </div>
 
         <div class="line-chart-box">
@@ -34,8 +34,8 @@ import axios_config from "@/utils/axios-config";
 import StatisticItem from "@/components/IM/Home/StatisticItem.vue";
 import HomeWelcome from "@/components/IM/Home/HomeWelcome.vue";
 import InfoBox from "@/components/IM/Home/InfoBox.vue";
-import {Avatar, CircleCloseFilled, Grid, WarningFilled, Comment, PhoneFilled} from "@element-plus/icons";
-import {ElMessage} from "element-plus";
+import { Avatar, CircleCloseFilled, Grid, WarningFilled, Comment, PhoneFilled } from "@element-plus/icons";
+import { ElMessage } from "element-plus";
 import * as echarts from 'echarts';
 
 export default {
@@ -60,7 +60,7 @@ export default {
             return WarningFilled
         },
     },
-    components: {StatisticItem, InfoBox, HomeWelcome},
+    components: { StatisticItem, InfoBox, HomeWelcome },
     data() {
         return {
             statsInfo: {},
@@ -83,13 +83,11 @@ export default {
         getStats() {
             axios_config.get('/api/user/stats').then(response => {
                 this.statsInfo = response.data.data;
-                console.log(response);
+
                 const messageCount = this.statsInfo.message_count;
 
                 const sortedMessageCount = Object.entries(messageCount).sort((a, b) => new Date(b[0]) - new Date(a[0]));
                 const sortedRoomMessageCount = Object.entries(this.statsInfo.room_message_count).sort((a, b) => b[1] - a[1]);
-                console.log(sortedMessageCount);
-                console.log(sortedRoomMessageCount);
                 this.statsInfo.message_count = sortedMessageCount;
                 this.statsInfo.room_message_count = sortedRoomMessageCount;
 
@@ -127,10 +125,10 @@ export default {
             const chart = echarts.init(this.$refs.lineChart);
 
             const option = {
-                title:{
-                    text:'终端流量统计图',
-                    x:'center',
-                    y:'top',
+                title: {
+                    text: '终端流量统计图',
+                    x: 'center',
+                    y: 'top',
                     // textAlign:'center'
                 },
                 tooltip: {
@@ -155,7 +153,7 @@ export default {
             };
             chart.setOption(option);
         },
-        renderPieChar(){
+        renderPieChar() {
             const top4 = this.statsInfo.room_message_count.slice(0, 4);
             const otherTotal = this.statsInfo.room_message_count.slice(4).reduce((sum, item) => sum + item[1], 0);
 
@@ -166,10 +164,10 @@ export default {
 
             const chart = echarts.init(this.$refs.pieChart);
             const option = {
-                title:{
-                    text:'房间消息数量统计图',
-                    x:'center',
-                    y:'top',
+                title: {
+                    text: '房间消息数量统计图',
+                    x: 'center',
+                    y: 'top',
                     // textAlign:'center'
                 },
                 tooltip: {
@@ -232,12 +230,13 @@ h1 {
     flex-direction: row;
 }
 
-.line-chart-chart, .pie-chart-chart {
+.line-chart-chart,
+.pie-chart-chart {
     display: flex;
     justify-content: center;
     background: #ffffff;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 20px 0 0 0;
 }
 
@@ -254,5 +253,4 @@ h1 {
 .pointer-emphasis:hover {
     border: 1px solid #4955f5;
 }
-
 </style>

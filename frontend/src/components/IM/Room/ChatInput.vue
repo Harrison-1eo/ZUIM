@@ -140,7 +140,6 @@ export default {
             });
         },
         closeCamera() {
-            console.log('关闭摄像头hahaha');
             if (this.stream) {
                 // 停止所有视频流的轨道
                 this.stream.getTracks().forEach(track => track.stop());
@@ -149,14 +148,12 @@ export default {
                 this.stream = null;
                 // 也要关闭ws发送
 
-                console.log('关闭摄像头');
             }
             if (this.video) {
                 this.video.srcObject = null; // 清空视频元素的源
             }
             if (this.ws && this.ws.readyState === WebSocket.OPEN) {
                 this.ws.close(); // 关闭 WebSocket 连接
-                console.log('WebSocket 已关闭');
             }
             clearInterval(this.frameInterval); // 清除定时器
             this.videoVisible = false;
@@ -167,7 +164,6 @@ export default {
         },
 
         // async connect() {
-        //     console.log('start to connect');
         //     // this.videoVisible = false;
         //     // this.videoVisible2 = true;
         //     this.startSendingVideo();
@@ -191,7 +187,6 @@ export default {
                 if (!this.isRecording) return;
 
                 if (this.video.paused || this.video.ended) {
-                    console.log('Video is paused or ended');
                     return;
                 }
                 context.drawImage(this.video, 0, 0, canvas.width, canvas.height);
@@ -235,7 +230,6 @@ export default {
                 try {
                     this.stream = await navigator.mediaDevices.getUserMedia({ video: true });
                     this.video.srcObject = this.stream;
-                    console.log('重新打开摄像头');
                 } catch (err) {
                     console.error('Error accessing camera:', err);
                 }
@@ -256,10 +250,8 @@ export default {
         //         if (this.isRecording) {
         //             context.drawImage(this.video, 0, 0, canvas.width, canvas.height);
         //             const videoFrameBase64 = canvas.toDataURL('image/jpeg', 0.5);
-        //             // console.log('发送视频流: videoFrameBase64:', videoFrameBase64);
         //             this.$emit('send', 'video', videoFrameBase64);
         //             // this.$emit('send', 'text', videoFrameBase64);
-        //             // console.log('发送视频流喽');
         //             await this.sleep(1000); // 每秒发送一帧视频
         //             sendVideoFrame();
         //         }
@@ -310,7 +302,6 @@ export default {
                 return;
             }
             // 在这里添加文件传输的逻辑
-            console.log('文件选择成功：', file.name);
             // 假设有一个函数 uploadFile 来处理文件上传
             this.uploadFile(file, 'file');
         },
@@ -327,18 +318,14 @@ export default {
                         'Content-Type': 'multipart/form-data'
                     }
                 });
-                console.log(response);
 
                 if (response.data.code === 0) {
                     // 上传成功，返回文件信息
-                    console.log('File uploaded:', response.data.data);
                     const msg = {
                         room_id: this.roomId,
                         type: 'file',
                         content: response.data.data.file_name
                     }
-                    console.log("msg", msg);
-                    console.log(response.data.data.file_name);
                     if (type === 'file') {
                         this.$emit('send', 'file', response.data.data.file_name + ' you can download the file on ' + response.data.data.file_url);
                     } else if (type === 'image') {

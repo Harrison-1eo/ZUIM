@@ -143,12 +143,10 @@ export default {
         // 对新消息进行处理
         // addNewMessage(message) {
         // 接收来自服务器的消息并处理
-        // console.log('Received new message:', message);
         fetchRoomInfo() {
             axios_config.get(`/api/room/info?room_id=${this.roomID}`).then(response => {
                 if (response.data.code === 0) {
                     this.roomInfo = response.data.data;
-                    console.log('获取房间信息成功:', this.roomInfo);
                 } else {
                     console.error('获取房间信息失败:', response.data.msg);
                 }
@@ -159,22 +157,18 @@ export default {
         // 对新消息进行处理
         addNewMessage(message) {
             // 接收来自服务器的消息并处理
-            console.log('Received new message:', message);
             if (message.code === 0) {
                 if (message.data.room_id !== this.roomID) {
                     return;
                 }
                 // message.data.sender_avatar = this.currentUser.avatar;
-                // console.log('Received new message:', message);
                 message.data.encryptInfo = message.en_data;
                 message.data.encryptInfo.key = localStorage.getItem('websocketBackendPassword');
                 if (message.data.type === 'video') {
                     if (this.forceDeleteVideo === false) {
-                        console.log('forceDeleteVideo is false');
                         this.recieveVideoVisible = true;
                         this.ReceiveVideoChunk_Base64(message.data.content);
                     } else {
-                        console.log('forceDeleteVideo is true');
                     }
                 }
                 else {
@@ -191,8 +185,6 @@ export default {
         // 接受来自 ChatInput 组件的消息并发送
         sendMessageToParent(type, message) {
             // 接收来自子组件的消息并处理
-            // console.log('Sending message to parent:', message);
-            console.log('Sending message to parent:', message);
             // 在这里可以进行进一步的处理，比如发送给服务器等操作
             // this.sendMessageToServer(message);
             this.ws.send({
@@ -215,10 +207,6 @@ export default {
                         "last_message_id": lastMessageId,
                         "limit": limit
                     });
-                //   console.log('roomID:', this.roomID);
-                //   console.log('lastMessageId:', lastMessageId);
-                //     console.log('limit:', limit);
-                //   console.log('Fetched history messages111:', response.data.data);
                 if (response.data.data.length === 0) {
                     ElMessage.info('没有更多历史消息了')
                     return;
@@ -227,7 +215,6 @@ export default {
                     item.encryptInfo = response.data.en_data;
                     item.encryptInfo.key = localStorage.getItem('backendPassword');
                 });
-                console.log('Fetched history messages:', response.data.data);
 
                 // response.data.data 获取的消息列表ID是从大到小的，需要将其反转
                 this.messages = [...response.data.data.reverse(), ...this.messages];
@@ -237,7 +224,6 @@ export default {
         },
         // 用于点击“加载更多历史消息”按钮时调用
         getMoreHistoryMessages() {
-            console.log(this.messages);
             if (this.messages.length === 0) {
                 ElMessage.info('没有更多历史消息了')
                 return;
@@ -247,8 +233,6 @@ export default {
                 return;
             }
             const minMessageId = Math.min(...this.messages.map(item => item.ID));
-            console.log('Called with lastMessageId:', minMessageId);
-            console.log('minMessageId:', minMessageId);
             this.getHistoryMessages(minMessageId, 10);
         },
         // 滚动消息列表到底部
@@ -271,7 +255,6 @@ export default {
         // 当有新消息时，并且消息列表在底部时，自动滚动到底部，保持最新消息可见
         handleNewMessage() {
             if (this.isAtBottom()) {
-                console.log('scroll to bottom');
                 this.scrollToBottom();
             }
         },

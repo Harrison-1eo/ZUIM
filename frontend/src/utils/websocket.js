@@ -34,16 +34,12 @@ export default class WebsocketClass {
             // 监听socket消息
         this.ws.onmessage = (e) => {
                 if (this.ifENCRYPT) {
-                    // console.log('WS 收到的数据 ', e.data)
                     let data = JSON.parse(e.data)
                         // let data = e.data
                     if (data.code === 0) {
                         try {
                             data.data.content = userCipherWebsocketBackend.decrypt(data.en_data.data, data.en_data.position)
-                                // console.log('解密后的数据', data.data.content)
                         } catch (e) {
-                            console.log('解密失败：', e)
-                            console.log('解密失败：', data.en_data.data, data.en_data.position)
                             ElMessage.error('解密失败，请重新登录获取密钥');
                         }
                     }
@@ -53,14 +49,11 @@ export default class WebsocketClass {
                 }
             }
             // 监听socket错误信息
-        this.ws.onerror = (e) => {
-                console.log(e)
-            }
+        this.ws.onerror = (e) => {}
             // 监听socket关闭
         this.ws.onclose = (e) => {
             this.onClose(e)
         }
-        console.log('WS 已连接')
     }
 
     /**
@@ -76,7 +69,6 @@ export default class WebsocketClass {
          }
          将data.data进行加密
          */
-        // console.log('WS 发送的数据 ', JSON.stringify(data))
         const dd = userCipherWebsocketFrontend.encrypt(data.content);
         data.content = "";
         data.en_data = {
@@ -98,7 +90,6 @@ export default class WebsocketClass {
             }
          }
          */
-        // console.log('WS 发送的数据 ', data)
         return this.ws.send(JSON.stringify(data))
     }
 
@@ -109,7 +100,6 @@ export default class WebsocketClass {
         this.status = 2
         this.ws.close()
         clearInterval(this.pingInterval)
-        console.log('WS 已关闭')
     }
 
     /**
@@ -120,7 +110,6 @@ export default class WebsocketClass {
             return
         }
         console.error(e)
-        console.log(this)
         this.status = this.status === 2 ? this.status : 0
         setTimeout(() => {
             if (this.status === 0) {

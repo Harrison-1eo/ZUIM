@@ -30,7 +30,7 @@ export default {
     data() {
         return {
             fullTextBeforeAvatar: `${this.getGreeting()}，`,
-            fullTextAfterAvatar: '', // 假设userInfo已经在数据中定义
+            fullTextAfterAvatar: '', 
             beforeAvatarText: '',
             afterAvatarText: '',
             avatarVisible: false,
@@ -60,10 +60,8 @@ export default {
             return greeting;
         },
         getAvatar(url) {
-            // console.log(url);
             if (url) {
                 return backendBaseUrl + url;
-                // return this.avatarUrl(url);
             }
             return backendBaseUrl + '/static/avatars/nopic.png';
         },
@@ -73,7 +71,7 @@ export default {
                     this.afterAvatarText = this.afterAvatarText.substring(0, this.afterAvatarText.length - 1);
                 } else if (this.avatarVisible) {
                     this.avatarVisible = false;
-                    this.textIndex = this.fullTextBeforeAvatar.length;  // 重设textIndex为前段文字长度
+                    this.textIndex = this.fullTextBeforeAvatar.length;  
                 } else if (this.beforeAvatarText.length > 0) {
                     this.beforeAvatarText = this.beforeAvatarText.substring(0, this.beforeAvatarText.length - 1);
                     this.textIndex--;

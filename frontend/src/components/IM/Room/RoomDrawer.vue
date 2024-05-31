@@ -163,7 +163,6 @@ export default {
                         'description': newRoomInfo.description
                     },
                 );
-                console.log('Update room info:', response.data);
                 if (response.data.code !== 0) {
                     ElMessage.error(response.data.msg);
                     return false;
@@ -187,7 +186,6 @@ export default {
                         'role': 'member'
                     },
                 );
-                console.log('Add user:', response.data);
                 if (response.data.code !== 0) {
                     ElMessage.error(response.data.msg);
                     return false;
@@ -206,7 +204,6 @@ export default {
                 const response = await axios_config.delete(
                     '/api/room/delete?room_id=' + this.roomID
                 );
-                console.log('Delete room:', response.data);
                 if (response.data.code !== 0) {
                     ElMessage.error(response.data.msg);
                     return false;

@@ -57,7 +57,6 @@ export default {
         },
         activeRoom(newValue, oldValue) {
             this.activeRoom = newValue;
-            console.log('activeRoom changed:', newValue, oldValue);
         },
         ifUpdateRoomList2Chat() {
             this.fetchRooms();
@@ -96,7 +95,6 @@ export default {
                             'description': ''
                         },
                 );
-                console.log('Create room:', response.data);
                 if (response.data.code !== 0) {
                     return false;
                 }
@@ -119,15 +117,12 @@ export default {
                     this.ifUpdateRoomList2Chat = false;
                     // 如果当前选中的聊天室仍在列表中，则重新获取聊天室信息，并选定当前聊天室不变
                     if (this.rooms.find(room => room.ID === this.activeRoomId)) {
-                        console.log('activeRoomId 没变:', this.activeRoomId, this.rooms);
                         this.activeOneRoom(this.activeRoomId);
                     } else {
-                        console.log('activeRoomId 变了:', this.activeRoomId);
                         this.activeRoom = null;
                         this.activeRoomId = null;
                     }
                 }
-                console.log('Rooms:', this.rooms);
             } catch (error) {
                 console.error('Failed to fetch rooms:', error);
             }
@@ -136,7 +131,6 @@ export default {
             this.activeRoom = this.rooms.find(room => room.ID === id);      // 假设返回的数据是聊天室详情
             this.activeRoomId = id;                                         // 更新当前激活的聊天室ID
             // store.commit('setActiveRoom', this.activeRoom);
-            // console.log('Active room in fetchroominfo func:', this.activeRoom);
         },
     }
 };

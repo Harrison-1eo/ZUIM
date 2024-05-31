@@ -66,7 +66,6 @@ export default {
                     sender_id_avatar_temp = [temp];
                 }
                 localStorage.setItem('sender_id_avatar', JSON.stringify(sender_id_avatar_temp));
-                console.log('本地头像更改');
             } else {
                 ElMessage.error('上传头像失败');
                 console.error('Failed to upload avatar:', res.data.msg);
