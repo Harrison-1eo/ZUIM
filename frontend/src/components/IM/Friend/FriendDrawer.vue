@@ -4,7 +4,6 @@
     <el-drawer show-close drawe>
         <template #header>
             <h2>{{friend.username}}</h2>
-            <h2>{{friend.ID}}</h2>
         </template>
 
         <el-card style="max-width: 480px">
@@ -16,6 +15,9 @@
             <el-button type="primary" class="changedescription" @click="createRoomChatWithThisGuy(friend.ID, friend.username)">创建聊天室</el-button>
 
         </el-card>
+        <template #footer>
+            <el-button type="danger">删除终端</el-button>
+        </template>
     </el-drawer>
 </template>
 

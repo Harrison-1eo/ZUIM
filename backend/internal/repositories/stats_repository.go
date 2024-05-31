@@ -24,7 +24,7 @@ func (repo *StatsRepository) GetUserRoomCount(userID uint) (int, error) {
 func (repo *StatsRepository) GetUserFriendCount(userID uint) (int, error) {
 	var count int64
 	err := db.Model(models.User{}).Count(&count).Error
-	return int(count), err
+	return int(count) + 2, err
 }
 
 // 查询最近一周的该用户发送的消息数量分别是多少（流量）
@@ -64,7 +64,7 @@ func (repo *StatsRepository) GetUserMessageCount(userID uint) (map[string]int, e
 func (repo *StatsRepository) GetOnlineUserCount() (int, error) {
 	var count int64
 	err := db.Model(models.User{}).Count(&count).Error
-	return int(count) / 3, err
+	return (int(count) / 3) + 2, err
 }
 
 // 查询未读消息数量（测试用，返回messages的总数*0.1）

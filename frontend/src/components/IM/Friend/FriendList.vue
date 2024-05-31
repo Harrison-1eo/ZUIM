@@ -7,7 +7,7 @@
                     <el-menu-item
                         class="el-menu-item-button"
                         v-for="friend in friends"
-                        :key="friend.ID"
+                        :key="friend.ID.toString()"
                         :index="friend.ID"
                         @click="fetchFriendInfo(friend.ID)">
 <!--                        <i class="el-icon-user-solid"></i>-->
@@ -15,18 +15,23 @@
                     </el-menu-item>
                 </el-scrollbar>
             </el-menu>
+<!--            <el-button-->
+<!--                    type="primary"-->
+<!--                    class="new-friend-button"-->
+<!--                    >-->
+<!--                添加新终端-->
+<!--            </el-button>-->
             
         </div>
 
         <div class="friend-details">
-            <div class="friend-header">
-                <p class="friend-title"> {{ activeFriend === null ? '请选择终端' : activeFriend.username }} </p>
-                <el-icon v-if="activeFriendId" @click="drawer = true" class="more-icon">
-                    <More />
-                </el-icon>
-            </div>
-            <FriendChat v-if="activeFriendId" :friendID="activeFriendId" :friendName="activeFriend.username" />
-            <FriendDrawer v-if="activeFriendId" v-model="drawer" v-model:ifFetch="ifFetch" :friendID="activateFriendId" :friend="activeFriend" />
+<!--            <div class="friend-header">-->
+<!--                <h2 class="friend-title"> {{ activeFriend === null ? '请选择终端' : activeFriend.username }} </h2>-->
+<!--                <el-icon v-if="activeFriendId" @click="drawer = true" class="more-icon">-->
+<!--                    <More />-->
+<!--                </el-icon>-->
+<!--            </div>-->
+            <FriendChat v-if="activeFriendId" :activeFriend="activeFriend" />
         </div>
     </div>
     
@@ -34,22 +39,18 @@
 
 <script>
 import axios_config from "@/utils/axios-config";
-import FriendDrawer from "@/components/IM/Friend/FriendDrawer.vue";
 import FriendChat from "@/components/IM/Friend/FriendChat.vue";
 export default {
     data() {
         return {
             friends: [],
-            activateFriendId: null,
+            activeFriendId: null,
             drawer: false,
             ifFetch: false,
             activeFriend: null,
-
-
         };
     },
     components: {
-        FriendDrawer,
         FriendChat
     },
     watch: {
@@ -101,6 +102,8 @@ export default {
     padding: 0;
     height: 100%;
     overflow-y: hidden;
+    display: flex;
+    flex-direction: row;
 }
 
 .chat-list {
@@ -129,21 +132,17 @@ export default {
 }
 
 
-
-
-.friend-list {
-    padding: 20px;
-    width: 200px;
-    display: flex;
-
-    flex-direction: column;
-    border-right: 1px solid #ebeef5;
-}
-
 .friend-details {
     flex: 1;
     display: flex;
     flex-direction: column;
     height: 100vh;
+}
+
+.new-friend-button {
+    margin: 20px;
+    height: 40px;
+    background: linear-gradient(135deg, #897dfb, #3471f6);
+    border: none;
 }
 </style>

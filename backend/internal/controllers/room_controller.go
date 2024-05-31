@@ -58,6 +58,86 @@ func CreateRoom(c *gin.Context) {
 	respond(c, 0, "创建聊天室成功", newRoom)
 }
 
+// GetRoomInfo 获取聊天室信息
+func GetRoomInfo(c *gin.Context) {
+	// 从URL参数中解析出聊天室ID
+	roomID, ok := c.GetQuery("room_id")
+	if ok != true {
+		respond(c, 1, "获取聊天室信息失败，请求错误", nil)
+		println("// controllers/room_controller.go 获取聊天室信息失败，请求错误 >>> err: room_id not found", c.Request.URL.RawQuery)
+		return
+	}
+	roomIDUint, err := strconv.Atoi(roomID)
+	if roomIDUint == 0 || err != nil {
+		respond(c, 1, "获取聊天室信息失败，请求错误", nil)
+		println("// controllers/room_controller.go 获取聊天室信息失败，请求错误 >>> err: roomID == 0")
+		return
+	}
+
+	// 检查用户是否有权限：只有在聊天室中的人才能查看聊天室信息
+	userId := c.MustGet("userID").(uint)
+	if !userRoomRepo.IfUserInRoom(userId, uint(roomIDUint)) {
+		respond(c, 1, "获取聊天室信息失败，没有权限，当前用户不在此房间中", nil)
+		println("// controllers/room_controller.go 获取聊天室信息失败，没有权限 >>> err:")
+		return
+	}
+
+	room, err := roomRepo.GetRoom(uint(roomIDUint))
+	if err != nil {
+		respond(c, 1, "获取聊天室信息失败，服务器错误", nil)
+		println("// controllers/room_controller.go 获取聊天室信息失败，服务器错误 >>> err:", err.Error())
+		return
+	}
+
+	respond(c, 0, "获取聊天室信息成功", room)
+}
+
+// UpdateRoom 修改聊天室信息
+func UpdateRoom(c *gin.Context) {
+	type RequestBody struct {
+		RoomID   uint   `json:"room_id"`
+		RoomName string `json:"name"`
+		RoomInfo string `json:"description"`
+	}
+
+	// 从请求体中解析出聊天室信息
+	var body RequestBody
+	if err := c.ShouldBindJSON(&body); err != nil {
+		respond(c, 1, "修改聊天室信息失败，请求错误", nil)
+		println("// controllers/room_controller.go 修改聊天室信息失败，请求错误 >>> err:", err.Error())
+		return
+	}
+
+	// 检查用户是否有权限：只有聊天室中的用户才能修改聊天室信息
+	userId := c.MustGet("userID").(uint)
+	if !userRoomRepo.IfUserInRoom(userId, body.RoomID) {
+		respond(c, 1, "修改聊天室信息失败，没有权限，当前用户不在此房间中", nil)
+		println("// controllers/room_controller.go 修改聊天室信息失败，没有权限 >>> err:")
+		return
+	}
+
+	// 获取聊天室信息
+	room, err := roomRepo.GetRoom(body.RoomID)
+	if err != nil {
+		respond(c, 1, "修改聊天室信息失败，聊天室不存在", nil)
+		println("// controllers/room_controller.go 修改聊天室信息失败，服务器错误1 >>> err:", err.Error())
+		return
+	}
+
+	// 修改聊天室信息
+	room.Name = body.RoomName
+	room.Description = body.RoomInfo
+
+	newRoom, err := roomRepo.UpdateRoom(*room)
+	if err != nil {
+		respond(c, 1, "修改聊天室信息失败，服务器错误2", nil)
+		println("// controllers/room_controller.go 修改聊天室信息失败，服务器错误2 >>> err:", err.Error())
+		return
+	}
+
+	respond(c, 0, "修改聊天室信息成功", newRoom)
+}
+
 // DeleteRoom 根据RoomID删除聊天室
 func DeleteRoom(c *gin.Context) {
 	// 从URL参数中解析出聊天室ID

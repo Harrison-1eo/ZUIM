@@ -9,7 +9,18 @@
                     <!--                  <el-backtop :visibility-height="1" > </el-backtop>-->
                 </div>
             </el-scrollbar>
+    <div class="chat-details">
+        <div class="chat-header">
+            <p class="room-title"> {{ roomInfo.name }} </p>
+            <el-icon v-if="roomID" @click="drawer=true" class="more-icon">
+                <More/>
+            </el-icon>
         </div>
+        <RoomDrawer v-if="roomID"
+                    v-model="drawer"
+                    v-model:ifUpdate="ifUpdate"
+                    v-model:roomInfo="roomInfo"
+                    :roomID="roomID"/>
 
         <el-dialog v-model="recieveVideoVisible" title="视频聊天室" width="640" height="480" :visible.sync="recieveVideoVisible" :close-on-click-modal="false" :close-on-press-escape="false">
             <div class="video-container" width="640" height="500" v-if="recieveVideoVisible">
@@ -17,25 +28,47 @@
 
                 <LiveStream :roomID="roomID" :VideoChunk="VideoChunk" @closeCamera="closeCamera" @ForceforceDeleteVideoBeTrue="ForceforceDeleteVideoBeTrue" />
 
+        <div class="chat-box" id="chat-box">
+            <div class="chat-messages" ref="messageContainer" id="message-box">
+                <!-- <p>消息内容将在这里显示 {{ roomID }} </p> -->
+                <el-scrollbar ref="scrollbar">
+                    <div ref="inner" class="message-inner-list">
+                        <el-button type="text" link @click="getMoreHistoryMessages" style="margin: 9px">
+                            加载更多历史消息
+                        </el-button>
+                        <MessageItem v-for="(message, index) in messages" :key="index" :message="message"
+                                     class="message"/>
+                    </div>
+                </el-scrollbar>
             </div>
-        </el-dialog>
 
         <div class="input-box" id="input-box">
             <ChatInput ref="ChatInput" :roomID="roomID" @send="sendMessageToParent" @ForceforceDeleteVideoBeFalse="ForceforceDeleteVideoBeFalse" />
+            <el-dialog v-model="recieveVideoVisible" title="视频聊天室" width="640" height="480"
+                       v-model:visible="recieveVideoVisible" :close-on-click-modal="false" :close-on-press-escape="false">
+                <div class="video-container" width="640" height="500" v-if="recieveVideoVisible">
+                    <LiveStream :roomID="roomID" :VideoChunk="VideoChunk"/>
+                </div>
+            </el-dialog>
+
+            <div class="input-box" id="input-box">
+                <ChatInput :roomID="roomID" @send="sendMessageToParent"/>
+            </div>
         </div>
     </div>
-
 </template>
 
 <script>
 import axios_config from "@/utils/axios-config";
 import MessageItem from "@/components/IM/Room/MessageItem.vue";
 import ChatInput from "@/components/IM/Room/ChatInput.vue";
-import { ElMessage } from "element-plus";
+import {ElMessage} from "element-plus";
 import WebsocketClass from "@/utils/websocket";
 // import { createFFmpeg, fetchFile, FFmpeg } from "@ffmpeg/ffmpeg";
 import LiveStream from "@/components/IM/Room/LiveStream.vue"
 import { wsBaseUrl } from "@/utils/base-url-setting";
+import {wsBaseUrl} from "@/utils/base-url-setting";
+import RoomDrawer from "@/components/IM/Room/RoomDrawer.vue";
 
 export default {
     name: 'RoomChat',
@@ -43,23 +76,31 @@ export default {
         roomID: {
             type: Number,
             required: true
-        }
+        },
+        ifUpdateRoomList2Chat: {
+            type: Boolean,
+        },
     },
     components: {
+        RoomDrawer,
         MessageItem,
         ChatInput,
         LiveStream
     },
     data() {
         return {
+            roomInfo: {},
             messages: [], // 用于存储消息列表
             newMessage: '', // 用于绑定输入框的内容
+            // WebSocket 对象
             ws: new WebsocketClass(
-                wsBaseUrl,
-                localStorage.getItem('token'),
-                this.addNewMessage,
-                true,
-            ), // WebSocket 对象
+                    wsBaseUrl,
+                    localStorage.getItem('token'),
+                    this.addNewMessage,
+                    true,
+            ),
+            drawer: false,
+            ifUpdate: false,
             currentUser: null, // 当前用户信息
             mediaSource: new MediaSource(),
             sourceBuffer: [],
@@ -75,6 +116,7 @@ export default {
     },
     created() {
         this.getHistoryMessages(0, 10); // 组件创建时调用获取历史消息函数
+        this.fetchRoomInfo();
         this.ws.connect();
         // 创建 WebSocket 实例
         // 定义当前用户信息
@@ -95,13 +137,20 @@ export default {
         roomID() {
             this.messages = [];                           // 切换房间时清空消息列表
             this.getHistoryMessages(0, 10); // 监听 roomID 变化时重新获取历史消息
+            this.fetchRoomInfo();
         },
         messages: {
             deep: true,
             handler() {
                 this.handleNewMessage();
             }
-        }
+        },
+        ifUpdate() {
+            if (this.ifUpdate) {
+                this.$emit('update:ifUpdateRoomList2Chat', true);
+                this.ifUpdate = false;
+            }
+        },
     },
     mounted() {
         this.scrollToBottom();
@@ -114,6 +163,22 @@ export default {
         addNewMessage(message) {
             // 接收来自服务器的消息并处理
             // console.log('Received new message:', message);
+        fetchRoomInfo() {
+            axios_config.get(`/api/room/info?room_id=${this.roomID}`).then(response => {
+                if (response.data.code === 0) {
+                    this.roomInfo = response.data.data;
+                    console.log('获取房间信息成功:', this.roomInfo);
+                } else {
+                    console.error('获取房间信息失败:', response.data.msg);
+                }
+            }).catch(error => {
+                console.error('获取房间信息失败:', error);
+            });
+        },
+        // 对新消息进行处理
+        addNewMessage(message) {
+            // 接收来自服务器的消息并处理
+            console.log('Received new message:', message);
             if (message.code === 0) {
                 if (message.data.room_id !== this.roomID) {
                     return;
@@ -131,6 +196,12 @@ export default {
                         console.log('forceDeleteVideo is true');
                     }
 
+                console.log('Received new message:', message);
+                message.data.encryptInfo = message.en_data;
+                message.data.encryptInfo.key = localStorage.getItem('websocketBackendPassword');
+                if (message.data.type === 'video') {
+                    this.recieveVideoVisible = true;
+                    this.ReceiveVideoChunk_Base64(message.data.content);
                 } else {
                     this.messages.push(message.data);
                 }
@@ -146,6 +217,7 @@ export default {
         sendMessageToParent(type, message) {
             // 接收来自子组件的消息并处理
             // console.log('Sending message to parent:', message);
+            console.log('Sending message to parent:', message);
             // 在这里可以进行进一步的处理，比如发送给服务器等操作
             // this.sendMessageToServer(message);
             this.ws.send({
@@ -211,7 +283,7 @@ export default {
                 container.scrollTop = container.scrollHeight;
             });
             this.$refs.scrollbar.handleScroll(
-                { direction: 'bottom', target: this.$refs.scrollbar.$el.querySelector('.el-scrollbar__wrap') }
+                    {direction: 'bottom', target: this.$refs.scrollbar.$el.querySelector('.el-scrollbar__wrap')}
             )
         },
         //判断消息列表是否在底部
@@ -243,9 +315,30 @@ export default {
 </script>
 
 <style scoped>
+
+.chat-header {
+    padding: 10px 30px;
+    background-color: #f5f7fa;
+    text-align: center;
+    height: 3em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.more-icon {
+    cursor: pointer;
+}
+
+.room-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
 .chat-box {
     margin: 0 60px;
-    height: calc(100vh - 7em);
+    height: calc(100vh - 8em);
     display: flex;
     flex-direction: column;
     position: relative; /* 添加相对定位 */
@@ -258,12 +351,13 @@ export default {
 .message {
     margin-bottom: 10px;
 }
+
 .input-box {
     padding: 0;
 }
 
 #message-box {
-    height: calc(100% - 60px - 52px - 221px); /* 减去头部和输入框的高度 */
+    height: calc(100% - 60px - 52px - 221px - 1em); /* 减去头部和输入框的高度 */
 }
 
 .message-inner-list {

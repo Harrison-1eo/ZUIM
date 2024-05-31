@@ -86,3 +86,18 @@ func (repo *UserRoomRepository) DeleteRoom(roomID uint) error {
 	}
 	return nil
 }
+
+// GetCommonRooms 获取和某个人一起在的聊天室
+func (repo *UserRoomRepository) GetCommonRooms(userID1, userID2 uint) ([]models.Room, error) {
+	var rooms []models.Room
+	if err := db.Model(models.UserRoom{}).
+		Select("rooms.id, rooms.name, rooms.description").
+		Joins("left join rooms on rooms.id = user_rooms.room_id").
+		Where("user_rooms.user_id = ? OR user_rooms.user_id = ?", userID1, userID2).
+		Group("rooms.id").
+		Having("count(rooms.id) = 2").
+		Find(&rooms).Error; err != nil {
+		return nil, err
+	}
+	return rooms, nil
+}

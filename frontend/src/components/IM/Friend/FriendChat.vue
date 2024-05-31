@@ -1,142 +1,184 @@
 <template>
-    <div class="friend-container">
-        <!-- 和这个friend共同的chatroom -->
-        <div class="friend-chat">
-            <el-card style="max-width: 480px">
-                <template #header>
-                    <div class="card-description">
-                        <!-- <span>和{{friendID}}的聊天</span> -->
-                        <span>和{{ friendName }}的聊天</span>
-                    </div>
-                </template>
-                <el-scrollbar style="height: 300px;">
-                    <el-menu class="el-menu-vertical-demo">
-                        <el-menu-item v-for="room in roomsBetween" :key="room.ID" :index="room.ID" @click="fetchRoomInfo(room.ID)">
-                            {{ room.name }}
-                        </el-menu-item>
-                    </el-menu>
-                </el-scrollbar>
-            </el-card>
-        </div>
-        <div class="friend-details">
-            <div class="friend-header">
-                <p class="friend-title"> {{ activeRoom===null ? '请选择聊天室' : activeRoom.name }} </p>
-                <el-icon v-if="activeRoomId" @click="drawer=true" class="more-icon">
+    <div class="friend-chat-container">
+        <!-- 显示这个friend的基本资料    -->
+        <div class="friend-chat-info-container">
+            <div class="friend-avatar">
+                <el-avatar :src="avatarUrl()" :size="80" class="user-avatar" shape="square"></el-avatar>
+            </div>
+            <div class="friend-username">
+                {{ userInfo.username || 'No username provided' }}
+            </div>
+            <div class="friend-details">
+                <p>邮箱: {{ userInfo.email || 'No email provided' }}</p>
+                <p>地区: {{ userInfo.country || '中国' }}</p>
+            </div>
+            <div class="friend-more">
+                <el-icon @click="drawer = true" style="cursor: pointer">
                     <More />
                 </el-icon>
+                <FriendDrawer v-model="drawer" v-model:ifFetch="ifFetch" :friendID="activeFriend.ID" :friend="activeFriend" />
             </div>
-            <!-- <RoomDrawer v-if="activeRoomId" v-model="drawer" v-model:ifFetch="ifFetch" :roomID="activeRoomId" :room="activeRoom"/> -->
+        </div>
+
+        <el-divider style="margin: 20px 0"/>
+
+        <!-- 和这个friend共同的chatroom -->
+        <div class="friend-chat-list-container">
+
+            <el-menu class="el-menu-rooms friend-chat-list-menu"  v-if="roomsBetween.length>0">
+                <h2 style="padding-left: 20px;margin: 0 0 10px;">共同通讯室</h2>
+                <el-scrollbar wrap-class="scrollbar-wrapper">
+                    <el-menu-item
+                            class="el-menu-item-button"
+                            style="font-size: large"
+                            v-for="room in roomsBetween"
+                            :key="room.ID"
+                            :index="room.ID.toString()"
+                            @click="fetchRoomInfo(room.ID)">
+                        {{ room.name }}
+                    </el-menu-item>
+                </el-scrollbar>
+            </el-menu>
+
+            <el-empty v-else description="暂无共同通讯室"></el-empty>
         </div>
     </div>
 </template>
 
 <script>
 import axios_config from "@/utils/axios-config";
-import RoomDrawer from "@/components/IM/Room/RoomDrawer.vue";
-import { ElMessage, ElMessageBox } from "element-plus";
+import {ElAvatar, ElDivider, ElMessage} from "element-plus";
+import {backendBaseUrl} from "@/utils/base-url-setting";
+import FriendDrawer from "@/components/IM/Friend/FriendDrawer.vue";
 
 export default {
     name: 'FriendChat',
+    components: {FriendDrawer, ElAvatar, ElDivider},
     props: {
-        friendID: {
-            type: Number,
-            required: true
+        activeFriend: {
+            type: Object,
+            required: true,
         },
-        friendName: {
-            type: String,
-            required: true
-        }
     },
     data() {
         return {
             roomsBetween: [], // 存储聊天室列表，两者共同的聊天室
-            rooms: [], // 存储聊天室列表
-            activeRoom: null, // 当前激活的聊天室详情
-            activeRoomId: null, // 当前激活的聊天室ID
+            userInfo: {},
+            ifFetch: false,
             drawer: false,
-            ifFetch: false
         };
     },
-    components: {
-        RoomDrawer
-    },
     watch: {
+        activeFriend() {
+            console.log('friendInfo change', this.activeFriend);
+            this.fetchRoomsWithFriend();
+            this.fetchFriendInfo();
+        },
         ifFetch() {
-            this.selectNoRoom();
             this.drawer = false;
             this.ifFetch = false;
         }
     },
     created() {
-        this.fetchRoomsWithMembers(); // 获取聊天室列表
+        this.fetchRoomsWithFriend(); // 获取聊天室列表
+        this.fetchFriendInfo();
     },
     methods: {
-        selectNoRoom() {
-            this.activeRoom = null;
-            this.activeRoomId = null;
-            this.fetchRoomsWithMembers();
+        avatarUrl() {
+            return backendBaseUrl + this.userInfo.avatar;
         },
-        async fetchRoomsWithMembers() {
-            //
-            console.log('fetchRoomsWithMembers begin');
+        async fetchRoomsWithFriend() {
             try {
-                const response = await axios_config.post('/api/room/create');
-                if (response.data.code === 200) {
-                    this.rooms = response.data.data;
-                    console.log('fetchRoomsWithMembers success');
-                    const rooms = response.data.data;
-                    this.roomsBetween = rooms.filter(room => room.members.includes(this.friendID));
+                const response = await axios_config.get('/api/user/common_rooms', {
+                    params: {
+                        friend_id: this.activeFriend.ID
+                    }
+                })
+                if (response.data.code === 0) {
+                    console.log('response.data.data', response.data.data)
+                    this.roomsBetween = response.data.data;
+                    console.log('roomsBetween', this.roomsBetween);
                 } else {
-                    ElMessage.error('获取聊天室列表失败');
+                    ElMessage.error('获取聊天室列表失败: ', response.data.msg);
                 }
             } catch (error) {
                 console.error('Failed to fetch rooms', error);
             }
         },
-        fetchRoomInfo(roomID) {
-            axios_config.get('/api/room/info', {
-                params: {
-                    roomID: roomID
+        async fetchFriendInfo() {
+            try {
+                const response = await axios_config.get('/api/user/info', {
+                    params: {
+                        user_id: this.activeFriend.ID
+                    }
+                });
+                if (response.data.code === 0) {
+                    this.userInfo = response.data.data;
+                    console.log('userInfo', this.userInfo);
+                } else {
+                    ElMessage.error('获取用户信息失败: ', response.data.msg);
                 }
-            }).then(res => {
-                this.activeRoom = res.data;
-                this.activeRoomId = roomID;
-            }).catch(err => {
-                ElMessage.error('获取聊天室信息失败');
-            });
-        }
+            } catch (error) {
+                console.error('Failed to fetch friend information:', error);
+            }
+        },
     }
 };
 </script>
 
 <style>
-.friend-container {
+.friend-chat-container {
+    width: calc(100% - 40px);
+    height: calc(100% - 60px - 40px);
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
     padding: 20px;
+    margin: 0;
 }
-.friend-chat {
-    width: 30%;
+
+.friend-chat-info-container {
+    display: grid;
+    grid-template-columns: repeat(20, 1fr);
+    grid-template-rows: repeat(5, 30px);
+    grid-column-gap: 0;
+    grid-row-gap: 0;
 }
+
+.friend-avatar {
+    grid-area: 2 / 2 / 3 / 3;
+}
+
+.friend-username {
+    grid-area: 2 / 4 / 4 / 10;
+    font-size: 24px;
+    font-weight: bold;
+    color: #000000;
+}
+
 .friend-details {
-    width: 68%;
+    margin-top: 10px;
+    grid-area: 3 / 4 / 6 / 19;
+    color: #8b8a8a;
 }
-.friend-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #f4f4f4;
+
+.friend-details p {
+    margin: 0 0 5px;
 }
-.friend-title {
-    font-size: 20px;
+
+.friend-more {
+    grid-area: 2 / 20 / 3 / 21;
 }
-.more-icon {
-    cursor: pointer;
+
+.friend-chat-list-container {
+    width: 100%;
+    margin: 20px;
 }
-.card-description {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+
+.friend-chat-list-menu {
+    width: 100%;
 }
+
+
 </style>

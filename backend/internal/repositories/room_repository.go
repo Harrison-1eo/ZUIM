@@ -13,7 +13,7 @@ func NewRoomRepository() *RoomRepository {
 	return &RoomRepository{}
 }
 
-// 创建聊天室
+// CreateRoom 创建聊天室
 func (repo *RoomRepository) CreateRoom(room models.Room) (*models.Room, error) {
 	if err := db.Model(models.Room{}).Create(&room).Error; err != nil {
 		return nil, err
@@ -21,7 +21,7 @@ func (repo *RoomRepository) CreateRoom(room models.Room) (*models.Room, error) {
 	return &room, nil
 }
 
-// 删除聊天室
+// DeleteRoom 删除聊天室
 func (repo *RoomRepository) DeleteRoom(id uint) error {
 	if err := db.Delete(&models.Room{}, id).Error; err != nil {
 		return err
@@ -29,7 +29,7 @@ func (repo *RoomRepository) DeleteRoom(id uint) error {
 	return nil
 }
 
-// 获取聊天室信息
+// GetRoom 获取聊天室信息
 func (repo *RoomRepository) GetRoom(id uint) (*models.Room, error) {
 	var room models.Room
 	if err := db.Model(models.Room{}).First(&room, id).Error; err != nil {
@@ -38,10 +38,18 @@ func (repo *RoomRepository) GetRoom(id uint) (*models.Room, error) {
 	return &room, nil
 }
 
-// 获取聊天室信息，包含被删除的聊天室
+// GetRoomWithDeleted 获取聊天室信息，包含被删除的聊天室
 func (repo *RoomRepository) GetRoomWithDeleted(id uint) (*models.Room, error) {
 	var room models.Room
 	if err := db.Model(models.Room{}).Unscoped().First(&room, id).Error; err != nil {
+		return nil, err
+	}
+	return &room, nil
+}
+
+// UpdateRoom 修改聊天室信息
+func (repo *RoomRepository) UpdateRoom(room models.Room) (*models.Room, error) {
+	if err := db.Model(models.Room{}).Where("id = ?", room.ID).Save(&room).Error; err != nil {
 		return nil, err
 	}
 	return &room, nil
