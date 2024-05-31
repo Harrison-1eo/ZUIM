@@ -29,7 +29,7 @@ export default class StreamCipher {
 
         const originPosition = this.position;
 
-        console.log("encrypt.js  加密前数据:", plainText);
+        // console.log("encrypt.js  加密前数据:", plainText);
 
         const plainTextBytes = new TextEncoder().encode(plainText);
         const cipherTextBytes = new Uint8Array(plainTextBytes.length);
@@ -39,7 +39,7 @@ export default class StreamCipher {
             this.position = (this.position + 1) % this.key.length;
         }
 
-        console.log("encrypt.js  加密后数据:", cipherTextBytes);
+        // console.log("encrypt.js  加密后数据:", cipherTextBytes);
 
         return {
             cipherText: btoa(String.fromCharCode.apply(null, cipherTextBytes)),
@@ -113,4 +113,4 @@ if (websocketFrontendPassword) {
 }
 
 
-export {userCipherFrontend, userCipherBackend, userCipherWebsocketBackend, userCipherWebsocketFrontend};
+export { userCipherFrontend, userCipherBackend, userCipherWebsocketBackend, userCipherWebsocketFrontend };

@@ -127,7 +127,7 @@ export default {
                 try {
                     // 请求摄像头权限并获取视频流
                     this.stream = await navigator.mediaDevices.getUserMedia({ video: true });
-
+                    this.$emit('ForceforceDeleteVideoBeFalse');
                     // this.sendVideo();
                     // 将视频流设置为视频元素的源
                     this.video = this.$refs.video;

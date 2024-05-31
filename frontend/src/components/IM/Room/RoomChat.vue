@@ -4,9 +4,9 @@
             <!-- <p>消息内容将在这里显示 {{ roomID }} </p> -->
             <el-scrollbar ref="scrollbar">
                 <div ref="inner" class="message-inner-list">
-                  <el-button type="text" link @click="getMoreHistoryMessages" style="margin: 9px"> 加载更多历史消息 </el-button>
-                  <MessageItem v-for="(message, index) in messages" :key="index" :message="message" class="message" />
-<!--                  <el-backtop :visibility-height="1" > </el-backtop>-->
+                    <el-button type="text" link @click="getMoreHistoryMessages" style="margin: 9px"> 加载更多历史消息 </el-button>
+                    <MessageItem v-for="(message, index) in messages" :key="index" :message="message" class="message" />
+                    <!--                  <el-backtop :visibility-height="1" > </el-backtop>-->
                 </div>
             </el-scrollbar>
         </div>
@@ -15,13 +15,13 @@
             <div class="video-container" width="640" height="500" v-if="recieveVideoVisible">
                 <!-- <LiveStream :roomID="roomID" :VideoChunks="VideoChunks" /> -->
 
-                <LiveStream :roomID="roomID" :VideoChunk="VideoChunk" />
+                <LiveStream :roomID="roomID" :VideoChunk="VideoChunk" @closeCamera="closeCamera" @ForceforceDeleteVideoBeTrue="ForceforceDeleteVideoBeTrue" />
 
             </div>
         </el-dialog>
 
         <div class="input-box" id="input-box">
-            <ChatInput :roomID="roomID" @send="sendMessageToParent" />
+            <ChatInput ref="ChatInput" :roomID="roomID" @send="sendMessageToParent" @ForceforceDeleteVideoBeFalse="ForceforceDeleteVideoBeFalse" />
         </div>
     </div>
 
@@ -35,7 +35,7 @@ import { ElMessage } from "element-plus";
 import WebsocketClass from "@/utils/websocket";
 // import { createFFmpeg, fetchFile, FFmpeg } from "@ffmpeg/ffmpeg";
 import LiveStream from "@/components/IM/Room/LiveStream.vue"
-import {wsBaseUrl} from "@/utils/base-url-setting";
+import { wsBaseUrl } from "@/utils/base-url-setting";
 
 export default {
     name: 'RoomChat',
@@ -70,6 +70,7 @@ export default {
             videoDuration: 0,
             ffmpeg: null,
             videoTime: 10,
+            forceDeleteVideo: false,
         };
     },
     created() {
@@ -109,71 +110,77 @@ export default {
         this.ws.close();
     },
     methods: {
-      // 对新消息进行处理
-      addNewMessage(message) {
-          // 接收来自服务器的消息并处理
-          console.log('Received new message:', message);
-          if (message.code === 0) {
-            if (message.data.room_id !== this.roomID) {
-              return;
+        // 对新消息进行处理
+        addNewMessage(message) {
+            // 接收来自服务器的消息并处理
+            // console.log('Received new message:', message);
+            if (message.code === 0) {
+                if (message.data.room_id !== this.roomID) {
+                    return;
+                }
+                // message.data.sender_avatar = this.currentUser.avatar;
+                // console.log('Received new message:', message);
+                message.data.encryptInfo = message.en_data;
+                message.data.encryptInfo.key = localStorage.getItem('websocketBackendPassword');
+                if (message.data.type === 'video') {
+                    if (this.forceDeleteVideo === false) {
+                        console.log('forceDeleteVideo is false');
+                        this.recieveVideoVisible = true;
+                        this.ReceiveVideoChunk_Base64(message.data.content);
+                    } else {
+                        console.log('forceDeleteVideo is true');
+                    }
+
+                } else {
+                    this.messages.push(message.data);
+                }
+            } else if (message.code === 1) {
+                console.error('收到错误消息:', message.msg);
+            } else if (message.code === 2) {
+                // 忽略心跳包
+            } else {
+                console.error('收到未知消息:', message);
             }
-            // message.data.sender_avatar = this.currentUser.avatar;
-            console.log('Received new message:', message);
-            message.data.encryptInfo = message.en_data;
-            message.data.encryptInfo.key = localStorage.getItem('websocketBackendPassword');
-              if (message.data.type === 'video') {
-                  this.recieveVideoVisible = true;
-                  this.ReceiveVideoChunk_Base64(message.data.content);
-              } else {
-                  this.messages.push(message.data);
-              }
-          } else if (message.code === 1) {
-              console.error('收到错误消息:', message.msg);
-          } else if (message.code === 2) {
-              // 忽略心跳包
-          } else {
-              console.error('收到未知消息:', message);
-          }
-      },
-      // 接受来自 ChatInput 组件的消息并发送
-      sendMessageToParent(type, message) {
-          // 接收来自子组件的消息并处理
-          console.log('Sending message to parent:', message);
-          // 在这里可以进行进一步的处理，比如发送给服务器等操作
-          // this.sendMessageToServer(message);
-          this.ws.send({
-              room_id: this.roomID,
-              type: type,
-              content: message
-          });
-      },
+        },
+        // 接受来自 ChatInput 组件的消息并发送
+        sendMessageToParent(type, message) {
+            // 接收来自子组件的消息并处理
+            // console.log('Sending message to parent:', message);
+            // 在这里可以进行进一步的处理，比如发送给服务器等操作
+            // this.sendMessageToServer(message);
+            this.ws.send({
+                room_id: this.roomID,
+                type: type,
+                content: message
+            });
+        },
         ReceiveVideoChunk_Base64(VideoChunk_Base64) {
             this.VideoChunks.push(VideoChunk_Base64);
             this.VideoChunk = VideoChunk_Base64;
         },
-      // 用于获取历史消息
-      async getHistoryMessages(lastMessageId, limit) {
-          try {
-              const response = await axios_config.post(
-                  '/api/message/list',
-                  {
-                      "room_id": this.roomID,
-                      "last_message_id": lastMessageId,
-                      "limit": limit
-                  });
+        // 用于获取历史消息
+        async getHistoryMessages(lastMessageId, limit) {
+            try {
+                const response = await axios_config.post(
+                    '/api/message/list',
+                    {
+                        "room_id": this.roomID,
+                        "last_message_id": lastMessageId,
+                        "limit": limit
+                    });
                 //   console.log('roomID:', this.roomID);
                 //   console.log('lastMessageId:', lastMessageId);
                 //     console.log('limit:', limit);
                 //   console.log('Fetched history messages111:', response.data.data);
-              if (response.data.data.length === 0) {
-                  ElMessage.info('没有更多历史消息了')
-                  return;
-              }
-              response.data.data.forEach(item => {
-                  item.encryptInfo = response.data.en_data;
-                  item.encryptInfo.key = localStorage.getItem('backendPassword');
-              });
-              console.log('Fetched history messages:', response.data.data);
+                if (response.data.data.length === 0) {
+                    ElMessage.info('没有更多历史消息了')
+                    return;
+                }
+                response.data.data.forEach(item => {
+                    item.encryptInfo = response.data.en_data;
+                    item.encryptInfo.key = localStorage.getItem('backendPassword');
+                });
+                console.log('Fetched history messages:', response.data.data);
 
                 // response.data.data 获取的消息列表ID是从大到小的，需要将其反转
                 this.messages = [...response.data.data.reverse(), ...this.messages];
@@ -221,6 +228,16 @@ export default {
                 this.scrollToBottom();
             }
         },
+        closeCamera() {
+            this.$refs.ChatInput.closeCamera();
+            this.recieveVideoVisible = false;
+        },
+        ForceforceDeleteVideoBeFalse() {
+            this.forceDeleteVideo = false;
+        },
+        ForceforceDeleteVideoBeTrue() {
+            this.forceDeleteVideo = true;
+        }
     }
 };
 </script>

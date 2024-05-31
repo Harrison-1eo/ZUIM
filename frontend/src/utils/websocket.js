@@ -1,5 +1,5 @@
-import {userCipherWebsocketBackend, userCipherWebsocketFrontend} from '@/utils/encrypt.js';
-import {ElMessage} from "element-plus";
+import { userCipherWebsocketBackend, userCipherWebsocketFrontend } from '@/utils/encrypt.js';
+import { ElMessage } from "element-plus";
 
 export default class WebsocketClass {
     /**
@@ -26,37 +26,37 @@ export default class WebsocketClass {
      */
     connect() {
         this.ws = new WebSocket(this.url)
-        // 监听socket连接
+            // 监听socket连接
         this.ws.onopen = () => {
-            this.status = 1
-            this.heartHandler()
-        }
-        // 监听socket消息
-        this.ws.onmessage = (e) => {
-            if (this.ifENCRYPT) {
-                console.log('WS 收到的数据 ', e.data)
-                let data = JSON.parse(e.data)
-                // let data = e.data
-                if (data.code === 0) {
-                    try {
-                        data.data.content = userCipherWebsocketBackend.decrypt(data.en_data.data, data.en_data.position)
-                        console.log('解密后的数据', data.data.content)
-                    } catch (e) {
-                        console.log('解密失败：', e)
-                        console.log('解密失败：', data.en_data.data, data.en_data.position)
-                        ElMessage.error('解密失败，请重新登录获取密钥');
-                    }
-                }
-                this.callback(data)
-            } else {
-                this.callback(JSON.parse(e.data))
+                this.status = 1
+                this.heartHandler()
             }
-        }
-        // 监听socket错误信息
+            // 监听socket消息
+        this.ws.onmessage = (e) => {
+                if (this.ifENCRYPT) {
+                    // console.log('WS 收到的数据 ', e.data)
+                    let data = JSON.parse(e.data)
+                        // let data = e.data
+                    if (data.code === 0) {
+                        try {
+                            data.data.content = userCipherWebsocketBackend.decrypt(data.en_data.data, data.en_data.position)
+                                // console.log('解密后的数据', data.data.content)
+                        } catch (e) {
+                            console.log('解密失败：', e)
+                            console.log('解密失败：', data.en_data.data, data.en_data.position)
+                            ElMessage.error('解密失败，请重新登录获取密钥');
+                        }
+                    }
+                    this.callback(data)
+                } else {
+                    this.callback(JSON.parse(e.data))
+                }
+            }
+            // 监听socket错误信息
         this.ws.onerror = (e) => {
-            console.log(e)
-        }
-        // 监听socket关闭
+                console.log(e)
+            }
+            // 监听socket关闭
         this.ws.onclose = (e) => {
             this.onClose(e)
         }
@@ -98,7 +98,7 @@ export default class WebsocketClass {
             }
          }
          */
-        console.log('WS 发送的数据 ', data)
+        // console.log('WS 发送的数据 ', data)
         return this.ws.send(JSON.stringify(data))
     }
 

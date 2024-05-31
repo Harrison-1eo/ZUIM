@@ -1,21 +1,21 @@
 <template>
+    <div class="tab-content-2">
+        <div class="logincontainer">
+            <div class="loginorreg">
+                <p>账号</p>
+                <el-input v-model="loginUsername" placeholder="请输入账号" type="text" clearable />
+            </div>
+            <div class="loginorreg">
+                <p>密码</p>
+                <el-input v-model="loginPassword" placeholder="请输入密码" type="password" style="text-align: center, width:80%" show-password />
+            </div>
+            <!-- div居中 -->
 
-    <div class="logincontainer">
-        <div class="loginorreg">
-            <p>账号</p>
-            <el-input v-model="loginUsername" placeholder="请输入账号" type="text" clearable />
         </div>
-        <div class="loginorreg">
-            <p>密码</p>
-            <el-input v-model="loginPassword" placeholder="请输入密码" type="password" style="text-align: center" show-password />
-        </div>
-        <!-- div居中 -->
-
-        <div style="text-align: center">
+        <div class="login-or-regsiter" style="text-align: center">
             <el-button type="primary" @click="apiLogin">登录</el-button>
         </div>
     </div>
-
 </template>
 
 <script>
@@ -81,7 +81,7 @@ export default {
                         userCipherWebsocketFrontend.init(keys[3]);
 
 
-                      ElMessage.success('登录成功');
+                        ElMessage.success('登录成功');
                     } else {
                         ElMessage.error(res.data.msg);
                     }
@@ -100,34 +100,56 @@ export default {
 
 
 <style>
-.logincontainer {
-    width: 100%;
-    max-width: 600px; /* 根据需要调整最大宽度 */
-    margin: 0 auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column; /* 设置 flex 方向为垂直 */
-    align-items: center; /* 水平居中 */
+/* .parent {
+display: grid;
+grid-template-columns: repeat(16, 1fr);
+grid-template-rows: repeat(20, 1fr);
+grid-column-gap: 0px;
+grid-row-gap: 0px;
+} */
+.tab-content-2 {
+    display: grid;
+    height: 350px;
+    grid-template-columns: repeat(16, 1fr);
+    grid-template-rows: repeat(20, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
 }
-/* loginorreg宽占container宽的一半 */
+.logincontainer {
+    grid-area: 1 / 3 / 15 / 15;
+    /* 子元素并排 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+.login-or-regsiter {
+    grid-area: 16 / 8 / 18 / 10;
+}
 .loginorreg {
-    width: 50%;
+    width: 80%;
+    height: 80px;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 auto;
+    margin: 0;
 }
 .loginorreg p {
-    width: 30%;
+    width: 20%;
     text-align: center;
     margin-right: 10px;
 }
 .loginorreg .el-input {
     margin-bottom: 15px;
-    width: 50%; /* 只占整个宽度的一半 */
+    width: 70%; /* 只占整个宽度的一半 */
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 0 auto;
+}
+.loginorreg .el-button {
+    height: 44px;
+    width: 120px;
 }
 </style>

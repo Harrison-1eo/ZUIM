@@ -4,7 +4,7 @@
         <!-- <video id="video" ref="video" controls autoplay></video> -->
         <!-- <video-player class="video-player" ref="videoPlayer" :options="playerOptions"></video-player> -->
         <canvas ref="canvasPlayer" class="canvas-player" width="640" height="480"></canvas>
-        <!-- <button @click="isInitialized=false">Stop</button> -->
+        <button @click="StopLive">关闭</button> 
     </div>
 </template>
 
@@ -50,7 +50,7 @@ export default {
             }
         },
         'queue.length'(newLength) {
-            if (newLength > 0) {
+            if (newLength > 0 && this.isInitialized) {
                 this.processQueue(); // 当队列非空时，开始处理队列
             }
         }
@@ -67,6 +67,8 @@ export default {
                 console.error('Video element is not initialized.');
                 return;
             }
+            this.isInitialized = true;
+            console.log('Live streaming initialized');
 
 
         },
@@ -117,6 +119,18 @@ export default {
         //     });
         //     video.play();
         // },
+        StopLive() {
+            // 调用chatinput的closecamara函数，关闭摄像头，关闭直播
+            this.$emit('closeCamera');
+            // 消除视频流，消除this.queue,消除this.VideoChunk，消除this.canvasElement，消除video-container
+            this.queue = [];
+            // this.VideoChunk = null;
+            this.canvasElement = null;
+            this.isInitialized = false;
+            this.$el.remove();
+            this.$emit('ForceforceDeleteVideoBeTrue');
+
+        }
 
     }
 }
