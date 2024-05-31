@@ -36,7 +36,7 @@
         <el-menu-item class="el-menu-item-button" index="chat">
           <template #title>
             <el-icon><ChatRound /></el-icon>
-            <span>通讯</span>
+            <span>通信</span>
           </template>
         </el-menu-item>
         <el-menu-item class="el-menu-item-button" index="setting">

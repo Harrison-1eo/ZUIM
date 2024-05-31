@@ -4,7 +4,7 @@
         <!-- <video id="video" ref="video" controls autoplay></video> -->
         <!-- <video-player class="video-player" ref="videoPlayer" :options="playerOptions"></video-player> -->
         <canvas ref="canvasPlayer" class="canvas-player" width="640" height="480"></canvas>
-        <button @click="StopLive">关闭</button> 
+        <button @click="StopLive">关闭</button>
     </div>
 </template>
 
@@ -142,7 +142,22 @@ export default {
     justify-content: center;
     align-items: center;
     height: 100%;
-    width: 100%;
+    width: 640px;
     background-color: #000;
+}
+.video-container button {
+    /* 右上角 */
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 999;
+    background-color: #f56c6c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 10px;
 }
 </style>

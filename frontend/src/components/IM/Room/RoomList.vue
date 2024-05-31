@@ -3,7 +3,7 @@
 <template>
     <div class="chatroom-container">
         <div class="chat-list">
-            <h2 style="padding-left: 20px">通讯列表</h2>
+            <h2 style="padding-left: 20px">通信列表</h2>
 
             <el-menu class="el-menu-rooms">
                 <el-scrollbar wrap-class="scrollbar-wrapper">

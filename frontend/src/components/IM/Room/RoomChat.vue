@@ -1,14 +1,4 @@
 <template>
-    <div class="chat-box" id="chat-box">
-        <div class="chat-messages" ref="messageContainer" id="message-box">
-            <!-- <p>消息内容将在这里显示 {{ roomID }} </p> -->
-            <el-scrollbar ref="scrollbar">
-                <div ref="inner" class="message-inner-list">
-                    <el-button type="text" link @click="getMoreHistoryMessages" style="margin: 9px"> 加载更多历史消息 </el-button>
-                    <MessageItem v-for="(message, index) in messages" :key="index" :message="message" class="message" />
-                    <!--                  <el-backtop :visibility-height="1" > </el-backtop>-->
-                </div>
-            </el-scrollbar>
     <div class="chat-details">
         <div class="chat-header">
             <p class="room-title"> {{ roomInfo.name }} </p>
@@ -21,12 +11,6 @@
                     v-model:ifUpdate="ifUpdate"
                     v-model:roomInfo="roomInfo"
                     :roomID="roomID"/>
-
-        <el-dialog v-model="recieveVideoVisible" title="视频聊天室" width="640" height="480" :visible.sync="recieveVideoVisible" :close-on-click-modal="false" :close-on-press-escape="false">
-            <div class="video-container" width="640" height="500" v-if="recieveVideoVisible">
-                <!-- <LiveStream :roomID="roomID" :VideoChunks="VideoChunks" /> -->
-
-                <LiveStream :roomID="roomID" :VideoChunk="VideoChunk" @closeCamera="closeCamera" @ForceforceDeleteVideoBeTrue="ForceforceDeleteVideoBeTrue" />
 
         <div class="chat-box" id="chat-box">
             <div class="chat-messages" ref="messageContainer" id="message-box">
@@ -42,17 +26,15 @@
                 </el-scrollbar>
             </div>
 
-        <div class="input-box" id="input-box">
-            <ChatInput ref="ChatInput" :roomID="roomID" @send="sendMessageToParent" @ForceforceDeleteVideoBeFalse="ForceforceDeleteVideoBeFalse" />
-            <el-dialog v-model="recieveVideoVisible" title="视频聊天室" width="640" height="480"
+            <el-dialog v-model="recieveVideoVisible" title="视频聊天室" width="680" height="480"
                        v-model:visible="recieveVideoVisible" :close-on-click-modal="false" :close-on-press-escape="false">
                 <div class="video-container" width="640" height="500" v-if="recieveVideoVisible">
-                    <LiveStream :roomID="roomID" :VideoChunk="VideoChunk"/>
+                <LiveStream :roomID="roomID" :VideoChunk="VideoChunk" @closeCamera="closeCamera" @ForceforceDeleteVideoBeTrue="ForceforceDeleteVideoBeTrue" />
                 </div>
             </el-dialog>
 
             <div class="input-box" id="input-box">
-                <ChatInput :roomID="roomID" @send="sendMessageToParent"/>
+            <ChatInput ref="ChatInput" :roomID="roomID" @send="sendMessageToParent" @ForceforceDeleteVideoBeFalse="ForceforceDeleteVideoBeFalse" />
             </div>
         </div>
     </div>
@@ -62,12 +44,11 @@
 import axios_config from "@/utils/axios-config";
 import MessageItem from "@/components/IM/Room/MessageItem.vue";
 import ChatInput from "@/components/IM/Room/ChatInput.vue";
-import {ElMessage} from "element-plus";
+import { ElMessage } from "element-plus";
 import WebsocketClass from "@/utils/websocket";
 // import { createFFmpeg, fetchFile, FFmpeg } from "@ffmpeg/ffmpeg";
 import LiveStream from "@/components/IM/Room/LiveStream.vue"
 import { wsBaseUrl } from "@/utils/base-url-setting";
-import {wsBaseUrl} from "@/utils/base-url-setting";
 import RoomDrawer from "@/components/IM/Room/RoomDrawer.vue";
 
 export default {
@@ -94,10 +75,10 @@ export default {
             newMessage: '', // 用于绑定输入框的内容
             // WebSocket 对象
             ws: new WebsocketClass(
-                    wsBaseUrl,
-                    localStorage.getItem('token'),
-                    this.addNewMessage,
-                    true,
+                wsBaseUrl,
+                localStorage.getItem('token'),
+                this.addNewMessage,
+                true,
             ),
             drawer: false,
             ifUpdate: false,
@@ -160,9 +141,9 @@ export default {
     },
     methods: {
         // 对新消息进行处理
-        addNewMessage(message) {
-            // 接收来自服务器的消息并处理
-            // console.log('Received new message:', message);
+        // addNewMessage(message) {
+        // 接收来自服务器的消息并处理
+        // console.log('Received new message:', message);
         fetchRoomInfo() {
             axios_config.get(`/api/room/info?room_id=${this.roomID}`).then(response => {
                 if (response.data.code === 0) {
@@ -195,14 +176,8 @@ export default {
                     } else {
                         console.log('forceDeleteVideo is true');
                     }
-
-                console.log('Received new message:', message);
-                message.data.encryptInfo = message.en_data;
-                message.data.encryptInfo.key = localStorage.getItem('websocketBackendPassword');
-                if (message.data.type === 'video') {
-                    this.recieveVideoVisible = true;
-                    this.ReceiveVideoChunk_Base64(message.data.content);
-                } else {
+                }
+                else {
                     this.messages.push(message.data);
                 }
             } else if (message.code === 1) {
@@ -283,7 +258,7 @@ export default {
                 container.scrollTop = container.scrollHeight;
             });
             this.$refs.scrollbar.handleScroll(
-                    {direction: 'bottom', target: this.$refs.scrollbar.$el.querySelector('.el-scrollbar__wrap')}
+                { direction: 'bottom', target: this.$refs.scrollbar.$el.querySelector('.el-scrollbar__wrap') }
             )
         },
         //判断消息列表是否在底部
@@ -315,7 +290,6 @@ export default {
 </script>
 
 <style scoped>
-
 .chat-header {
     padding: 10px 30px;
     background-color: #f5f7fa;
