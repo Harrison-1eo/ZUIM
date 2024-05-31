@@ -4,7 +4,6 @@ package middlewares
 
 import (
 	"errors"
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -63,14 +62,14 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		println(" ======= claims ======== ")
-		for key, value := range claims {
-			fmt.Printf("%s: %v\n", key, value)
-		}
-		println(" ======= claims ======== ")
+		//println(" ======= claims ======== ")
+		//for key, value := range claims {
+		//	fmt.Printf("%s: %v\n", key, value)
+		//}
+		//println(" ======= claims ======== ")
 
 		userID, ok := claims["user_id"].(float64) // JWT库默认将数字解释为float64
-		println("userID: ", userID)
+		//println("userID: ", userID)
 
 		if !ok {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "User ID must be a number"})

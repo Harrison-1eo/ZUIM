@@ -25,7 +25,7 @@ func CipherDecryptMiddleware() gin.HandlerFunc {
 			// 如果访问路径中包含upload，则不解码
 			if strings.Contains(c.Request.URL.Path, "upload") {
 				// 不做处理
-				println("No need to decode: ", c.Request.URL.Path)
+				//println("No need to decode: ", c.Request.URL.Path)
 			} else {
 				userID := c.MustGet("userID").(uint)
 
@@ -37,7 +37,7 @@ func CipherDecryptMiddleware() gin.HandlerFunc {
 					return
 				}
 
-				println("Before Decoded data: ", db.Data)
+				//println("Before Decoded data: ", db.Data)
 
 				// 对decodedMsg进行解密
 				uf := controllers.UserCipherFrontends[userID]
@@ -52,7 +52,7 @@ func CipherDecryptMiddleware() gin.HandlerFunc {
 					return
 				}
 
-				println("Decoded body: ", decodedBody)
+				//println("Decoded body: ", decodedBody)
 
 				// 重置Body
 				c.Request.Body = io.NopCloser(bytes.NewBuffer([]byte(decodedBody)))

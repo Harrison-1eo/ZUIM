@@ -10,27 +10,15 @@
                         :key="friend.ID.toString()"
                         :index="friend.ID"
                         @click="fetchFriendInfo(friend.ID)">
-<!--                        <i class="el-icon-user-solid"></i>-->
                         {{ friend.username }}
                     </el-menu-item>
                 </el-scrollbar>
             </el-menu>
-<!--            <el-button-->
-<!--                    type="primary"-->
-<!--                    class="new-friend-button"-->
-<!--                    >-->
-<!--                添加新终端-->
-<!--            </el-button>-->
+
             
         </div>
 
         <div class="friend-details">
-<!--            <div class="friend-header">-->
-<!--                <h2 class="friend-title"> {{ activeFriend === null ? '请选择终端' : activeFriend.username }} </h2>-->
-<!--                <el-icon v-if="activeFriendId" @click="drawer = true" class="more-icon">-->
-<!--                    <More />-->
-<!--                </el-icon>-->
-<!--            </div>-->
             <FriendChat v-if="activeFriendId" :activeFriend="activeFriend" />
         </div>
     </div>
@@ -78,16 +66,12 @@ export default {
                 const response = await axios_config.get('/api/user/friends');
                 this.friends = response.data.data;
                 // 排除自己
-                console.log('localStorage.getItem(userId): ', localStorage.getItem('userId'));
                 this.friends = this.friends.filter(friend => friend.ID.toString() !== localStorage.getItem('userId').toString());
-                console.log('friends: ', this.friends);
             } catch (error) {
-                console.error('Failed to fetch friends' ,error);
             }
         },
         fetchFriendInfo(id) {
             this.activeFriendId = id;
-            console.log('fetchFriendInfo', id);
             this.activeFriend = this.friends.find(friend => friend.ID === id);
 
         },

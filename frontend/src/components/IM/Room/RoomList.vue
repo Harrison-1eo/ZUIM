@@ -102,7 +102,6 @@ export default {
                 // 创建成功后激活新通讯：无法实现，element-plus的el-menu-item无法通过代码激活
                 // await this.activeOneRoom(response.data.data.ID);
             } catch (error) {
-                console.error('Failed to create room:', error);
                 return false;
             }
             return true;
@@ -124,7 +123,7 @@ export default {
                     }
                 }
             } catch (error) {
-                console.error('Failed to fetch rooms:', error);
+                ElMessage.error('Failed to fetch rooms:', error);
             }
         },
         async activeOneRoom(id) {

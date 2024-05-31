@@ -70,7 +70,6 @@ export default {
     },
     watch: {
         activeFriend() {
-            console.log('friendInfo change', this.activeFriend);
             this.fetchRoomsWithFriend();
             this.fetchFriendInfo();
         },
@@ -95,14 +94,12 @@ export default {
                     }
                 })
                 if (response.data.code === 0) {
-                    console.log('response.data.data', response.data.data)
                     this.roomsBetween = response.data.data;
-                    console.log('roomsBetween', this.roomsBetween);
                 } else {
                     ElMessage.error('获取聊天室列表失败: ', response.data.msg);
                 }
             } catch (error) {
-                console.error('Failed to fetch rooms', error);
+                ElMessage.error('Failed to fetch rooms', error);
             }
         },
         async fetchFriendInfo() {
@@ -114,12 +111,11 @@ export default {
                 });
                 if (response.data.code === 0) {
                     this.userInfo = response.data.data;
-                    console.log('userInfo', this.userInfo);
                 } else {
                     ElMessage.error('获取用户信息失败: ', response.data.msg);
                 }
             } catch (error) {
-                console.error('Failed to fetch friend information:', error);
+                ElMessage.error('Failed to fetch friend information:', error);
             }
         },
     }

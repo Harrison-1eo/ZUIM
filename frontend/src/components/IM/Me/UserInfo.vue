@@ -33,11 +33,9 @@ onMounted(async () => {
         if (response.data.code === 0) {
             userInfo.value = response.data.data;
         } else {
-            console.error('Failed to fetch user info:', response.data.msg);
             ElMessage.error('获取用户信息失败');
         }
     } catch (error) {
-        console.error('Error fetching user information:', error);
         ElMessage.error('获取用户信息失败');
     }
 });

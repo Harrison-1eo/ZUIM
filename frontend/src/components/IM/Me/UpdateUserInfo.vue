@@ -36,17 +36,14 @@ export default {
                 if (response.data.code === 0) {
                     this.userInfo = response.data.data;
                 } else {
-                    console.error('Failed to fetch user info:', response.data.msg);
                     ElMessage.error('获取用户信息失败');
                 }
             } catch (error) {
-                console.error('Error fetching user information:', error);
                 ElMessage.error('获取用户信息失败');
             }
             this.avatarUrl = this.userInfo.avatar ? backendBaseUrl + this.userInfo.avatar : backendBaseUrl + '/static/avatars/nopic.png';
         },
         handleAvatarError(err, file, fileList) {
-            console.error('上传头像失败:', err, file, fileList);
             ElMessage.error('上传头像失败');
         },
         handleAvatarSuccess(res) {
@@ -68,7 +65,6 @@ export default {
                 localStorage.setItem('sender_id_avatar', JSON.stringify(sender_id_avatar_temp));
             } else {
                 ElMessage.error('上传头像失败');
-                console.error('Failed to upload avatar:', res.data.msg);
             }
         },
         beforeAvatarUpload(file) {

@@ -1,24 +1,21 @@
 <template>
 
     <!--  消息显示框：如果是用户发送的消息，则显示在右侧，否则显示在左侧  -->
-    <div class="message-item"
-         :class="{ 'message-from-user': isSenderUser }">
+    <div class="message-item" :class="{ 'message-from-user': isSenderUser }">
         <!--  头像显示  -->
         <el-avatar shape="square" :src="getAvatarUrl(message.sender_avatar)" style="margin-top: 0px"></el-avatar>
         <!--  消息内容显示：包含发送者名称、消息内容  -->
         <div class="message-content">
             <!--  用户名称显示  -->
-            <div v-if="isSenderUser===false" class="sender-name, sender-name-from-other">
+            <div v-if="isSenderUser === false" class="sender-name, sender-name-from-other">
                 {{ message.sender_name }}
             </div>
 
             <!--  消息内容显示  -->
-            <div @mouseenter="showMoreButton = true"
-                 @mouseleave="showMoreButton = false">
+            <div @mouseenter="showMoreButton = true" @mouseleave="showMoreButton = false">
                 <div :class="{ 'bubble-and-more-left': !isSenderUser, 'bubble-and-more-right': isSenderUser }">
                     <div class="chat-bubble chat-bubble-top"
-                         :class="isSenderUser ? 'chat-bubble-from-right' : 'chat-bubble-from-left'"
-                         style="--chat-bubble-background-color: #ffffff;
+                        :class="isSenderUser ? 'chat-bubble-from-right' : 'chat-bubble-from-left'" style="--chat-bubble-background-color: #ffffff;
                         --chat-bubble-border-color: rgba(0, 0, 0, 0);
                         --chat-bubble-text-color: #000">
 
@@ -30,25 +27,24 @@
                         <!--      图片显示 -->
                         <!--            <div v-else-if="message.type === 'image'" class="image-message">-->
                         <div v-else-if="message.type === 'image'">
-                            <el-image :src="getPicUrl(message.content)"
-                                      fit="contain"
-                                      :previewSrcList="[getPicUrl(message.content)]"
-                                      style="height: auto; display: block;"
-                            ></el-image>
+                            <el-image :src="getPicUrl(message.content)" fit="contain"
+                                :previewSrcList="[getPicUrl(message.content)]"
+                                style="height: auto; display: block;"></el-image>
                         </div>
                         <!--      文件显示 -->
                         <!--            <div v-else-if="message.type === 'file'" class="file-message file-message-link">-->
                         <div v-else-if="message.type === 'file'" class="file-message-link">
                             <el-icon>
-                                <Link/>
+                                <Link />
                             </el-icon>
                             <el-link :href="getFileUrl(message.content)" target="_blank">
                                 下载文件：{{ this.getFileName(message.content) }}
                             </el-link>
                         </div>
                     </div>
-                    <el-icon v-if="showMoreButton" style="margin: 5px 10px; cursor: pointer;" @click="showDialog = true">
-                        <More/>
+                    <el-icon v-if="showMoreButton" style="margin: 5px 10px; cursor: pointer;"
+                        @click="showDialog = true">
+                        <More />
                     </el-icon>
                 </div>
             </div>
@@ -87,9 +83,9 @@
 </template>
 
 <script>
-import {ElAvatar, ElImage, ElLink} from 'element-plus';
-import {Link} from "@element-plus/icons";
-import {backendBaseUrl} from "@/utils/base-url-setting";
+import { ElAvatar, ElImage, ElLink } from 'element-plus';
+import { Link } from "@element-plus/icons";
+import { backendBaseUrl } from "@/utils/base-url-setting";
 import "@/assets/chatbubble.css";
 
 export default {

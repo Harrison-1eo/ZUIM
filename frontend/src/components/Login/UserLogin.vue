@@ -88,7 +88,6 @@ export default {
                     ElMessage.error('登录请求失败');
                 }
             } catch (error) {
-                console.error('An error occurred:', error);
                 ElMessage.error('连接服务器请求失败');
             }
         },

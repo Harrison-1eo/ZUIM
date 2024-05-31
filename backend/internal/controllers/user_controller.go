@@ -114,7 +114,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	println("create token: ", token)
+	//println("create token: ", token)
 
 	var userKeys [4]string
 	for index, salt := range keySalts {
@@ -128,13 +128,13 @@ func Login(c *gin.Context) {
 	UserCipherWebsocketsBackends[authenticatedUser.ID] = utils.NewStreamCipher(userKeys[2])
 	UserCipherWebsocketsFrontends[authenticatedUser.ID] = utils.NewStreamCipher(userKeys[3])
 
-	println(" ++++ UserEncryptKey ++++ ")
-	println("UserEncryptKey[authenticatedUser.ID]: ", authenticatedUser.ID)
-	println(UserEncryptKey[authenticatedUser.ID][0], UserCipherBackends[authenticatedUser.ID].Key)
-	println(UserEncryptKey[authenticatedUser.ID][1], UserCipherFrontends[authenticatedUser.ID].Key)
-	println(UserEncryptKey[authenticatedUser.ID][2], UserCipherWebsocketsBackends[authenticatedUser.ID].Key)
-	println(UserEncryptKey[authenticatedUser.ID][3], UserCipherWebsocketsFrontends[authenticatedUser.ID].Key)
-	println(" ++++ UserEncryptKey ++++ \n")
+	//println(" ++++ UserEncryptKey ++++ ")
+	//println("UserEncryptKey[authenticatedUser.ID]: ", authenticatedUser.ID)
+	//println(UserEncryptKey[authenticatedUser.ID][0], UserCipherBackends[authenticatedUser.ID].Key)
+	//println(UserEncryptKey[authenticatedUser.ID][1], UserCipherFrontends[authenticatedUser.ID].Key)
+	//println(UserEncryptKey[authenticatedUser.ID][2], UserCipherWebsocketsBackends[authenticatedUser.ID].Key)
+	//println(UserEncryptKey[authenticatedUser.ID][3], UserCipherWebsocketsFrontends[authenticatedUser.ID].Key)
+	//println(" ++++ UserEncryptKey ++++ \n")
 
 	type ResponseType struct {
 		ID       uint   `json:"ID"`

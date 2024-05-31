@@ -28,38 +28,4 @@ app.mount('#app')
 for (let iconName in ElIconModules) {
     app.component(iconName, ElIconModules[iconName])
 }
-// new Vue({
-//     el: '#app',
-//     router,
-//     store, //使用store
-//     components: { App },
-//     template: '<App/>'
-// })
 
-// 为了解决resizeObserver报错问题, 添加防抖函数
-// const debounce = (fn, delay) => {
-//     let timer
-//     return (...args) => {
-//         if (timer) {
-//             clearTimeout(timer)
-//         }
-//         timer = setTimeout(() => {
-//             fn(...args)
-//         }, delay)
-//     }
-// }
-//
-// const _ResizeObserver = window.ResizeObserver;
-// window.ResizeObserver = class ResizeObserver extends _ResizeObserver{
-//     constructor(callback) {
-//         callback = debounce(callback, 200);
-//         super(callback);
-//     }
-// }
-
-
-// app.use((req, res, next) => {
-//     res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-//     res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
-//     next();
-// });

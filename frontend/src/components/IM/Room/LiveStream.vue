@@ -1,8 +1,5 @@
 <template>
     <div class="video-container" width="640" height="480">
-        <!-- <video ref="video" controls autoplay></video> -->
-        <!-- <video id="video" ref="video" controls autoplay></video> -->
-        <!-- <video-player class="video-player" ref="videoPlayer" :options="playerOptions"></video-player> -->
         <canvas ref="canvasPlayer" class="canvas-player" width="640" height="480"></canvas>
         <button @click="StopLive">关闭</button>
     </div>
@@ -57,17 +54,14 @@ export default {
 
     },
     methods: {
-
         initializeLiveStreaming() {
             this.canvasElement = this.$refs.canvasPlayer;
             // this.canvasElement = this.$refs.video;
             if (!this.canvasElement) {
-                console.error('Video element is not initialized.');
+                ElMessage.error('Video element is not initialized.');
                 return;
             }
             this.isInitialized = true;
-
-
         },
         handleReceivedVideoChunk_Base64(VideoChunk_Base64) {
             this.queue.push(VideoChunk_Base64); // 将视频块添加到队列中
@@ -85,37 +79,19 @@ export default {
                         const canvas = this.canvasElement;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-
                     };
-
                 }
             } catch (error) {
-                console.error('Error processing queue:', error);
+                ElMessage.error('Error processing queue:', error);
             }
 
         },
 
-        // 尝试用接收的是视频直接解析的url
-        // processQueue() {
-        //     const video = document.createElement('video');
-        //     video.controls = true;
-        //     document.body.appendChild(video);
-
-        //     const mediaSource = new MediaSource();
-        //     video.src = URL.createObjectURL(mediaSource);
-        //     mediaSource.addEventListener('sourceopen', () => {
-        //         const sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vp8"');
-        //         sourceBuffer.appendBuffer(this.queue.shift());
-        //     });
-        //     video.play();
-        // },
         StopLive() {
             // 调用chatinput的closecamara函数，关闭摄像头，关闭直播
             this.$emit('closeCamera');
             // 消除视频流，消除this.queue,消除this.VideoChunk，消除this.canvasElement，消除video-container
             this.queue = [];
-            // this.VideoChunk = null;
             this.canvasElement = null;
             this.isInitialized = false;
             this.$el.remove();

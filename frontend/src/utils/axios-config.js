@@ -12,14 +12,11 @@ const axios_config = axios.create({
 axios_config.interceptors.request.use(
     config => {
         config.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
-        console.log('Authorization >>> ', config.headers.Authorization);
 
         // 如果访问路径中包含upload，则不进行Base64编码
         if (!config.url.includes('upload')) {
-            console.log(config.url);
             if (config.data) {
                 // 将请求数据 config.data 进行加密
-                console.log("加密前数据:", config.data);
                 const dd = userCipherFrontend.encrypt(JSON.stringify(config.data));
                 // config.data中存储数据格式为：
                 // {
@@ -57,21 +54,17 @@ axios_config.interceptors.response.use(
             try{
                 decryptedData = userCipherBackend.decrypt(encryptedData, position);
             } catch (e) {
-                console.log('解密失败：', e);
-                console.log('解密失败：', encryptedData, position);
                 ElMessage.error('解密失败，请重新登录获取密钥');
+                localStorage.clear();
+                this.$router.push('/login');
             }
             response.data.data = JSON.parse(decryptedData);
-
-            console.log("解密解码结果：", response.data.data);
         }
         return response;
     },
     error => {
         console.log('error', error)
-        console.log('error response', error.response)
         if (error.response.status === 401) {
-            console.log(error.response);
             ElMessage.error('登录无效或过期，请重新登录');
             localStorage.clear();
             window.location.href = '/login';

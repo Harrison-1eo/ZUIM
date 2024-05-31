@@ -4,6 +4,7 @@ package controllers
 
 import (
 	"backend/internal/models"
+	"backend/internal/utils"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -52,7 +53,7 @@ func respond(c *gin.Context, code int, msg string, data interface{}) {
 		Position: pos,
 		Length:   dataByteLength,
 		Data:     decryptedData,
-		Mac:      "",
+		Mac:      utils.ZUCMac32(UserEncryptKey[userID][0], string(jsonStr)),
 	}
 
 	c.JSON(200, ResponseData{
@@ -90,9 +91,9 @@ func respondWebSocket(userID uint, ws *websocket.Conn, code int, msg string, dat
 		msgData.Content = ""
 
 		db := decryptBody{
-			Length:   0,
+			Length:   len([]byte(msgData.Content)),
 			Position: pos,
-			Mac:      "",
+			Mac:      utils.ZUCMac32(UserEncryptKey[userID][2], msgData.Content),
 			Data:     decryptData,
 		}
 

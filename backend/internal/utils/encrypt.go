@@ -41,9 +41,9 @@ func (sc *StreamCipher) Encrypt(plainText []byte) (string, int, error) {
 
 		sc.Position = (sc.Position + 1) % len(sc.Key)
 	}
-	println("Hex format: ", hex.EncodeToString(cipherTextBytes))
-	println("String format: ", string(cipherTextBytes))
-	println("Base64 encode format: ", base64.StdEncoding.EncodeToString(cipherTextBytes))
+	//println("Hex format: ", hex.EncodeToString(cipherTextBytes))
+	//println("String format: ", string(cipherTextBytes))
+	//println("Base64 encode format: ", base64.StdEncoding.EncodeToString(cipherTextBytes))
 	return base64.StdEncoding.EncodeToString(cipherTextBytes), originPosition, nil
 }
 
@@ -55,9 +55,9 @@ func (sc *StreamCipher) Decrypt(encryptedText string, wantedPosition int) (strin
 	if len(encryptedText) == 0 {
 		return "", nil
 	}
-	println("Encrypted text: ", encryptedText)
-	println("wantedPosition: ", wantedPosition)
-	println("sc.Position: ", sc.Position)
+	//println("Encrypted text: ", encryptedText)
+	//println("wantedPosition: ", wantedPosition)
+	//println("sc.Position: ", sc.Position)
 	if wantedPosition != sc.Position {
 		println("Position changed from ", sc.Position, " to ", wantedPosition)
 		sc.Position = wantedPosition
@@ -83,4 +83,9 @@ func (sc *StreamCipher) Decrypt(encryptedText string, wantedPosition int) (strin
 	}
 
 	return string(plainTextBytes), nil
+}
+
+func ZUCMac32(key string, data string) string {
+	// ZUC算法
+	return Sha256OfString(key + data)[0:32]
 }

@@ -11,7 +11,6 @@ const axios_origin = axios.create({
 
 axios_origin.interceptors.request.use(
     config => {
-        console.log('URL >>> ', config.url);
         return config;
     },
     error => {

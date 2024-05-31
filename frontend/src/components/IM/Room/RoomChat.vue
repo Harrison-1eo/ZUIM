@@ -148,10 +148,10 @@ export default {
                 if (response.data.code === 0) {
                     this.roomInfo = response.data.data;
                 } else {
-                    console.error('获取房间信息失败:', response.data.msg);
+                    ElMessage.error('获取房间信息失败:', response.data.msg);
                 }
             }).catch(error => {
-                console.error('获取房间信息失败:', error);
+                ElMessage.error('获取房间信息失败:', error);
             });
         },
         // 对新消息进行处理
@@ -175,11 +175,11 @@ export default {
                     this.messages.push(message.data);
                 }
             } else if (message.code === 1) {
-                console.error('收到错误消息:', message.msg);
+                ElMessage.error('收到错误消息:', message.msg);
             } else if (message.code === 2) {
                 // 忽略心跳包
             } else {
-                console.error('收到未知消息:', message);
+                ElMessage.error('收到未知消息:', message);
             }
         },
         // 接受来自 ChatInput 组件的消息并发送
@@ -219,7 +219,7 @@ export default {
                 // response.data.data 获取的消息列表ID是从大到小的，需要将其反转
                 this.messages = [...response.data.data.reverse(), ...this.messages];
             } catch (error) {
-                console.error('Failed to fetch messages:', error);
+                ElMessage.error('Failed to fetch messages:', error);
             }
         },
         // 用于点击“加载更多历史消息”按钮时调用

@@ -15,7 +15,7 @@ func NewUserRepository() *UserRepository {
 // 检查用户名是否已存在
 func (repo *UserRepository) UserExists(username string) bool {
 	var user models.User
-	println("username : ", username)
+	//println("username : ", username)
 	res := db.Model(models.User{}).Where("Username = ?", username)
 	if res.First(&user).Error != nil {
 		return false
@@ -63,8 +63,8 @@ func (repo *UserRepository) GetUserByUsername(username string) (*models.User, er
 	if err := db.Model(models.User{}).Where("username = ?", username).First(&user).Error; err != nil {
 		return nil, err
 	}
-	println("username : ", username)
-	println("user : ", user.ID)
+	//println("username : ", username)
+	//println("user : ", user.ID)
 	return &user, nil
 }
 

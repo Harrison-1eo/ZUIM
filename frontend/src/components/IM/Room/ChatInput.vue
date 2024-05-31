@@ -4,27 +4,21 @@
         <div class="chat-input-icon-box">
             <!-- 发送图片 -->
             <div class="upload-icon">
-                <el-tooltip
-                        class="box-item"
-                        effect="dark"
-                        content="发送图片"
-                        placement="top"
-                >
-                    <el-icon size="20px" @click="openImageChooser"><Picture /></el-icon>
+                <el-tooltip class="box-item" effect="dark" content="发送图片" placement="top">
+                    <el-icon size="20px" @click="openImageChooser">
+                        <Picture />
+                    </el-icon>
                 </el-tooltip>
                 <input type="file" ref="imageInput" style="display: none;" accept="image/*" @change="handleImageUpload">
             </div>
             <!-- 发送文件 -->
             <div class="upload-icon">
-                <el-tooltip
-                        class="box-item"
-                        effect="dark"
-                        content="发送文件"
-                        placement="top"
-                >
+                <el-tooltip class="box-item" effect="dark" content="发送文件" placement="top">
                     <!-- 文件上传按钮 -->
                     <!--        <el-button type="primary" class="send-button" @click="openFileChooser" style="margin-bottom: 10px">发送文件</el-button>-->
-                    <el-icon  size="20px" @click="openFileChooser"><FolderAdd /></el-icon>
+                    <el-icon size="20px" @click="openFileChooser">
+                        <FolderAdd />
+                    </el-icon>
                 </el-tooltip>
                 <!-- 隐藏的文件输入 -->
                 <input type="file" ref="fileInput" style="display: none;" @change="handleFileUpload">
@@ -37,7 +31,8 @@
                     </el-icon>
                 </el-tooltip>
                 <div class="video-container" v-if="videocontainerVisible">
-                    <el-dialog v-model="videoVisible" title="视频聊天" width="660" height="480" v-model:visible="videoVisible" :close-on-click-modal="false" :close-on-press-escape="false">
+                    <el-dialog v-model="videoVisible" title="视频聊天" width="660" height="480"
+                        v-model:visible="videoVisible" :close-on-click-modal="false" :close-on-press-escape="false">
                         <video ref="video" id="video" width="640" height="480" autoplay></video>
                         <el-button @click="startSendingVideo">连接</el-button>
                         <el-button class="close-button" @click="closeCamera">关闭摄像头</el-button>
@@ -47,33 +42,19 @@
             </div>
         </div>
 
-        <el-divider style="margin: 0 5px"/>
+        <el-divider style="margin: 0 5px" />
 
         <div class="chat-input-input-box">
-<!--            <el-input type="textarea"-->
-<!--                      placeholder="输入消息..."-->
-<!--                      v-model="newMessage"-->
-<!--                      resize="none"-->
-<!--                      style="padding: 10px; border-radius: 10px;"-->
-<!--                      :rows="4"-->
-<!--                      @keyup.enter="sendMessage()"-->
-<!--            />-->
-            <textarea
-                    rows="3"
-                    v-model="newMessage"
-                    placeholder="输入消息..."
-                    class="message-input"
-                    @keyup.enter="sendMessage()"
-            />
+            <textarea rows="3" v-model="newMessage" placeholder="输入消息..." class="message-input"
+                @keyup.enter="sendMessage()" />
         </div>
 
         <div class="chat-input-send-box">
-            <el-button
-                type="success"
-                class="send-button"
-                @click="sendMessage()">
+            <el-button type="success" class="send-button" @click="sendMessage()">
                 <!-- 发送消息 -->
-                <el-icon size="20px"><Promotion /></el-icon>
+                <el-icon size="20px">
+                    <Promotion />
+                </el-icon>
             </el-button>
         </div>
 
@@ -135,7 +116,7 @@ export default {
                     // this.video = document.getElementById('video');
                     this.video.srcObject = this.stream;
                 } catch (err) {
-                    console.error('Error accessing camera:', err);
+                    ElMessage.error('Error accessing camera:', err);
                 }
             });
         },
@@ -143,11 +124,7 @@ export default {
             if (this.stream) {
                 // 停止所有视频流的轨道
                 this.stream.getTracks().forEach(track => track.stop());
-                // this.stream.getTracks()[0].stop();
-                // this.$refs.video.srcObject.getTracks()[0].stop();
                 this.stream = null;
-                // 也要关闭ws发送
-
             }
             if (this.video) {
                 this.video.srcObject = null; // 清空视频元素的源
@@ -162,15 +139,6 @@ export default {
             // this.isRecording = false;
 
         },
-
-        // async connect() {
-        //     // this.videoVisible = false;
-        //     // this.videoVisible2 = true;
-        //     this.startSendingVideo();
-        //     this.videoVisible = false;
-
-        // },
-
 
         startSendingVideo() {
             // 重新刷新视频流
@@ -201,26 +169,6 @@ export default {
             sendVideoFrame();
         },
 
-        // 尝试使用MediaRecorder来录制视频，每秒记录10帧，每秒向后端发送一次10帧的视频
-        // startSendingVideo() {
-        //     this.isRecording = true;
-        //     this.mediaRecorder = new MediaRecorder(this.stream, { mimeType: 'video/webm' });
-        //     this.mediaRecorder.ondataavailable = (event) => {
-        //         if (event.data.size > 0) {
-        //             this.chunks.push(event.data);
-        //         }
-        //     };
-        //     this.mediaRecorder.onstop = () => {
-        //         const blob = new Blob(this.chunks, { type: 'video/webm' });
-        //         const videoUrl = URL.createObjectURL(blob);
-        //         this.$emit('send', 'video', videoUrl);
-        //         this.chunks = [];
-        //     };
-        //     this.mediaRecorder.start(1000); // 每秒录制一帧
-
-
-        // },
-
         reopenCamera() {
             if (this.stream) {
                 this.stream.getTracks().forEach(track => track.stop());
@@ -231,35 +179,11 @@ export default {
                     this.stream = await navigator.mediaDevices.getUserMedia({ video: true });
                     this.video.srcObject = this.stream;
                 } catch (err) {
-                    console.error('Error accessing camera:', err);
+                    ElMessage.error('Error accessing camera:', err);
                 }
             });
 
         },
-
-
-        // async startSendingVideo() {
-        //     this.isRecording = true;
-        //     // 从this.stream中每秒抓取一帧绘制在canvas上，然后将canvas转为base64编码的图片发送到服务器
-        //     const canvas = document.createElement('canvas');
-        //     const context = canvas.getContext('2d');
-        //     canvas.width = 640;
-        //     canvas.height = 480;
-
-        //     const sendVideoFrame = async () => {
-        //         if (this.isRecording) {
-        //             context.drawImage(this.video, 0, 0, canvas.width, canvas.height);
-        //             const videoFrameBase64 = canvas.toDataURL('image/jpeg', 0.5);
-        //             this.$emit('send', 'video', videoFrameBase64);
-        //             // this.$emit('send', 'text', videoFrameBase64);
-        //             await this.sleep(1000); // 每秒发送一帧视频
-        //             sendVideoFrame();
-        //         }
-        //     };
-        //     sendVideoFrame();
-
-
-        // },
 
         stopRecording() {
             if (this.mediaRecorder && this.isRecording) {
@@ -339,8 +263,7 @@ export default {
                     throw new Error(response.data.msg || '上传文件失败');
                 }
             } catch (error) {
-                console.error('Failed to upload file:', error);
-                throw error;
+                ElMessage.error('Failed to upload file:', error);
             }
         },
     }
@@ -357,7 +280,7 @@ export default {
     border-radius: 8px;
     border: 1px solid #ffffff;
     background: #ffffff;
-    box-shadow: 0 16px 20px 0 rgba(174,167,223,.2);
+    box-shadow: 0 16px 20px 0 rgba(174, 167, 223, .2);
     transition: border 0.5s linear;
 }
 
@@ -384,12 +307,13 @@ export default {
 
 .message-input {
     resize: none;
-    flex: 1; /* 输入框占据剩余空间 */
+    flex: 1;
+    /* 输入框占据剩余空间 */
     border: none;
     background: none;
     width: 100%;
     font-size: medium;
-    font-family: "微软雅黑","黑体",serif;
+    font-family: "微软雅黑", "黑体", serif;
     caret-color: #000000;
 }
 
@@ -406,13 +330,15 @@ export default {
 }
 
 .send-button {
-    width: 60px; /* 设置发送按钮的宽度 */
-    height: 35px; /* 设置按钮的高度，与输入框高度一致 */
+    width: 60px;
+    /* 设置发送按钮的宽度 */
+    height: 35px;
+    /* 设置按钮的高度，与输入框高度一致 */
     margin-right: 10px;
     margin-left: 10px;
     margin-top: 8px;
     margin-block-end: 10px;
-    background: linear-gradient(322deg,#1f6ff5 7.93%,#9a7ffc 92.22%);
+    background: linear-gradient(322deg, #1f6ff5 7.93%, #9a7ffc 92.22%);
     border: none;
     border-radius: 20px;
     transition: background 0.5s linear;
@@ -431,7 +357,8 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.8); /* 添加背景色以突出显示视频 */
+    background-color: rgba(0, 0, 0, 0.8);
+    /* 添加背景色以突出显示视频 */
 }
 
 video {

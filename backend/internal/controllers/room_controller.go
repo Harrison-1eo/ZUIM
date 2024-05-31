@@ -146,7 +146,7 @@ func DeleteRoom(c *gin.Context) {
 	if ok != true {
 		respond(c, 1, "删除聊天室失败，请求错误1", nil)
 		println("// controllers/room_controller.go 删除聊天室失败，请求错误1 >>> err: room_id not found", c.Request.URL.RawQuery)
-		println(roomID)
+		//println(roomID)
 		return
 	}
 	roomIDUint, err := strconv.Atoi(roomID)
@@ -166,7 +166,7 @@ func DeleteRoom(c *gin.Context) {
 
 	// 删除聊天室
 	if err := roomRepo.DeleteRoom(uint(roomIDUint)); err != nil {
-		println(roomID)
+		//println(roomID)
 		respond(c, 1, "删除聊天室失败，服务器错误3", nil)
 		println("// controllers/room_controller.go 删除聊天室失败，服务器错误3 >>> err:", err.Error())
 		return

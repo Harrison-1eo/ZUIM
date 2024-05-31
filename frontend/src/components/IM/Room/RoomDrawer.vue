@@ -171,8 +171,7 @@ export default {
                 this.$emit('update:roomInfo', newRoomInfo);
                 this.$emit('update:ifUpdate', true);
             } catch (error) {
-                console.error('Failed to update room info:', error);
-                ElMessage.error('服务器错误');
+                ElMessage.error('Failed to update room info:', error);
                 return false;
             }
             return true;
@@ -192,7 +191,6 @@ export default {
                 }
                 await this.fetchRoomUsers();
             } catch (error) {
-                console.error('Failed to add user:', error);
                 ElMessage.error('服务器错误');
                 return false;
             }
@@ -212,7 +210,6 @@ export default {
                 this.$emit('update:ifUpdate', true);
                 ElMessage.success('退出房间成功');
             } catch (error) {
-                console.error('Failed to delete room:', error);
                 return false;
             }
         },
@@ -227,7 +224,6 @@ export default {
                     ElMessage.error(response.data.msg);
                 }
             } catch (error) {
-                console.error('获取房间成员列表失败', error);
                 ElMessage.error('获取房间成员列表失败');
             }
 

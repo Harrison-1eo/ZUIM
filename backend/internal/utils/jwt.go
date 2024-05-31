@@ -16,7 +16,7 @@ const JWT_SECRET = "your-secret-Key"
 
 // CreateToken 生成JWT令牌
 func CreateToken(userID uint) (string, error) {
-	println("CreateToken userID: ", userID)
+	// println("CreateToken userID: ", userID)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": float64(userID),
 		"exp":     time.Now().Add(time.Hour * 24).Unix(), // 有效期为24小时

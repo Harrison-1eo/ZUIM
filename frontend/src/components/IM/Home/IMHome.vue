@@ -104,7 +104,6 @@ export default {
                 this.renderLineChart();
                 this.renderPieChar();
             }).catch(error => {
-                console.error('Error fetching stats:', error);
                 ElMessage.error('获取统计信息失败');
             });
         },
@@ -112,7 +111,6 @@ export default {
             axios_config.get('/api/user/my').then(response => {
                 this.userInfo = response.data.data;
             }).catch(error => {
-                console.error('Error fetching user info:', error);
                 ElMessage.error('获取用户信息失败');
             });
         },
