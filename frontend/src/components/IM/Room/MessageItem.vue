@@ -57,7 +57,7 @@
         <!-- 展示message.encryptInfo中的信息 -->
         <div class="message-encrypt-info">
             <div class="message-encrypt-info-key">加密方式： </div>
-            <div class="message-encrypt-info-value">ZUC-256 加速算法</div>
+            <div class="message-encrypt-info-value">ZUC-256 加速算法xiao</div>
         </div>
 
         <div class="message-encrypt-info">

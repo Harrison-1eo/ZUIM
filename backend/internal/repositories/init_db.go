@@ -80,6 +80,7 @@ func InitDBMySQL() {
 		&models.Message{},
 		&models.File{},
 		&models.UserInfo{},
+		&models.OnlineUsers{},
 	)
 	if err != nil {
 		panic("internal/config/init_db.go: failed to migrate mysql database >>> " + err.Error())

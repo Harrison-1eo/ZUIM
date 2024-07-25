@@ -3,12 +3,15 @@
 package middlewares
 
 import (
+	"backend/internal/repositories"
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
 )
+
+var onlineUserRepo = repositories.NewOnlineUserRepository()
 
 // AuthMiddleware JWT验证中间件
 func AuthMiddleware() gin.HandlerFunc {
@@ -76,7 +79,14 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("userID", uint(userID)) // 转换为uint类型
+		userIDUint := uint(userID)
+
+		c.Set("userID", userIDUint) // 转换为uint类型
+
+		err = onlineUserRepo.SetOnline(userIDUint)
+		if err != nil {
+			println("SetOnline error: ", err.Error())
+		}
 
 		//c.Set("userID", claims["user_id"])
 		//println("userID: ", claims["user_id"])

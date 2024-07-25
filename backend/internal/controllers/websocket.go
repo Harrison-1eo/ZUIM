@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"backend/internal/models"
+	"backend/internal/repositories"
 	"backend/internal/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -18,6 +19,8 @@ var upgrader = websocket.Upgrader{
 		return true
 	},
 }
+
+var onlineUserRepo = repositories.NewOnlineUserRepository()
 
 var clients = make(map[uint]*websocket.Conn)
 
@@ -59,13 +62,25 @@ func WebSocketMessage(c *gin.Context) {
 		err := ws.ReadJSON(&msgGet)
 		if err != nil {
 			respondWebSocket(userID, ws, 1, "读取信息失败", nil)
-			log.Default().Println("Failed to read message from WebSocket, Breaking loop, err:", err)
+			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+				log.Default().Println("Failed to read message from WebSocket, Breaking loop, err:", err)
+			} else {
+				log.Default().Println("User closed WebSocket, Breaking loop", userID)
+				err := onlineUserRepo.SetOffline(userID)
+				if err != nil {
+					log.Default().Println("Failed to update offline status:", err)
+				}
+			}
 			break
 		}
 
 		// 如果是心跳包，直接返回
 		if msgGet.Type == "ping" {
 			respondWebSocket(userID, ws, 2, "", nil)
+			err := onlineUserRepo.SetOnline(userID)
+			if err != nil {
+				log.Default().Println("Failed to update online status:", err)
+			}
 			continue
 		}
 

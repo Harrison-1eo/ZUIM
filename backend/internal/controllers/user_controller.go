@@ -199,7 +199,9 @@ func GetStats(c *gin.Context) {
 	}
 
 	// 查询在线用户
-	onlineUserCount, err := statsRepository.GetOnlineUserCount()
+	//onlineUserCount, err := statsRepository.GetOnlineUserCount()
+	err = onlineUserRepo.SetOnline(userID)
+	onlineUserCount, err := onlineUserRepo.CountOnlineUsers()
 	if err != nil {
 		respond(c, 1, "获取统计信息（在线用户数）失败", nil)
 		println("// controllers/user_controller.go 获取统计信息（在线用户数）失败 >>> err:", err.Error())
