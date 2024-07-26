@@ -2,8 +2,8 @@ package utils
 
 /*
 #cgo CFLAGS: -I./cmodule
-#cgo LDFLAGS: -L./cmodule -lZUC256-SK
-#include "ZUC256-SK.h"
+#cgo LDFLAGS: -L./cmodule -lzuc
+#include "zuc.h"
 */
 import "C"
 import (

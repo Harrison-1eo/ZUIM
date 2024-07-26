@@ -1,3 +1,5 @@
+use imdsb;
+
 create table if not exists files
 (
     id         bigint unsigned auto_increment

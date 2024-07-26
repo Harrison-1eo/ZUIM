@@ -79,10 +79,6 @@ export default {
             type: Number,
             required: true,
         },
-        VideoChunk: {
-            type: String,
-            required: true
-        },
     },
     data() {
         return {

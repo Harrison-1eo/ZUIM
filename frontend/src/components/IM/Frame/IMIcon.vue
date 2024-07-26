@@ -17,7 +17,7 @@
 
 <script>
 export default {
-    name: 'FluentCommunicationShield24Filled',
+    name: 'IMLogoComponent',
     props: {
         size: {
             type: String,
