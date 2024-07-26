@@ -15,8 +15,9 @@ func main() {
 	repositories.InitDBMySQL()
 
 	router := routes.SetupRouter()
-	err := router.Run(":8000")
+	err := router.Run("0.0.0.0:8000")
 	if err != nil {
+		println("main.go: failed to start server >>> ", err.Error())
 		return
 	}
 }
