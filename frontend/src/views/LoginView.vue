@@ -5,11 +5,11 @@
                 Welcome to Our IM System
             </h2>
         </div>
-        <div class="login-box">
+        <!-- <div class="login-box">
             <form action="#" class="login-form">
-                <el-tabs v-model="activeTab" class="demo-tabs" stretch @tab-click="handleClick" style="height: 200px">
-                    <el-tab-pane label="登录" name="loginTab" class="large-text"></el-tab-pane>
-                    <el-tab-pane label="注册" name="registerTab" class="large-text"></el-tab-pane>
+                <el-tabs v-model="activeTab" class="demo-tabs"  stretch @tab-click="handleClick" style="height: 200px">
+                    <el-tab-pane label="登录" :label-style="{ fontSize: '80px' }" name="loginTab" class="large-text"></el-tab-pane>
+                    <el-tab-pane label="注册" :label-style="{ fontSize: '80px' }" name="registerTab" class="large-text"></el-tab-pane>
 
                     <div class="tab-content">
                         <keep-alive>
@@ -18,6 +18,22 @@
                     </div>
                 </el-tabs>
             </form>
+        </div> -->
+        <div class="login-container">
+            <div class="login-form">
+                <div class="tabs">
+                    <div class="damn" @click="handleClick">
+                        <div id="loginTab" class="loginTab" style="color: #f60;">账号密码登录</div>
+                        <div class="registerTab">注册</div>
+                    </div>
+                    <div class="tab-content">
+                        <keep-alive>
+                            <component :is="curTabComponents[activeTab]"></component>
+                        </keep-alive>
+                    </div>
+                </div>
+
+            </div>
         </div>
         <!-- 新增的文字说明部分 -->
         <div class="description">
@@ -43,20 +59,49 @@ export default {
     data() {
         return {
             activeTab: 'loginTab',
+            // activeTab显示为橙色, 其他为黑色
+
+
             curTabComponents: {
                 loginTab: UserLogin,
                 registerTab: UserRegister
             }
         }
     },
+    created() {
+        // activeTab显示为橙色, 其他为黑色
+        var loginTab = document.querySelector('#loginTab');
+        // 确保元素存在
+        if (loginTab) {
+            // 修改样式
+            loginTab.style.color = '#f60';
+        } else {
+            console.error('Element with id "loginTab" not found');
+        }
+
+    },
     components: {
         UserLogin,
         UserRegister
     },
     methods: {
-        handleClick(tab) {
-            console.log(tab);
-            this.activeTab = tab.props.name;
+        goToLogin() {
+            this.activeTab = 'loginTab'
+        },
+        goToRegister() {
+            this.activeTab = 'registerTab'
+        },
+        handleClick(e) {
+            if (e.target.innerText === '账号密码登录') {
+                this.goToLogin();
+                // activeTab显示为橙色, 其他为黑色
+                e.target.style.color = '#f60';
+                e.target.nextElementSibling.style.color = '#000';
+            } else {
+                this.goToRegister();
+                e.target.style.color = '#f60';
+                e.target.previousElementSibling.style.color = '#000';
+            }
         },
         goPage(url) {
             window.location.href = url
@@ -67,6 +112,81 @@ export default {
 
 
 <style>
+.damn {
+    display: flex;
+    justify-content: space-around;
+    /* align-items: center; */
+}
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    /* background-color: #f9f9f9; */
+}
+.login-form {
+    width: 400px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    padding: 30px;
+}
+.tabs {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    flex-direction: column;
+}
+.tab {
+    padding: 10px;
+    cursor: pointer;
+}
+.tab.active {
+    color: #f60;
+    border-bottom: 2px solid #f60;
+}
+.input-group {
+    margin-bottom: 15px;
+}
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+.login-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #f60;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+.login-button:hover {
+    background-color: #e55d00;
+}
+.links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+.links a {
+    color: #999;
+    text-decoration: none;
+}
+.other-login {
+    margin-top: 20px;
+    text-align: center;
+}
+.other-login .icons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
 .title {
     text-align: center;
     /* 字体变大 */
@@ -145,8 +265,7 @@ h2 {
 
 } */
 .large-text {
-  font-size: 44px;
-  
+    font-size: 44px;
 }
 
 .el-tabs__item {

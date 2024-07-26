@@ -125,7 +125,7 @@ grid-row-gap: 0px;
     grid-area: 16 / 8 / 18 / 10;
 }
 .loginorreg {
-    width: 80%;
+    width: 120%;
     height: 80px;
     display: flex;
     justify-content: center;
