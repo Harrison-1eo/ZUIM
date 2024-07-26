@@ -7,7 +7,6 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 var db *gorm.DB
@@ -18,7 +17,7 @@ func InitDBSqlite() {
 	var err error
 	db, err = gorm.Open(sqlite.Open("test.db"), &gorm.Config{
 		// 打印SQL语句
-		Logger: logger.Default.LogMode(logger.Info),
+		// Logger: logger.Default.LogMode(logger.Info),
 	})
 	if err != nil {
 		panic("internal/config/init_db.go: failed to connect sqlite database >>> " + err.Error())
@@ -65,7 +64,7 @@ func InitDBMySQL() {
 	var err error
 	db, err = gorm.Open(mysql.Open("imdsbMaster:imdsbPassword@tcp(127.0.0.1:3306)/imdsb?parseTime=true"), &gorm.Config{
 		// 打印SQL语句
-		Logger: logger.Default.LogMode(logger.Info),
+		// Logger: logger.Default.LogMode(logger.Info),
 	})
 	if err != nil {
 		panic("internal/config/init_db.go: failed to connect mysql database >>> " + err.Error())
