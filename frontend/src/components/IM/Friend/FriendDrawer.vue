@@ -5,7 +5,7 @@
         </template>
 
         <el-card style="max-width: 480px">
-            <el-button type="primary" class="changedescription" @click="createRoomChatWithThisGuy(friend.ID, friend.username)">创建聊天室</el-button>
+            <el-button type="primary" class="changedescription" @click="createRoomChatWithThisGuyBox(friend.ID, friend.username)">创建聊天室</el-button>
         </el-card>
         <template #footer>
             <el-button type="danger">删除终端</el-button>
@@ -15,7 +15,7 @@
 
 <script>
 import axios_config from "@/utils/axios-config";
-import { ElMessage } from "element-plus";
+import {ElMessage, ElMessageBox} from "element-plus";
 import store from "@/store/store";
 export default {
     name: 'FriendDrawer',
@@ -40,22 +40,40 @@ export default {
         }
     },
     methods: {
-        async createRoomChatWithThisGuy(ID, username) {
+        createRoomChatWithThisGuyBox(ID, username) {
+            ElMessageBox.prompt(
+                    '请输入新的房间名称',
+                    '创建与' + username + '的聊天室',
+                    {
+                        inputValue: 'chat with ' + username,
+                        confirmButtonText: '创建',
+                        cancelButtonText: '取消',
+                        inputPattern: /\S/,
+                        inputErrorMessage: '房间名称不能为空'
+                    }
+            ).then(({ value }) => {
+                if (!value) {
+                    ElMessage.error('房间名称不能为空');
+                    return;
+                }
+                this.createRoomChatWithThisGuy(ID, username, value);
+            }).catch(() => {
+                ElMessage.info('创建');
+            });
+        },
+        async createRoomChatWithThisGuy(ID, username, roomname) {
             // ID不能是我自己的ID
             if (ID.toString() === localStorage.getItem('userId')) {
                 ElMessage.error('不能和自己聊天');
                 return false;
             }
             // 创建我和他之间的聊天室，跳转到/im/chat界面
-            const description = "chat with " + username;
-            const roomname = "chat with " + ID;
+            const description = "自动创建" + roomname
             try {
                 const response = await axios_config.post('/api/room/create', {
                     'name': roomname,
                     'description': description,
-                },
-                    { headers: { Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTUzOTg4MjYsInVzZXJfaWQiOjJ9.u1coQZoetjzqKRVjQqWdLWC1Jr5ymGoqcUCqLc0eLFY` } }
-                );
+                });
                 if (response.data.code !== 0) {
                     ElMessage.error(response.data.msg);
                     return false;
@@ -69,9 +87,11 @@ export default {
                 });
 
                 // 创建成功，跳转到聊天室界面
+                this.$store.commit('setActiveRoom', response.data.data);
                 this.$router.push({ path: '/im/chat' });
-                await this.fetchRoomUsers();
-                store.commit('setActiveRoom', response.data.data);
+
+                ElMessage.success('创建聊天室成功, 跳转到聊天室界面');
+                // await this.fetchRoomUsers();
 
             } catch (error) {
                 ElMessage.error('创建聊天室失败');

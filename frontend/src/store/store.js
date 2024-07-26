@@ -1,45 +1,8 @@
 // store.js
 
-import Vue from 'vue'
 import Vuex from 'vuex'
-// Vue.use(Vuex)
-import { createApp } from 'vue'
-import { createStore } from 'vuex'
 
-
-// const state = {
-//     activeRoomId: null // 存储激活的房间信息
-// }
-
-// const mutations = {
-//     setActiveRoomId(id) {
-//         state.activeRoomId = id;
-//     }
-// }
-
-// const actions = {
-
-// }
-
-// const getters = {
-//     activeRoomId(state) {
-//         return state.activeRoomId;
-//     }
-
-// }
-
-// const store = new Vuex.Store({
-//     state,
-//     mutations,
-//     actions,
-//     getters
-// })
-
-
-
-// export default store
-
-export default new Vuex.Store({
+const store = new Vuex.Store({
     state: {
         activeRoom: {
             "ID": null,
@@ -51,7 +14,11 @@ export default new Vuex.Store({
         } // 存储激活的房间信息
     },
     getters: {
-        activeRoom(state) {
+        getActiveRoom(state) {
+            if (!state.activeRoom.ID) {
+                console.error('activeRoom is null');
+                return null;
+            }
             return state.activeRoom;
         }
     },
@@ -66,9 +33,19 @@ export default new Vuex.Store({
             state.activeRoom.description = room.description;
 
             console.log('state.activeRoom:', state.activeRoom)
-        }
+        },
+        clearActiveRoom(state) {
+            state.activeRoom.ID = null;
+            state.activeRoom.CreatedAt = null;
+            state.activeRoom.UpdatedAt = null;
+            state.activeRoom.DeletedAt = null;
+            state.activeRoom.name = null;
+            state.activeRoom.description = null;
+        },
     },
     actions: {
         // 不需要在这里定义 fetchRoomInfo 方法，因为这个方法不是从服务器获取数据的
-    }
+    },
 });
+
+export default store

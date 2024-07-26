@@ -37,6 +37,27 @@ func UpdateUserInfo(c *gin.Context) {
 		return
 	}
 
+	user, err := userRepository.GetUserByID(userID)
+	if err != nil {
+		respond(c, 1, "获取用户信息失败", nil)
+		return
+	}
+
+	if user.Username != userInfo.Username {
+		// 查找是否有重名用户
+		u, err := userRepository.GetUserByUsername(userInfo.Username)
+		if err != nil && err.Error() != "record not found" {
+			respond(c, 1, "获取用户信息失败", nil)
+			return
+		}
+		if u != nil && u.ID != userID {
+			respond(c, 1, "用户名已存在", nil)
+			return
+		}
+		user.Username = userInfo.Username
+		_, err = userRepository.UpdateUser(*user)
+	}
+
 	updatedUserInfo, err := userInfoRepository.UpdateUserInfo(userInfo)
 	if err != nil {
 		respond(c, 1, "更新用户信息失败", nil)

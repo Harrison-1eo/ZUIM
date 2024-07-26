@@ -64,8 +64,24 @@ export default {
     },
     created() {
         this.fetchRooms(); // 获取聊天室列表
+        // this.jumpFromFriendChat();
+    },
+    beforeMount() {
+        this.jumpFromFriendChat();
     },
     methods: {
+        jumpFromFriendChat(){
+            // 从Vuex获取当前激活的聊天室ID
+            const activeRoom = this.$store.getters.getActiveRoom;
+            console.log("jumpFromFriendChat:", activeRoom);
+            if (activeRoom) {
+                this.activeRoomId = activeRoom.ID;
+                this.ifUpdateRoomList2Chat = true;
+                this.$store.commit('clearActiveRoom')
+            } else {
+                this.selectNoRoom();
+            }
+        },
         selectNoRoom() {
             this.activeRoom = null;
             this.activeRoomId = null;

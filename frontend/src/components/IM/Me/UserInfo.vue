@@ -12,8 +12,8 @@
             <el-descriptions-item label="User ID">{{ userInfo.user_id }}</el-descriptions-item>
             <el-descriptions-item label="Nickname">{{ userInfo.nike_name || 'N/A' }}</el-descriptions-item>
             <el-descriptions-item label="Country">{{ userInfo.country || 'N/A' }}</el-descriptions-item>
-            <el-descriptions-item label="Province">{{ userInfo.province || 'N/A' }}</el-descriptions-item>
-            <el-descriptions-item label="City">{{ userInfo.city || 'N/A' }}</el-descriptions-item>
+<!--            <el-descriptions-item label="Province">{{ userInfo.province || 'N/A' }}</el-descriptions-item>-->
+<!--            <el-descriptions-item label="City">{{ userInfo.city || 'N/A' }}</el-descriptions-item>-->
             <el-descriptions-item label="Account Created">{{ formatDate(userInfo.CreatedAt) }}</el-descriptions-item>
         </el-descriptions>
     </el-card>

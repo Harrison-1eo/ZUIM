@@ -1,10 +1,7 @@
 <template>
     <el-card class="update-password-card">
-        <template #header>
-            <div class="update-password-header">
-                <h2>修改密码</h2>
-            </div>
-        </template>
+        <h2>修改密码</h2>
+        <el-divider></el-divider>
         <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="120px" class="demo-ruleForm">
             <el-form-item label="原密码" prop="oriPass">
                 <el-input type="password" v-model="ruleForm.oriPass" autocomplete="off" show-password></el-input>
@@ -26,18 +23,20 @@
 <style scoped>
 .update-password-card {
     width: 500px;
-    margin: 50px auto;
-    border-radius: 8px;
+    margin: 40px auto;
+    padding: 20px;
+    border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 </style>
 
 <script>
 import axios_config from "@/utils/axios-config";
-import { ElMessage } from "element-plus";
+import {ElDivider, ElMessage} from "element-plus";
 
 export default {
     name: 'UpdatePassword',
+    components: {ElDivider},
     data() {
         return {
             ruleForm: {

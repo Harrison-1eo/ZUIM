@@ -71,3 +71,10 @@ func (repo *UserRepository) GetUserByUsername(username string) (*models.User, er
 func (repo *UserRepository) UpdatePassword(id uint, password string) error {
 	return db.Model(models.User{}).Where("id = ?", id).Update("password", password).Error
 }
+
+func (repo *UserRepository) UpdateUser(user models.User) (*models.User, error) {
+	if err := db.Model(models.User{}).Where("id = ?", user.ID).Updates(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}

@@ -34,7 +34,7 @@
                             v-for="room in roomsBetween"
                             :key="room.ID"
                             :index="room.ID.toString()"
-                            @click="fetchRoomInfo(room.ID)">
+                            @click="jumpToRoom(room)">
                         {{ room.name }}
                     </el-menu-item>
                 </el-scrollbar>
@@ -118,6 +118,12 @@ export default {
                 ElMessage.error('Failed to fetch friend information:', error);
             }
         },
+        jumpToRoom(room) {
+            // 首先将room的信息存储在Vuex中
+            this.$store.commit('setActiveRoom', room);
+            // 然后跳转到聊天室
+            this.$router.push({ path: '/im/chat' });
+        }
     }
 };
 </script>
