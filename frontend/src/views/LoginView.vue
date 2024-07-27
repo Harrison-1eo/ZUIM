@@ -200,7 +200,7 @@ export default {
     margin-top: 0;
 }
 .backgroud {
-    background-image: url("../assets/beach.png");
+    background-image: url("https://harr1son.oss-cn-zhangjiakou.aliyuncs.com/imdsb/background.png");
     background-size: cover;
     height: 100%;
     display: flex;
@@ -279,7 +279,6 @@ h2 {
 }
 
 .tab-content {
-    background-color: #f5f5f5;
     padding: 20px;
 }
 
