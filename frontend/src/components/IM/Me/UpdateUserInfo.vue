@@ -8,7 +8,7 @@
             </el-col>
             <el-col :span="16">
                 <div class="avatar-uploader-box">
-                    <el-upload class="avatar-uploader" action="http://localhost:8000/api/user/upload_avatar"
+                    <el-upload class="avatar-uploader" :action="uploadUrl"
                                :headers="{ Authorization: 'Bearer ' + this.token }" :show-file-list="false" :on-success="handleAvatarSuccess"
                                :on-error="handleAvatarError" :before-upload="beforeAvatarUpload">
                         <img v-if="avatarUrl" :src="avatarUrl" class="avatar">
@@ -142,8 +142,8 @@ export default {
         handleAvatarSuccess(res) {
             if (res.code === 0) {
                 ElMessage.success('上传头像成功');
-                this.userInfo = res.data;
-                this.avatarUrl = this.userInfo.avatar ? backendBaseUrl + this.userInfo.avatar : '';
+                this.getUserInfo();
+
                 var temp = {
                     'id': this.userInfo.ID,
                     'avatar': this.avatarUrl
