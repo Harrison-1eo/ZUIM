@@ -195,9 +195,12 @@ export default {
 }
 .title h2 {
     font-size: 54px;
-    color: #333;
+    color: #f7c95c;
     /* margin: 0 0 20px; */
     margin-top: 0;
+    /* 阴影 */
+    text-shadow: 6px 6px 6px #000;
+
 }
 .backgroud {
     background-image: url("https://harr1son.oss-cn-zhangjiakou.aliyuncs.com/imdsb/background.png");

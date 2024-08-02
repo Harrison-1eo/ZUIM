@@ -28,7 +28,12 @@ export default {
             httpKey: localStorage.getItem('backendPassword'),
             wsKey: localStorage.getItem('websocketBackendPassword')
         }
-    }
+    },
+    // method {
+    //     ShowData () {
+
+    //     }
+    // }
 };
 </script>
 
@@ -58,6 +63,7 @@ export default {
     row-gap: 20px;
     border: #ffffff 1px solid;
     transition: border 0.5s linear;
+    word-wrap: break-word;
 }
 
 .encryption-info-box:hover {
